@@ -1,4 +1,4 @@
-# this script is used to visualize ABIDE I subgroup after Spectral clustering (dev ASD Male only)
+# this script is used to visualize subgroup after Spectral clustering (dev ASD Male only)
 # Xue-Ru Fan 25 April 2023 @BNU
 
 rm(list=ls())
