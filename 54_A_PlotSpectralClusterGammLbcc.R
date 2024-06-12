@@ -21,7 +21,6 @@ sapply(packages, require, character.only = TRUE)
 abideDir <- 'E:/PhDproject/ABIDE' # winds
 clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster")
 plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster/GAMMlbcc")
-resDate <- "240315"
 newDate <- "240610"
 
 # define variables
@@ -140,7 +139,7 @@ for (volumeName in volumeNames){
           axis.text = element_text(size = 8)) +
     theme(legend.position = "None")
   
-  name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_", volumeName, "_GAMLSS_lbcc_", resDate,".png")
+  name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_", volumeName, "_GAMLSS_lbcc_", newDate,".png")
   ggsave(file.path(plotDir, name), dpi = 300, width = 10, height = 10, unit = "cm")
   
 }
