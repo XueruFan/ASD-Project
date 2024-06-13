@@ -31,10 +31,15 @@ rank <- read.csv(file.path(clustDir, paste0("abide_A_asd_male_dev_Spectral_Clust
 All <- merge(cluster, pheno, by = "participant", All.x = TRUE)
 
 
+# 控制变量：site
+# 自变量：使用贡献排在前5个的脑指标进行加权后合成的指标作为自变量
+# 因变量：认知
+
+
 # 选择自变量列
 names_brain <- names(cluster)[3:ncol(cluster)]
 
-names_cog <- c("ADOS_2_SEVERITY_TOTAL", "ADOS_2_TOTAL", "ADOS_2_SOCAFFECT",
+names_cog <- c("FIQ", "PIQ", "VIQ", "ADOS_2_SEVERITY_TOTAL", "ADOS_2_TOTAL", "ADOS_2_SOCAFFECT",
                "ADOS_2_RRB", "SRS_AWARENESS_RAW", "SRS_COGNITION_RAW", "SRS_COMMUNICATION_RAW",
                "SRS_MOTIVATION_RAW", "SRS_MANNERISMS_RAW", "SRS_AWARENESS_T", "SRS_COGNITION_T",
                "SRS_COMMUNICATION_T", "SRS_MOTIVATION_T", "SRS_MANNERISMS_T", "SRS_TOTAL_T",
@@ -46,7 +51,7 @@ names_cog <- c("ADOS_2_SEVERITY_TOTAL", "ADOS_2_TOTAL", "ADOS_2_SOCAFFECT",
 
 
 #### select: 控制变量、自变量、因变量
-names_col <- c("clusterID", "SITE_ID", "FIQ", names_brain, names_cog)
+names_col <- c("clusterID", "SITE_ID", names_brain, names_cog)
 All <- All[, names_col]
 All[All < 0] <- NA
 
@@ -98,20 +103,16 @@ rank$Importance <- rank$Rank
 rank <- rank[, -3]
 
 
-################### Part 1 ：首先使用全部脑指标进行加权后合成的指标作为自变量 ######################
 
-################### Part 11
-# 控制变量：site、FIQ
-# 自变量：全部脑指标的加权合成新指标
-# 因变量：认知
+importance <- rank[1:5,]
+
+
 
 ################### L组
 
-importance <- rank %>% select(Feature, Importance)
-
-# 确保 SITE_ID 和 FIQ 是因子和数值类型
+# 确保 SITE_ID 是因子类型
 L$SITE_ID <- as.factor(L$SITE_ID)
-L$FIQ <- as.numeric(L$FIQ)
+
 
 # 对 L 数据框中的 names_brain 列进行加权
 weighted_names_brain <- L %>%
@@ -133,15 +134,15 @@ for (name_cog in names_cog) {
     y <- L[[name_cog]] # 提取因变量
     # 确保 y 中非 NA 值不少于 30 个
     if (sum(!is.na(y)) >= 30) {
-      # 创建临时数据框，包含做相关分析需要的列，并过滤掉 FIQ 为 NA 的行
-      temp_L <- L[!is.na(y) & !is.na(L$FIQ), c("weighted_var", "SITE_ID", "FIQ", name_cog)]
-      temp_L$y <- y[!is.na(y) & !is.na(L$FIQ)]
+      # 创建临时数据框，包含做相关分析需要的列
+      temp_L <- L[!is.na(y), c("weighted_var", "SITE_ID", name_cog)]
+      temp_L$y <- y[!is.na(y)]
       
       if (nrow(temp_L) >= 30) {
         if (length(unique(temp_L$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
-          # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 FIQ
-          y_lm <- lm(y ~ SITE_ID + FIQ, data = temp_L)
-          weighted_var_lm <- lm(weighted_var ~ SITE_ID + FIQ, data = temp_L)
+          # 对 y 和 weighted_var 进行回归，控制 SITE_ID
+          y_lm <- lm(y ~ SITE_ID, data = temp_L)
+          weighted_var_lm <- lm(weighted_var ~ SITE_ID, data = temp_L)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -150,9 +151,9 @@ for (name_cog in names_cog) {
           # 使用 Spearman 相关性计算残差之间的相关性
           cor_test <- cor.test(y_residuals, weighted_var_residuals, method = "spearman")
         } else {
-          # 如果 SITE_ID 只有一个水平，不控制 SITE_ID，但仍然控制 FIQ
-          y_lm <- lm(y ~ FIQ, data = temp_L)
-          weighted_var_lm <- lm(weighted_var ~ FIQ, data = temp_L)
+          # 如果 SITE_ID 只有一个水平，不控制 SITE_ID
+          y_lm <- lm(y ~ 1, data = temp_L)
+          weighted_var_lm <- lm(weighted_var ~ 1, data = temp_L)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -177,83 +178,84 @@ for (name_cog in names_cog) {
 L_sorted <- arrange(results_L, p_value)
 
 ### 保存下来结果
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_CorrA_L_", newDate, ".csv")
+name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_CorrE_L_", newDate, ".csv")
 write.csv(L_sorted, file.path(statiDir, name), row.names = F)
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_CorrA_H_", newDate, ".csv")
+
+
+
+################### H组
+
+
+# 确保 SITE_ID 是因子类型
+H$SITE_ID <- as.factor(H$SITE_ID)
+
+# 对 H 数据框中的 names_brain 列进行加权
+weighted_names_brain <- H %>%
+  select(all_of(importance$Feature)) %>%
+  mutate(across(everything(), ~ . * importance$Importance[match(cur_column(), importance$Feature)]))
+
+# 将加权后的列合并成一个新的自变量
+weighted_var <- rowSums(weighted_names_brain, na.rm = TRUE)
+if(length(weighted_var) != nrow(H)) {
+  stop("Length of weighted_var does not match number of rows in H")
+}
+
+# 将加权合成的新变量添加到 H 数据框中
+H$weighted_var <- weighted_var
+
+# 初始化空数据框来存储相关计算的结果
+results_H <- data.frame()
+
+# 循环 names_cog 列，计算 Spearman 相关性
+for (name_cog in names_cog) {
+  if (name_cog %in% names(H)) {
+    y <- H[[name_cog]] # 提取因变量
+    # 确保 y 中非 NA 值不少于 30 个
+    if (sum(!is.na(y)) >= 30) {
+      # 创建临时数据框，包含做相关分析需要的列
+      temp_H <- H[!is.na(y), c("weighted_var", "SITE_ID", name_cog)]
+      temp_H$y <- y[!is.na(y)]
+      
+      if (nrow(temp_H) >= 30) {
+        if (length(unique(temp_H$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
+          # 对 y 和 weighted_var 进行回归，控制 SITE_ID
+          y_lm <- lm(y ~ SITE_ID, data = temp_H)
+          weighted_var_lm <- lm(weighted_var ~ SITE_ID, data = temp_H)
+          
+          # 提取残差
+          y_residuals <- residuals(y_lm)
+          weighted_var_residuals <- residuals(weighted_var_lm)
+          
+          # 使用 Spearman 相关性计算残差之间的相关性
+          cor_test <- cor.test(y_residuals, weighted_var_residuals, method = "spearman")
+        } else {
+          # 如果 SITE_ID 只有一个水平，不控制 SITE_ID
+          y_lm <- lm(y ~ 1, data = temp_H)
+          weighted_var_lm <- lm(weighted_var ~ 1, data = temp_H)
+          
+          # 提取残差
+          y_residuals <- residuals(y_lm)
+          weighted_var_residuals <- residuals(weighted_var_lm)
+          
+          # 使用 Spearman 相关性计算残差之间的相关性
+          cor_test <- cor.test(y_residuals, weighted_var_residuals, method = "spearman")
+        }
+        
+        # 保存 Spearman 相关系数和显著性到新的数据框中
+        results_H <- rbind(results_H, data.frame(
+          name_cog = name_cog,
+          coef = cor_test$estimate,
+          p_value = cor_test$p.value
+        ))
+      }
+    }
+  }
+}
+
+########### 给P值排序
+H_sorted <- arrange(results_H, p_value)
+
+### 保存下来结果
+name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_CorrE_H_", newDate, ".csv")
 write.csv(H_sorted, file.path(statiDir, name), row.names = F)
 
-
-
-
-##################################### Part 2: 画图 #################################################
-
-##### 画L组图 
-
-for (i in 1:nrow(L_sorted)) {
-  to_plot_names <- c(L_sorted[i, 1], L_sorted[i, 2])
-  
-  plotPoint <- L[, to_plot_names]
-  plotPoint <- plotPoint[!is.na(plotPoint[[2]]), ]
-  
-  if (nrow(plotPoint) < 40) {
-    next  # 如果行数少于40，跳过此次循环的剩余部分，也就是说，不够40个的就不看了
-  }
-  
-  # 如果行数不少于40，继续执行下面的代码
-  colnames(plotPoint) <- c("x","y")
-  note_p <- paste0("p = ", round(L_sorted[i, "P"], 4))
-  note_r <- paste0("r = ", round(L_sorted[i, "R"], 4))
-  note_n <- paste0("n = ", round(L_sorted[i, "R"], 4))
-  
-  ggplot(plotPoint, aes(x = x, y = y)) +
-    geom_point(color = "#add8e6", alpha = .8, size = 2, shape = 16) +  # 添加散点图层
-    geom_smooth(method = "lm", se = T, lwd = 2, color = "#add8e6", fill = "#add8e6") +
-    theme_cowplot() +
-    scale_x_continuous(limits = c(0,1), breaks = c(0,0.25,0.5,0.75,1)) +
-    xlab(to_plot_names[1]) +
-    ylab(to_plot_names[2]) +
-    annotate("text", x = Inf, y = Inf, label = note_r, hjust = 1.2, vjust = 3, size = 7) +
-    annotate("text", x = Inf, y = Inf, label = note_p, hjust = 1.2, vjust = 1.2, size = 7) +
-    
-    theme(legend.position = "none", # without legend
-          axis.text.y = element_text(size = 15, face = "bold"),
-          axis.text.x = element_text(size = 15, face = "bold"))
-  
-  name <- paste0("L_", i, "_", to_plot_names[1], "_", to_plot_names[2], "_", newDate, ".png")
-  ggsave(file.path(plotDir, name), width = 7, height = 7, units = "in", dpi = 500)
-}
-
-
-####################################### 画H组图 ####################################################
-
-for (i in 1:nrow(H_sorted)) {
-  to_plot_names <- c(H_sorted[i, 1], H_sorted[i, 2])
-  
-  plotPoint <- H[, to_plot_names]
-  plotPoint <- plotPoint[!is.na(plotPoint[[2]]), ]
-  
-  if (nrow(plotPoint) < 40) {
-    next  # 如果行数少于40，跳过此次循环的剩余部分，也就是说，不够40个的就不看了
-  }
-  
-  # 如果行数不少于40，继续执行下面的代码
-  colnames(plotPoint) <- c("x","y")
-  note_p <- paste0("p = ", round(H_sorted[i, "P"], 4))
-  note_r <- paste0("r = ", round(H_sorted[i, "R"], 4))
-
-  ggplot(plotPoint, aes(x = x, y = y)) +
-    geom_point(color = "#ffb699", alpha = .8, size = 2, shape = 16) +  # 添加散点图层
-    geom_smooth(method = "lm", se = T, lwd = 2, color = "#ffb699", fill = "#ffb699") +
-    theme_cowplot() +
-    scale_x_continuous(limits = c(0,1), breaks = c(0,0.25,0.5,0.75,1)) +
-    xlab(to_plot_names[1]) +
-    ylab(to_plot_names[2]) +
-    annotate("text", x = Inf, y = Inf, label = note_r, hjust = 1.2, vjust = 3, size = 7) +
-    annotate("text", x = Inf, y = Inf, label = note_p, hjust = 1.2, vjust = 1.2, size = 7) +
-    theme(legend.position = "none", # without legend
-          axis.text.y = element_text(size = 15, face = "bold"),
-          axis.text.x = element_text(size = 15, face = "bold"))
-  
-  name <- paste0("H_", i, "_", to_plot_names[1], "_", to_plot_names[2], "_", newDate, ".png")
-  ggsave(file.path(plotDir, name), width = 7, height = 7, units = "in", dpi = 500)
-}
