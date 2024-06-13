@@ -127,97 +127,61 @@ if(length(weighted_var) != nrow(L)) {
 # 将加权合成的新变量添加到 L 数据框中
 L$weighted_var <- weighted_var
 
-# 循环 names_cog 列，计算相关性
+# 循环 names_cog 列，计算 Spearman 相关性
 for (name_cog in names_cog) {
   if (name_cog %in% names(L)) {
     y <- L[[name_cog]] # 提取因变量
     # 确保 y 中非 NA 值不少于 30 个
     if (sum(!is.na(y)) >= 30) {
-      # 创建临时数据框，包含所有非 NA 的 y 值对应的行
-      temp_L <- L[!is.na(y), ]
-      temp_L$y <- y[!is.na(y)]
+      # 创建临时数据框，包含做相关分析需要的列，并过滤掉 FIQ 为 NA 的行
+      temp_L <- L[!is.na(y) & !is.na(L$FIQ), c("weighted_var", "SITE_ID", "FIQ", name_cog)]
+      temp_L$y <- y[!is.na(y) & !is.na(L$FIQ)]
       
       if (nrow(temp_L) >= 30) {
         if (length(unique(temp_L$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
-          model <- lm(y ~ weighted_var + SITE_ID + FIQ, data = temp_L) # 构建回归模型，控制变量为 SITE_ID 和 FIQ
+          # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 FIQ
+          y_lm <- lm(y ~ SITE_ID + FIQ, data = temp_L)
+          weighted_var_lm <- lm(weighted_var ~ SITE_ID + FIQ, data = temp_L)
+          
+          # 提取残差
+          y_residuals <- residuals(y_lm)
+          weighted_var_residuals <- residuals(weighted_var_lm)
+          
+          # 使用 Spearman 相关性计算残差之间的相关性
+          cor_test <- cor.test(y_residuals, weighted_var_residuals, method = "spearman")
         } else {
-          model <- lm(y ~ weighted_var + FIQ, data = temp_L) # 构建回归模型，控制变量为 FIQ
+          # 如果 SITE_ID 只有一个水平，不控制 SITE_ID，但仍然控制 FIQ
+          y_lm <- lm(y ~ FIQ, data = temp_L)
+          weighted_var_lm <- lm(weighted_var ~ FIQ, data = temp_L)
+          
+          # 提取残差
+          y_residuals <- residuals(y_lm)
+          weighted_var_residuals <- residuals(weighted_var_lm)
+          
+          # 使用 Spearman 相关性计算残差之间的相关性
+          cor_test <- cor.test(y_residuals, weighted_var_residuals, method = "spearman")
         }
-        summary_model <- summary(model) # 提取相关系数和显著性
-        # 保存结果到新的数据框中
+        
+        # 保存 Spearman 相关系数和显著性到新的数据框中
         results_L <- rbind(results_L, data.frame(
           name_cog = name_cog,
-          coef = summary_model$coefficients[2, "Estimate"],
-          p_value = summary_model$coefficients[2, "Pr(>|t|)"]
+          coef = cor_test$estimate,
+          p_value = cor_test$p.value
         ))
       }
     }
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-######################################
-
-
-##################################### Part 1: 计算变量之间的相关 ###################################
-
-# L组
-results_L <- data.frame(x = character(),
-                        y = character(),
-                        R = numeric(),
-                        P = numeric(),
-                        stringsAsFactors = FALSE)
-
-for (i in 1:length(names_brain)) { # 自变量
-  for (j in (length(names_brain) +1):ncol(L)) { # 因变量
-    cor_test_result <- cor.test(L[, i], L[, j], method = "spearman")
-    results_L <- rbind(results_L, data.frame(x = names(L)[i],
-                                             y = names(L)[j],
-                                             R = cor_test_result$estimate,
-                                             P = cor_test_result$p.value))
-  }
-}
-
-# H组
-results_H <- data.frame(x = character(),
-                        y = character(),
-                        R = numeric(),
-                        P = numeric(),
-                        stringsAsFactors = FALSE)
-
-for (i in 1:length(names_brain)) { # 自变量
-  for (j in (length(names_brain) +1):ncol(H)) { # 因变量
-    cor_test_result <- cor.test(H[, i], H[, j], method = "spearman")
-    results_H <- rbind(results_H, data.frame(x = names(H)[i],
-                                             y = names(H)[j],
-                                             R = cor_test_result$estimate,
-                                             P = cor_test_result$p.value))
-  }
-}
-
 ########### 给P值排序
-L_sorted <- arrange(results_L, P)
-L_sorted <- L_sorted[abs(L_sorted$R) >= 0.2, ] # 删除R列绝对值小于0.2的行
-L_sorted <- L_sorted[L_sorted$P < 0.05, ] # 删除数据框中P列大于或等于0.05的行
-
-H_sorted <- arrange(results_H, P)
-H_sorted <- H_sorted[abs(H_sorted$R) >= 0.2, ]
-H_sorted <- H_sorted[H_sorted$P < 0.05, ]
+L_sorted <- arrange(results_L, p_value)
 
 ### 保存下来结果
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_Corr_L_", newDate, ".csv")
+name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_CorrA_L_", newDate, ".csv")
 write.csv(L_sorted, file.path(statiDir, name), row.names = F)
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_Corr_H_", newDate, ".csv")
+name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_CorrA_H_", newDate, ".csv")
 write.csv(H_sorted, file.path(statiDir, name), row.names = F)
+
 
 
 
