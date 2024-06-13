@@ -120,26 +120,3 @@ ggsave(name, width = 7, height = 8, units = "in", dpi = 500)
 ################################# 保存该结果
 name <- paste0("abide_A_asd_male_dev_GMM_RM_Rank_", newDate, ".csv")
 write.csv(plot_data, file.path(resDir, name), row.names = F)
-
-
-################################## Part 4：使用随机森林评估每个特征的贡献 ##########################
-data_cluster$clusterID = as.factor(data_cluster$clusterID)
-set.seed(941205)
-rf_model = randomForest(x = data_cluster[, -1], y = data_cluster$clusterID, importance = TRUE)
-feature_importance <- importance(rf_model) # 获取特征重要性
-sorted_indices <- order(feature_importance[, "MeanDecreaseAccuracy"], decreasing = TRUE)
-sorted_feature_importance <- feature_importance[sorted_indices, ]
-feature_importance_long <- data.frame(Feature = rownames(sorted_feature_importance),
-                                      Importance = sorted_feature_importance[, "MeanDecreaseAccuracy"])
-
-ggplot(feature_importance_long, aes(x = reorder(Feature, Importance), y = Importance)) +
-  geom_bar(stat = "identity", fill = "#66cdaa") +
-  coord_flip() +  # 翻转坐标轴，使特征名称更容易阅读
-  theme_minimal() +  # 使用简洁的主题
-  labs(x = "Feature", y = "Importance") +
-  theme(axis.title = element_text(size = 12, face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1))  # x轴标签倾斜，以防重叠
-
-################################# save plot
-name <- file.path(plotDir, paste0("abide_A_asd_male_dev_GMM_RF_Rank_", newDate, ".png"))
-ggsave(name, width = 7, height = 8, units = "in", dpi = 500)
