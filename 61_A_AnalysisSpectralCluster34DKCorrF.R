@@ -1,6 +1,7 @@
 # 本代码用来分析两组ASD男性的变量之间的相关系数和显著性水平
 # 斯皮尔曼相关，Site作为控制变量，34个脑指标分别作为自变量,
 # 保存原始的相关系数和p值csv文件，另外，筛选p小于0.01且r大于0.2的结果，保存csv文件
+# 之后手动筛选保存一个xlsx
 # 按照显著性水平结果，绘制相关图png
 # 雪如 2024年2月28日于北师大办公室
 
@@ -239,7 +240,7 @@ for (i in 1:nrow(sorted)) {
   sorted[i, "Hn"] <- nrow(temp)
 }
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_statis_CorrF_Final", newDate, ".csv")
+name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_statis_CorrF_Final_", newDate, ".csv")
 write.csv(sorted[, -7], file.path(statiDir, name), row.names = F)
 
 
