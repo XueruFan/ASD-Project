@@ -127,7 +127,10 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 
 ######################### Part 3: Project extram percentage on the brain ###########################
 # 34个脑区的异常流行率, 对于每个脑区来说有多少人的体积常模分属于极端值（位于thr以外，这里thr取5%）
+group1 <- (subset(cluster_result, clusterID == "1"))[, -1:-9]
+group2 <- (subset(cluster_result, clusterID == "2"))[, -1:-9]
 
+###########
 thr <- 0.05
 
 # cluster 1
