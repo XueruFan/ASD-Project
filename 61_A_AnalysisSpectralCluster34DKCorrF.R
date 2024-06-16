@@ -227,6 +227,18 @@ sorted <- sorted %>%
 sorted <- sorted %>%
   arrange(SortValue)
 
+sorted$Ln <- NA
+sorted$Hn <- NA
+
+for (i in 1:nrow(sorted)) {
+  temp <- L[, c(sorted[i, "name_brain"], sorted[i, "name_cog"])]
+  temp <- temp[!is.na(temp[[2]]),]
+  sorted[i, "Ln"] <- nrow(temp)
+  temp <- H[, c(sorted[i, "name_brain"], sorted[i, "name_cog"])]
+  temp <- temp[!is.na(temp[[2]]),]
+  sorted[i, "Hn"] <- nrow(temp)
+}
+
 name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_statis_CorrF_Final", newDate, ".csv")
 write.csv(sorted[, -7], file.path(statiDir, name), row.names = F)
 
