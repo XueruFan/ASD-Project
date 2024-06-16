@@ -3,10 +3,10 @@
 # 注意，这里只是用34个脑区作为分类指标
 # Xue-Ru Fan 13 march 2024 @BNU
 ###################################################
-# Part 0: 对每个特征值进行标准化
+# Part 0: 对每个特征值进行标准化，聚类时时使用标准化的centile
 # Part 1: 选择不同聚类数的轮廓系数，确定最佳聚类数目，png和csv
-# Part 2: 根据最佳聚类数目进行谱聚类，csv
-# Part 3: 使用特征消除法评估每个特征的贡献，png和csv
+# Part 2: 根据最佳聚类数目进行谱聚类，保存结果csv，保存了cluster编号和41个脑指标的原始centile
+# Part 3: 使用特征消除法评估每个特征的贡献，保存排序的png和csv
 ##################################################
 
 rm(list=ls())
@@ -31,8 +31,8 @@ data_raw <- subset(abide_centile, dx == "ASD" & sex == "Male")
 # rows_with_na <- apply(data_raw, 1, function(x) any(is.na(x)))
 # na_rows <- data_raw[rows_with_na, ]
 # 去掉他们
-data_centile <- na.omit(data_raw[, -2:-13])
-data <- data_centile[, -1]
+data_raw <- na.omit(data_raw[, -2:-6])
+data <- data_raw[, -1:-8]
 
 ################################## Part 0：标准化 ##################################################
 # 为什么要标准化
@@ -98,7 +98,7 @@ cluster_result <- specc(as.matrix(data), centers = optimal_clusters)
 cluster_membership <- cluster_result@.Data
 
 ################################# save result
-data_cluster <- cbind(cluster_membership, data_centile)
+data_cluster <- cbind(cluster_membership, data_raw)
 # 结果发现标准化和不标准化特征值对聚类结果没有影响
 colnames(data_cluster)[1] <- "clusterID"
 name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_", newDate, ".csv")
