@@ -1,6 +1,13 @@
 # this script is used to do ABIDE I and II Spectral Clustering (age 6-17.9 male only)
 # 使用谱聚类算法对人群进行聚类分析，并把对分类特征的重要性评估出来
+# 注意，这里只是用34个脑区作为分类指标
 # Xue-Ru Fan 13 march 2024 @BNU
+###################################################
+# Part 0: 对每个特征值进行标准化
+# Part 1: 选择不同聚类数的轮廓系数，确定最佳聚类数目，png和csv
+# Part 2: 根据最佳聚类数目进行谱聚类，csv
+# Part 3: 使用特征消除法评估每个特征的贡献，png和csv
+##################################################
 
 rm(list=ls())
 
@@ -98,7 +105,6 @@ name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_", newDate, ".csv")
 write.csv(data_cluster, file.path(resDir, name), row.names = F)
 
 ################################## Part 3: 使用特征消除法评估每个特征的贡献 ########################
-# 定义一个函数，用于计算给定数据的谱聚类轮廓系数
 calculate_silhouette_for_spectral_clustering <- function(data, centers) {
   spectral_clustering_result <- specc(as.matrix(data), centers = centers)
   cluster_membership <- spectral_clustering_result@.Data
