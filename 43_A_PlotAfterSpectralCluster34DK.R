@@ -1,5 +1,12 @@
 # this script is used to visualize subgroup after Spectral clustering (dev ASD Male only)
+# 绘图使用谱聚类算法（这里只是用34个脑区作为分类指标）对人群进行聚类后的两类人群
 # Xue-Ru Fan 25 April 2023 @BNU
+###################################################
+# Part 1: 画出两个分型的34个分区体积centile的概率密度分布图，png
+# Part 2: 画出两个分型7个全局指标常模分（中位数+四分位距）的概率密度图，png
+# Part 3: 画出两个分型的34个分区体积centile中位数投射出的脑图，png
+# Part 4: 画出两个分型的34个脑区的异常（5%和95%）流行率，png和csv
+###################################################
 
 rm(list=ls())
 packages <- c("ggplot2", "ggseg", "ggridges", "tidyr", "do", "dplyr")
@@ -8,8 +15,8 @@ sapply(packages, require, character.only = TRUE)
 
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # MAC
 abideDir <- 'E:/PhDproject/ABIDE' # Windows
-resDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster")
-plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster")
+resDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster34DK")
+plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK")
 resDate <- "240315"
 newDate <- "240610"
 
