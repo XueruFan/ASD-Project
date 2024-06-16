@@ -18,8 +18,8 @@ sapply(packages, require, character.only = TRUE)
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # MAC
 abideDir <- 'E:/PhDproject/ABIDE' # Windows
 dataDir <- file.path(abideDir, "Preprocessed")
-resDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster")
-plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster")
+resDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster34DK")
+plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK")
 resDate <- "240315" # 上次分析
 newDate <- "240610" # 这次分析
 
