@@ -1,4 +1,6 @@
-# 本代码用来分析由谱聚类的方法分类的两组ASD男性的变量之间的相关系数和显著性水平
+# 本代码用来分析两组ASD男性的变量之间的相关系数和显著性水平
+# 斯皮尔曼相关
+# Site作为控制变量，34个脑指标按照贡献度合成的新指标作为自变量
 # 雪如 2024年2月28日于北师大办公室
 
 rm(list=ls())
@@ -11,7 +13,7 @@ sapply(packages, require, character.only = TRUE)
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # mac
 abideDir <- 'E:/PhDproject/ABIDE' # winds
 phenoDir <- file.path(abideDir, "Preprocessed")
-clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster")
+clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster34DK")
 statiDir <- file.path(abideDir, "Analysis/Statistic")
 plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK/Corr")
 resDate <- "240315"
@@ -29,14 +31,6 @@ colnames(cluster)[start:ncol(cluster)] <- paste0(colnames(cluster)[start:ncol(cl
 rank <- read.csv(file.path(clustDir, paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_RM_Rank_",
                                             newDate, ".csv")))
 All <- merge(cluster, pheno, by = "participant", All.x = TRUE)
-
-
-# 控制变量：site
-# 自变量：全部脑指标的加权合成新指标
-# 因变量：认知
-# 用全部脑指标每一个分别作为自变量
-
-
 
 # 选择自变量列
 names_brain <- names(cluster)[3:ncol(cluster)]
@@ -84,6 +78,8 @@ L <- subset(All, clusterID == "1")
 L <- L[, -1]
 H <- subset(All, clusterID == "2")
 H <- H[, -1]
+
+######################################## Part 1: 计算相关
 
 # 初始化空数据框来存储相关计算的结果
 results_L <- data.frame()
