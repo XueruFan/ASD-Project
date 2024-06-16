@@ -1,4 +1,5 @@
 # 画出ASD男性两个亚型的34+7个脑指标的百分位数随龄发育GAMM曲线
+# GAMM模型，95%置信区间
 # Xue-Ru Fan 04 Jan 2024 @BNU
 
 rm(list=ls())
