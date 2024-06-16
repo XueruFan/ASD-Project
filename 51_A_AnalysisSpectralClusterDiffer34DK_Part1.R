@@ -1,6 +1,26 @@
-# 本代码用来分析两组【谱聚类】ASD男性的人口学和认知行为之间的差异 
-# Part A
+# 本代码用来分析谱聚类的两组ASD男性的人口学和认知行为之间的差异（Part A）
 # 雪如 2024年2月27日于北师大办公室
+################################
+# Part 01: 站点
+# Part 02: 机型
+# Part 03: 类型
+# 在Part 0：站点部分，会对人数总和不少于10的站点进行Fisher检验，来判断站点和人群类别之间是否是独立的
+# 结果不会保存，只会打印在屏幕上
+
+# Part 1: 年龄
+# Part 2: IQ
+# Part 3: ADOS_G
+# Part 4: ADOS_2
+# Part 5: SRS
+# Part 6: ADI_R
+# Part 7: VINELAND
+# Part 8: BMI
+
+# 以上每部分都会保存统计的csv文件和绘图的png文件
+
+# Part Z：保存P值文件csv，之后需要手动excel，筛选出P值显著（＜0.05）的位置，保存一个xlsx文件
+################################
+
 
 rm(list=ls())
 packages <- c("ggplot2", "ggridges", "tidyr", "bestNormalize", "dplyr", "reshape2")
@@ -10,7 +30,7 @@ sapply(packages, require, character.only = TRUE)
 abideDir <- 'E:/PhDproject/ABIDE'
 phenoDir <- file.path(abideDir, "Preprocessed")
 statiDir <- file.path(abideDir, "Analysis/Statistic")
-clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster")
+clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster34DK")
 plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK")
 resDate <- "240315"
 newDate <- "240610"
@@ -105,7 +125,7 @@ ggplot(data_long, aes(x = Site, y = value, fill = variable)) +
   theme_minimal() +
   xlab("") +
   ylab("") +
-  scale_fill_manual(values = c("#ffb699", "#add8e6")) +
+  scale_fill_manual(values = c("#f9ae78", "#86b5a1")) +
   theme(legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold", angle = 45, hjust = 1))
@@ -239,7 +259,7 @@ ggplot(data_long, aes(x = Scan, y = value, fill = variable)) +
   theme_minimal() +
   xlab("") +
   ylab("") +
-  scale_fill_manual(values = c("#ffb699", "#add8e6")) +
+  scale_fill_manual(values = c("#f9ae78", "#86b5a1")) +
   theme(legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold", angle = 45, hjust = 1))
@@ -282,7 +302,7 @@ ggplot(data_long, aes(x = Manu, y = value, fill = variable)) +
   theme_minimal() +
   xlab("") +
   ylab("") +
-  scale_fill_manual(values = c("#ffb699", "#add8e6")) +
+  scale_fill_manual(values = c("#f9ae78", "#86b5a1")) +
   theme(legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold"))
@@ -342,7 +362,7 @@ ggplot(data_long, aes(x = type, y = value, fill = variable)) +
   theme_minimal() +
   xlab("") +
   ylab("") +
-  scale_fill_manual(values = c("#ffb699", "#add8e6")) +
+  scale_fill_manual(values = c("#f9ae78", "#86b5a1")) +
   theme(legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold"))
@@ -362,7 +382,7 @@ colnames(var)[2] <- "variable"
 ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill = clusterID)) +
   geom_density_ridges(scale = 1.2, quantile_lines = TRUE, size = 1, quantiles = 4) +
   scale_x_continuous(breaks = seq(6, 18, by = 3), labels = c("6 yrs", "9", "12", "15", "18")) +
-  scale_fill_manual(values = c("L" = "#add8e6", "H" = "#ffb699")) +
+  scale_fill_manual(values = c("L" = "#86b5a1", "H" = "#f9ae78")) +
   coord_fixed(ratio = 6) + 
   xlab("") +
   ylab("") +
@@ -415,9 +435,9 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = c("L FIQ", "H FI
                                                                   "H VIQ", "L PIQ", "H PIQ")),
                      fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L FIQ" = "#add8e6", "H FIQ" = "#ffb699",
-                               "L VIQ" = "#add8e6", "H VIQ" = "#ffb699",
-                               "L PIQ" = "#add8e6", "H PIQ" = "#ffb699")) +
+  scale_fill_manual(values = c("L FIQ" = "#86b5a1", "H FIQ" = "#f9ae78",
+                               "L VIQ" = "#86b5a1", "H VIQ" = "#f9ae78",
+                               "L PIQ" = "#86b5a1", "H PIQ" = "#f9ae78")) +
   xlim(50, 160) +
   xlab("") +
   ylab("") +
@@ -501,10 +521,10 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L ADOS_G_Total" = "#add8e6", "H ADOS_G_Total" = "#ffb699",
-                               "L ADOS_G_Commu" = "#add8e6", "H ADOS_G_Commu" = "#ffb699",
-                               "L ADOS_G_Socia" = "#add8e6", "H ADOS_G_Socia" = "#ffb699",
-                               "L ADOS_G_Stere" = "#add8e6", "H ADOS_G_Stere" = "#ffb699")) +
+  scale_fill_manual(values = c("L ADOS_G_Total" = "#86b5a1", "H ADOS_G_Total" = "#f9ae78",
+                               "L ADOS_G_Commu" = "#86b5a1", "H ADOS_G_Commu" = "#f9ae78",
+                               "L ADOS_G_Socia" = "#86b5a1", "H ADOS_G_Socia" = "#f9ae78",
+                               "L ADOS_G_Stere" = "#86b5a1", "H ADOS_G_Stere" = "#f9ae78")) +
   coord_cartesian(xlim = c(NA, max(var_long$variable))) +
   xlab("") +
   ylab("") +
@@ -578,10 +598,10 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L ADOS_2_Sever" = "#add8e6", "H ADOS_2_Sever" = "#ffb699",
-                               "L ADOS_2_Total" = "#add8e6", "H ADOS_2_Total" = "#ffb699",
-                               "L ADOS_2_Socia" = "#add8e6", "H ADOS_2_Socia" = "#ffb699",
-                               "L ADOS_2_Restr" = "#add8e6", "H ADOS_2_Restr" = "#ffb699")) +
+  scale_fill_manual(values = c("L ADOS_2_Sever" = "#86b5a1", "H ADOS_2_Sever" = "#f9ae78",
+                               "L ADOS_2_Total" = "#86b5a1", "H ADOS_2_Total" = "#f9ae78",
+                               "L ADOS_2_Socia" = "#86b5a1", "H ADOS_2_Socia" = "#f9ae78",
+                               "L ADOS_2_Restr" = "#86b5a1", "H ADOS_2_Restr" = "#f9ae78")) +
   coord_cartesian(xlim = c(NA, 25)) +
   xlab("") +
   ylab("") +
@@ -655,11 +675,11 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L SRS_Aware_r" = "#add8e6", "H SRS_Aware_r" = "#ffb699",
-                               "L SRS_Cogni_r" = "#add8e6", "H SRS_Cogni_r" = "#ffb699",
-                               "L SRS_Commu_r" = "#add8e6", "H SRS_Commu_r" = "#ffb699",
-                               "L SRS_Motiv_r" = "#add8e6", "H SRS_Motiv_r" = "#ffb699",
-                               "L SRS_Manne_r" = "#add8e6", "H SRS_Manne_r" = "#ffb699")) +
+  scale_fill_manual(values = c("L SRS_Aware_r" = "#86b5a1", "H SRS_Aware_r" = "#f9ae78",
+                               "L SRS_Cogni_r" = "#86b5a1", "H SRS_Cogni_r" = "#f9ae78",
+                               "L SRS_Commu_r" = "#86b5a1", "H SRS_Commu_r" = "#f9ae78",
+                               "L SRS_Motiv_r" = "#86b5a1", "H SRS_Motiv_r" = "#f9ae78",
+                               "L SRS_Manne_r" = "#86b5a1", "H SRS_Manne_r" = "#f9ae78")) +
   xlab("") +
   ylab("") +
   theme_ridges() +
@@ -729,11 +749,11 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L SRS_Aware_t" = "#add8e6", "H SRS_Aware_t" = "#ffb699",
-                               "L SRS_Cogni_t" = "#add8e6", "H SRS_Cogni_t" = "#ffb699",
-                               "L SRS_Commu_t" = "#add8e6", "H SRS_Commu_t" = "#ffb699",
-                               "L SRS_Motiv_t" = "#add8e6", "H SRS_Motiv_t" = "#ffb699",
-                               "L SRS_Manne_t" = "#add8e6", "H SRS_Manne_t" = "#ffb699")) +
+  scale_fill_manual(values = c("L SRS_Aware_t" = "#86b5a1", "H SRS_Aware_t" = "#f9ae78",
+                               "L SRS_Cogni_t" = "#86b5a1", "H SRS_Cogni_t" = "#f9ae78",
+                               "L SRS_Commu_t" = "#86b5a1", "H SRS_Commu_t" = "#f9ae78",
+                               "L SRS_Motiv_t" = "#86b5a1", "H SRS_Motiv_t" = "#f9ae78",
+                               "L SRS_Manne_t" = "#86b5a1", "H SRS_Manne_t" = "#f9ae78")) +
   xlab("") +
   ylab("") +
   theme_ridges() +
@@ -802,8 +822,8 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L SRS_Total_t" = "#add8e6", "H SRS_Total_t" = "#ffb699",
-                               "L SRS_Total_r" = "#add8e6", "H SRS_Total_r" = "#ffb699")) +
+  scale_fill_manual(values = c("L SRS_Total_t" = "#86b5a1", "H SRS_Total_t" = "#f9ae78",
+                               "L SRS_Total_r" = "#86b5a1", "H SRS_Total_r" = "#f9ae78")) +
   coord_cartesian(xlim = c(NA, 200)) +
   xlab("") +
   ylab("") +
@@ -877,10 +897,10 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L ADI_R_Socia" = "#add8e6", "H ADI_R_Socia" = "#ffb699",
-                               "L ADI_R_Verba" = "#add8e6", "H ADI_R_Verba" = "#ffb699",
-                               "L ADI_R_Nonve" = "#add8e6", "H ADI_R_Nonve" = "#ffb699",
-                               "L ADI_R_Restr" = "#add8e6", "H ADI_R_Restr" = "#ffb699")) +
+  scale_fill_manual(values = c("L ADI_R_Socia" = "#86b5a1", "H ADI_R_Socia" = "#f9ae78",
+                               "L ADI_R_Verba" = "#86b5a1", "H ADI_R_Verba" = "#f9ae78",
+                               "L ADI_R_Nonve" = "#86b5a1", "H ADI_R_Nonve" = "#f9ae78",
+                               "L ADI_R_Restr" = "#86b5a1", "H ADI_R_Restr" = "#f9ae78")) +
   xlab("") +
   ylab("") +
   theme_ridges() +
@@ -959,10 +979,10 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L VIN_Commu_t" = "#add8e6", "H VIN_Commu_t" = "#ffb699",
-                               "L VIN_Daily_t" = "#add8e6", "H VIN_Daily_t" = "#ffb699",
-                               "L VIN_Socia_t" = "#add8e6", "H VIN_Socia_t" = "#ffb699",
-                               "L VIN_ABC_t" = "#add8e6", "H VIN_ABC_t" = "#ffb699")) +
+  scale_fill_manual(values = c("L VIN_Commu_t" = "#86b5a1", "H VIN_Commu_t" = "#f9ae78",
+                               "L VIN_Daily_t" = "#86b5a1", "H VIN_Daily_t" = "#f9ae78",
+                               "L VIN_Socia_t" = "#86b5a1", "H VIN_Socia_t" = "#f9ae78",
+                               "L VIN_ABC_t" = "#86b5a1", "H VIN_ABC_t" = "#f9ae78")) +
   xlim(40, 120) +
   xlab("") +
   ylab("") +
@@ -1041,15 +1061,15 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L VIN_Recep" = "#add8e6", "H VIN_Recep" = "#ffb699",
-                               "L VIN_Expre" = "#add8e6", "H VIN_Expre" = "#ffb699",
-                               "L VIN_Write" = "#add8e6", "H VIN_Write" = "#ffb699",
-                               "L VIN_Perso" = "#add8e6", "H VIN_Perso" = "#ffb699",
-                               "L VIN_Domes" = "#add8e6", "H VIN_Domes" = "#ffb699",
-                               "L VIN_Commu" = "#add8e6", "H VIN_Commu" = "#ffb699",
-                               "L VIN_Inter" = "#add8e6", "H VIN_Inter" = "#ffb699",
-                               "L VIN_Play" = "#add8e6", "H VIN_Play" = "#ffb699",
-                               "L VIN_Copin" = "#add8e6", "H VIN_Copin" = "#ffb699")) +
+  scale_fill_manual(values = c("L VIN_Recep" = "#86b5a1", "H VIN_Recep" = "#f9ae78",
+                               "L VIN_Expre" = "#86b5a1", "H VIN_Expre" = "#f9ae78",
+                               "L VIN_Write" = "#86b5a1", "H VIN_Write" = "#f9ae78",
+                               "L VIN_Perso" = "#86b5a1", "H VIN_Perso" = "#f9ae78",
+                               "L VIN_Domes" = "#86b5a1", "H VIN_Domes" = "#f9ae78",
+                               "L VIN_Commu" = "#86b5a1", "H VIN_Commu" = "#f9ae78",
+                               "L VIN_Inter" = "#86b5a1", "H VIN_Inter" = "#f9ae78",
+                               "L VIN_Play" = "#86b5a1", "H VIN_Play" = "#f9ae78",
+                               "L VIN_Copin" = "#86b5a1", "H VIN_Copin" = "#f9ae78")) +
   xlim(2, 22) +
   xlab("") +
   ylab("") +
@@ -1106,7 +1126,7 @@ var <- na.omit(var)
 ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill = clusterID)) +
   geom_density_ridges(scale = 1.2, quantile_lines = TRUE, size = 1, quantiles = 4) +
   scale_x_continuous(breaks = c(18.5, 24.9, 29.9), limits = c(NA, 30)) +
-  scale_fill_manual(values = c("L" = "#add8e6", "H" = "#ffb699")) +
+  scale_fill_manual(values = c("L" = "#86b5a1", "H" = "#f9ae78")) +
   # coord_fixed(ratio = 6) + 
   xlab("") +
   ylab("") +
