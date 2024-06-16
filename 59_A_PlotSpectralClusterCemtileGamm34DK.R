@@ -1,4 +1,4 @@
-# 画出ASD男性两个亚型的34+7个脑指标的百分位数随龄发育
+# 画出ASD男性两个亚型的34+7个脑指标的百分位数随龄发育GAMM曲线
 # Xue-Ru Fan 04 Jan 2024 @BNU
 
 rm(list=ls())
@@ -14,8 +14,8 @@ sapply(packages, require, character.only = TRUE)
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # mac
 abideDir <- 'E:/PhDproject/ABIDE' # winds
 phenoDir <- file.path(abideDir, "Preprocessed")
-clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A")
-plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A")
+clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster34DK")
+plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK/GAMMcentile")
 resDate <- "240315"
 newDate <- "240610"
 
@@ -24,12 +24,12 @@ newDate <- "240610"
 ageRange <- log((seq(6, 18, 0.1)*365.245)+280)
 
 name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_", newDate, ".csv")
-cluster <- read.csv(file.path(clustDir, "SpectralCluster",name))
+cluster <- read.csv(file.path(clustDir, name))
 cluster <- cluster[, c("clusterID", "participant")]
 centile <- read.csv(file.path(phenoDir, paste0("abide_A_centile_", resDate, ".csv")))
 All <- merge(cluster, centile, by = "participant", All.x = TRUE)
 
-volumeNames <- names(centile)[c(which(names(centile) == "bankssts"):which(names(centile) == "insula"))]
+volumeNames <- names(centile)[c(which(names(centile) == "GMV"):which(names(centile) == "insula"))]
 
 for (volumeName in volumeNames){
   # volumeName <- "GMV"
@@ -71,8 +71,8 @@ for (volumeName in volumeNames){
     # 绘制置信区间
     geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = factor(clusterID)), alpha = 0.1,
                 lwd = 0.1) +
-    scale_color_manual(values = c("#0064b5", "#ff6347")) +  # 自定义分组颜色
-    scale_fill_manual(values = c("#0064b5", "#ff6347")) +  # 自定义填充颜色
+    scale_color_manual(values = c("#719988", "#faa264")) +  # 自定义分组颜色
+    scale_fill_manual(values = c("#719988", "#faa264")) +  # 自定义填充颜色
     # 添加散点图
     geom_point(data = studyFIT, aes(x = x, y = y, color = factor(clusterID)), alpha = .2, size = 2,
                shape = 16) +
@@ -84,7 +84,7 @@ for (volumeName in volumeNames){
     theme(legend.position = "None")
   
 
-  name <- paste0(volumeName, "_GAMMcentile_", newDate,".png")
-  ggsave(file.path(plotDir, "SpectralCluster34DK/GAMMcentile", name), dpi = 300, width = 10,
+  name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_", volumeName, "_GAMMcentile_", newDate,".png")
+  ggsave(file.path(plotDir, name), dpi = 300, width = 10,
          height = 10, unit = "cm")
 }
