@@ -213,6 +213,7 @@ H_sorted <- arrange(results_H, p_value)
 name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_statis_CorrF_H_", newDate, ".csv")
 write.csv(H_sorted, file.path(statiDir, name), row.names = F)
 
+
 #################### 筛选显著且相关大于0.2的结果
 H_sorted <- H_sorted %>%
   filter(abs(coef) > 0.2, p_value < 0.01)
