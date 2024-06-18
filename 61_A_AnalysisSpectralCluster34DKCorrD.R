@@ -1,6 +1,8 @@
 # 本代码用来分析两组ASD男性的变量之间的相关系数和显著性水平
-# 斯皮尔曼相关
-# Site作为控制变量，34个脑指标按照贡献度合成的新指标作为自变量
+# 斯皮尔曼相关，Site作为控制变量，34个脑指标合成的新指标作为自变量,
+# 保存原始的相关系数和p值csv文件，另外，筛选p小于0.01且r大于0.2的结果，保存csv文件
+# 之后手动筛选保存一个xlsx
+# 按照显著性水平结果，绘制相关图png
 # 雪如 2024年2月28日于北师大办公室
 
 rm(list=ls())
@@ -15,7 +17,7 @@ abideDir <- 'E:/PhDproject/ABIDE' # winds
 phenoDir <- file.path(abideDir, "Preprocessed")
 clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster34DK")
 statiDir <- file.path(abideDir, "Analysis/Statistic")
-plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK/Corr")
+plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK/Corr/CorrD")
 resDate <- "240315"
 newDate <- "240610"
 
