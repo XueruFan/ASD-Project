@@ -1,4 +1,8 @@
-# 本代码用来分析由谱聚类的方法分类的两组ASD男性的变量之间的相关系数和显著性水平
+# 本代码用来分析两组ASD男性的变量之间的相关系数和显著性水平
+# 斯皮尔曼相关，Site和FIQ作为控制变量，34个脑指标分别作为自变量,
+# 保存原始的相关系数和p值csv文件，另外，筛选p小于0.01且r大于0.2的结果，保存csv文件
+# 之后手动筛选保存一个xlsx
+# 按照显著性水平结果，绘制相关图png
 # 雪如 2024年2月28日于北师大办公室
 
 rm(list=ls())
@@ -11,9 +15,9 @@ sapply(packages, require, character.only = TRUE)
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # mac
 abideDir <- 'E:/PhDproject/ABIDE' # winds
 phenoDir <- file.path(abideDir, "Preprocessed")
-clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster")
+clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster34DK")
 statiDir <- file.path(abideDir, "Analysis/Statistic")
-plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK/Corr")
+plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK/Corr/CorrC")
 resDate <- "240315"
 newDate <- "240610"
 
@@ -29,12 +33,6 @@ colnames(cluster)[start:ncol(cluster)] <- paste0(colnames(cluster)[start:ncol(cl
 rank <- read.csv(file.path(clustDir, paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_RM_Rank_",
                                             newDate, ".csv")))
 All <- merge(cluster, pheno, by = "participant", All.x = TRUE)
-
-
-# 控制变量：site、FIQ
-# 自变量：全部脑指标的加权合成新指标
-# 因变量：认知
-# 用全部脑指标每一个分别作为自变量
 
 
 # 选择自变量列
@@ -89,24 +87,6 @@ H <- H[, -1]
 # 初始化空数据框来存储相关计算的结果
 results_L <- data.frame()
 results_H <- data.frame()
-
-# 
-# # 给rank中的脑指标按照贡献大小赋值
-# rank$Feature <- paste0(rank$Feature, "_centile")
-# rank$Rank <- 0 # 创建一个新的列来保存排名
-# # 将正数和负数分开排名
-# positive_ranks <- rank(rank$Importance[rank$Importance > 0], ties.method = "first")
-# negative_ranks <- rank(-rank$Importance[rank$Importance < 0], ties.method = "first")
-# # 将排名结果赋值回数据框中
-# rank$Rank[rank$Importance > 0] <- positive_ranks
-# rank$Rank[rank$Importance < 0] <- -negative_ranks
-# rank$Importance <- rank$Rank
-# rank <- rank[, -3]
-
-
-# 
-# importance <- rank %>% select(Feature, Importance)
-
 
 
 ################### L组
@@ -234,3 +214,98 @@ H_sorted <- arrange(results_H, p_value)
 ### 保存下来结果
 name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_statis_CorrC_H_", newDate, ".csv")
 write.csv(H_sorted, file.path(statiDir, name), row.names = F)
+
+
+
+#################### 筛选显著且相关大于0.2的结果
+H_sorted <- H_sorted %>%
+  filter(abs(coef) > 0.2, p_value < 0.01)
+L_sorted <- L_sorted %>%
+  filter(abs(coef) > 0.2, p_value < 0.01)
+colnames(L_sorted)[3:4] <- c("Lr", "Lp")
+colnames(H_sorted)[3:4] <- c("Hr", "Hp")
+sorted <- full_join(L_sorted, H_sorted, by = c("name_cog", "name_brain"))
+
+sorted <- sorted %>%
+  mutate(SortValue = ifelse(is.na(Lp), abs(Hp), abs(Lp)))
+# 根据 SortValue 列对数据框进行排序
+sorted <- sorted %>%
+  arrange(SortValue)
+
+sorted$Ln <- NA
+sorted$Hn <- NA
+
+for (i in 1:nrow(sorted)) {
+  temp <- L[, c(sorted[i, "name_brain"], sorted[i, "name_cog"])]
+  temp <- temp[!is.na(temp[[2]]),]
+  sorted[i, "Ln"] <- nrow(temp)
+  temp <- H[, c(sorted[i, "name_brain"], sorted[i, "name_cog"])]
+  temp <- temp[!is.na(temp[[2]]),]
+  sorted[i, "Hn"] <- nrow(temp)
+}
+
+name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_statis_CorrC_Final_", newDate, ".csv")
+write.csv(sorted[, -7], file.path(statiDir, name), row.names = F)
+
+
+##################################### Part 2: 画图 #################################################
+
+
+for (i in 1:nrow(sorted)) {
+  to_plot_names <- c(sorted[i, "name_brain"], sorted[i, "name_cog"])
+  
+  plotPoint_L <- L[, to_plot_names]
+  plotPoint_L <- plotPoint_L[!is.na(plotPoint_L[[2]]), ]
+  plotPoint_H <- H[, to_plot_names]
+  plotPoint_H <- plotPoint_H[!is.na(plotPoint_H[[2]]), ]
+  
+  if (nrow(plotPoint_L) < 30 & nrow(plotPoint_H) < 30) {
+    next  # 如果数据点过少，跳过当前循环
+  }
+  
+  colnames(plotPoint_L)[1:2] <- c("x","y")
+  colnames(plotPoint_H)[1:2] <- c("x","y")
+  
+  
+  if (is.na(sorted[i, "Lp"])) {
+    ggplot() +
+      geom_point(data = plotPoint_L, aes(x = x, y = y, color = "lightgray"),
+                 alpha = .8, size = 2, shape = 16) +
+      geom_smooth(data = plotPoint_L, aes(x = x, y = y), method = "lm", se = TRUE, lwd = 2,
+                  color = "lightgray", fill = "lightgray") +
+      geom_point(data = plotPoint_H, aes(x = x, y = y, color = "#faa264"),
+                 alpha = .8, size = 2, shape = 16) +
+      geom_smooth(data = plotPoint_H, aes(x = x, y = y), method = "lm", se = TRUE, lwd = 2,
+                  color = "#faa264", fill = "#faa264") +
+      scale_x_continuous(limits = c(0,1), breaks = c(0,0.25,0.5,0.75,1)) +
+      xlab(to_plot_names[1]) +
+      ylab(to_plot_names[2]) +
+      theme_cowplot() +
+      theme(legend.position = "none", # without legend
+            axis.text.y = element_text(size = 15, face = "bold"),
+            axis.text.x = element_text(size = 15, face = "bold")) +
+      scale_color_identity()
+  } else {
+    ggplot() +
+      geom_point(data = plotPoint_H, aes(x = x, y = y, color = ifelse(is.na(sorted[i, "Hp"]), "lightgray", "#faa264")),
+                 alpha = .8, size = 2, shape = 16) +
+      geom_smooth(data = plotPoint_H, aes(x = x, y = y), method = "lm", se = TRUE, lwd = 2,
+                  color = ifelse(is.na(sorted[i, "Hp"]), "lightgray", "#faa264"),
+                  fill = ifelse(is.na(sorted[i, "Hp"]), "lightgray", "#faa264")) +
+      scale_x_continuous(limits = c(0,1), breaks = c(0,0.25,0.5,0.75,1)) +
+      geom_point(data = plotPoint_L, aes(x = x, y = y, color = "#719988"),
+                 alpha = .8, size = 2, shape = 16) +
+      geom_smooth(data = plotPoint_L, aes(x = x, y = y), method = "lm", se = TRUE, lwd = 2,
+                  color = "#719988", fill = "#719988") +
+      xlab(to_plot_names[1]) +
+      ylab(to_plot_names[2]) +
+      theme_cowplot() +
+      theme(legend.position = "none", # without legend
+            axis.text.y = element_text(size = 15, face = "bold"),
+            axis.text.x = element_text(size = 15, face = "bold")) +
+      scale_color_identity()
+  }
+  name <- paste0("CorrC_", i, "_", to_plot_names[1], "_", to_plot_names[2], "_", newDate, ".png")
+  ggsave(file.path(plotDir, name), width = 7, height = 7, units = "in", dpi = 500)
+}
+
