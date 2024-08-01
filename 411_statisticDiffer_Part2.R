@@ -1,24 +1,33 @@
-# 本代码用来分析两组【谱聚类】ASD男性的人口学和认知行为之间的差异 
-# Part B
+# 本代码用来分析谱聚类的两组ASD男性的人口学和认知行为之间的差异（Part B，这部分是只有ABIDE2才有）
 # 雪如 2024年2月27日于北师大办公室
+################################
+# Part 9: RBSR
+# Part 10: MASC
+# Part 11: BRIEF
+# Part 12: CBCL，保存统计的csv文件
+# Part 13: WIAT
+# Part 14: CPRS
+################
+# Part Z：保存P值文件csv，之后需要手动excel，筛选出P值显著（＜0.05）的位置，保存一个xlsx文件
+################################
 
 rm(list=ls())
-packages <- c("ggplot2", "ggridges", "tidyr", "bestNormalize", "dplyr")
+packages <- c("ggplot2", "ggridges", "tidyr", "bestNormalize", "dplyr", "reshape2")
 # sapply(packages,install.packages,character.only=TRUE)
 sapply(packages, require, character.only = TRUE)
 
 abideDir <- 'E:/PhDproject/ABIDE'
 phenoDir <- file.path(abideDir, "Preprocessed")
 statiDir <- file.path(abideDir, "Analysis/Statistic")
-clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster")
-plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster")
+clustDir <- file.path(abideDir, "Analysis/Cluster/SpectralCluster")
+plotDir <- file.path(abideDir, "Plot/Cluster/SpectralCluster")
 resDate <- "240315"
 newDate <- "240610"
 
 pheno <- read.csv(file.path(phenoDir, paste0("abide_A_all_", resDate, ".csv")))
 colnames(pheno)[1] <- "participant"
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_", newDate, ".csv")
+name <- paste0("asd_male_Spectral_Cluster_", newDate, ".csv")
 cluster <- read.csv(file.path(clustDir, name))
 colnames(cluster)[3:ncol(cluster)] <- paste0(colnames(cluster)[3:ncol(cluster)], "_centile")
 
@@ -35,7 +44,7 @@ rownames(Pvalue) <- c("t-test", "w-test")
 colnames(Pvalue) <- "variable"
 
 
-################################# Part 8: RBSR #####################################################
+################################# Part 9: RBSR #####################################################
 pick_columns <- grep("RBSR", names(All), value = TRUE)
 
 var <- All[, c("clusterID", pick_columns)]
@@ -64,7 +73,7 @@ for (v in varia) {
 }
 
 
-################################# Part 9: MASC ###################################################
+################################# Part 10: MASC ###################################################
 pick_columns <- grep("MASC", names(All), value = TRUE)
 pick_columns
 # 上面是为了输出这些列名，下面手动贴上需要的
@@ -95,7 +104,7 @@ for (v in varia) {
 }
 
 
-################################# Part 10: BRIEF ###################################################
+################################# Part 11: BRIEF ###################################################
 pick_columns <- grep("BRIEF", names(All), value = TRUE)
 pick_columns
 # 上面是为了输出这些列名，下面手动贴上需要的
@@ -127,7 +136,7 @@ for (v in varia) {
 }
 
 
-################################# Part 11: CBCL ###################################################
+################################# Part 12: CBCL ###################################################
 pick_columns <- grep("CBCL_6.18", names(All), value = TRUE)
 pick_columns
 
@@ -178,11 +187,11 @@ for (v in varia) {
   }
 }
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_CBCL_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_CBCL_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 
-################################# Part 12: WIAT ###################################################
+################################# Part 13: WIAT ###################################################
 pick_columns <- grep("WIAT", names(All), value = TRUE)
 pick_columns
 
@@ -212,7 +221,7 @@ for (v in varia) {
 }
 
 
-################################# Part 13: CPRS ###################################################
+################################# Part 14: CPRS ###################################################
 pick_columns <- grep("CPRS", names(All), value = TRUE)
 pick_columns
 
@@ -246,5 +255,5 @@ for (v in varia) {
 ################################# 保存P值文件 ######################################################
 Pvalue <- Pvalue[, -1]
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_Pvalue_Part2_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_Pvalue_Part2_", newDate, ".csv")
 write.csv(Pvalue, file.path(statiDir, name))

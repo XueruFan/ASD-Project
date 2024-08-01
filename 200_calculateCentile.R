@@ -1,5 +1,9 @@
 # this script is used to calculate ABIDE centile (ABIDE1 + ABIDE2)
 # Xue-Ru Fan 25 April 2023 @BNU
+###################################################
+# Part 1: 计算41个表型的Centile分，csv
+# Part 2: 提取出计算的Centile分，分全年龄版本和儿童青少年版本dev，csv
+###################################################
 
 rm(list=ls())
 source("E:/PhDproject/LBCC/lbcc/920.calc-novel-wo-subset-function.r")
@@ -47,6 +51,7 @@ for (aparc in volumeNames){
     data <- RESULT$data
     write.csv(data[, c(1, 16:ncol(data))], resultCSV, row.names = F)
     saveRDS(RESULT, resultRDS)
+    
   }
 }
 

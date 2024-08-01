@@ -1,6 +1,10 @@
 # this script is used to do ComBat analysis for ABIDE data
 # Xue-Ru Fan 16 May 2023 @BNU
-
+###################################################
+# Part 1: 把ABIDE 的1和2合并一起进行后续的分析，csv
+# Part 2: 只分析ABIDE I的数据，csv
+# Part 3：只分析ABIDE II的数据，csv
+###################################################
 rm(list=ls())
 packages <- c("neuroCombat")
 # sapply(packages,install.packages,character.only=TRUE)
@@ -18,7 +22,9 @@ resDate <- "240315"
 abide_all <- read.csv(file.path(dataDir,  paste0("abide_A_forComBat_", resDate, ".csv")))
 
 
-################################## Part 1 看ABIDE I和II合并的数据##################################
+################################## Part 1 ##################################
+# 把ABIDE 的1和2合并一起进行后续的分析
+
 abide <- abide_all
 dat <- as.matrix(t(abide[, which(names(abide) == "GMV"):ncol(abide)]))
 batch <- c(t(abide$Site)) # Numeric or character vector
@@ -41,7 +47,8 @@ name <-  paste0("abide_A_forCentile_", resDate, ".csv")
 write.csv(abide_forCentile, file.path(dataDir, name), row.names = F)
 
 
-################################## Part 2 只分析ABIDE I的数据 ######################################
+################################## Part 2  ######################################
+# 只分析ABIDE I的数据
 abide <- subset(abide_all, Release == "1")
 dat <- as.matrix(t(abide[, which(names(abide) == "GMV"):ncol(abide)]))
 batch <- c(t(abide$Site)) # Numeric or character vector
@@ -58,7 +65,8 @@ name <- paste0("abide_1_forCentile_", resDate, ".csv")
 write.csv(abide_forCentile, file.path(dataDir, name), row.names = F)
 
 
-################################## Part 3 只分析ABIDE II的数据 #####################################
+################################## Part 3  #####################################
+# 只分析ABIDE II的数据
 abide <- subset(abide_all, Release == "2")
 dat <- as.matrix(t(abide[, which(names(abide) == "GMV"):ncol(abide)]))
 batch <- c(t(abide$Site)) # Numeric or character vector

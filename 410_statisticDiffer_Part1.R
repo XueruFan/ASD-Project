@@ -1,6 +1,23 @@
-# 本代码用来分析两组【谱聚类】ASD男性的人口学和认知行为之间的差异 
-# Part A
+# 本代码用来分析谱聚类的两组ASD男性的人口学和认知行为之间的差异（Part A）
 # 雪如 2024年2月27日于北师大办公室
+################################
+# Part 01: 站点
+# Part 02: 机型和厂家
+# Part 03: 类型
+# Part 1: 年龄
+# Part 2: IQ
+# Part 3: ADOS_G
+# Part 4: ADOS_2
+# Part 5: SRS
+# Part 6: ADI_R
+# Part 7: VINELAND
+# Part 8: BMI
+################
+# 以上每部分都会保存统计的csv文件和绘图的png文件
+################
+# Part Z：保存P值文件csv，之后需要手动excel，筛选出P值显著（＜0.05）的位置，保存一个xlsx文件
+################################
+
 
 rm(list=ls())
 packages <- c("ggplot2", "ggridges", "tidyr", "bestNormalize", "dplyr", "reshape2")
@@ -10,15 +27,15 @@ sapply(packages, require, character.only = TRUE)
 abideDir <- 'E:/PhDproject/ABIDE'
 phenoDir <- file.path(abideDir, "Preprocessed")
 statiDir <- file.path(abideDir, "Analysis/Statistic")
-clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster")
-plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster")
+clustDir <- file.path(abideDir, "Analysis/Cluster/SpectralCluster")
+plotDir <- file.path(abideDir, "Plot/Cluster/SpectralCluster")
 resDate <- "240315"
 newDate <- "240610"
 
 pheno <- read.csv(file.path(phenoDir, paste0("abide_A_all_", resDate, ".csv")))
 colnames(pheno)[1] <- "participant"
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_", newDate, ".csv")
+name <- paste0("asd_male_Spectral_Cluster_", newDate, ".csv")
 cluster <- read.csv(file.path(clustDir, name))
 colnames(cluster)[3:ncol(cluster)] <- paste0(colnames(cluster)[3:ncol(cluster)], "_centile")
 
@@ -71,7 +88,6 @@ freq_var <- table(var$SITE_ID, var$clusterID)
 filtered_freq <- freq_var[rowSums(freq_var) >= 10, ]
 # fisher检验
 site_pvalue <- fisher.test(filtered_freq, simulate.p.value = TRUE, B = 1e5)
-print(paste0("站点之间统计差异是否显著？答案是：p = ", site_pvalue[["p.value"]]))
 
 L <- subset(var, clusterID == "L")
 H <- subset(var, clusterID == "H")
@@ -86,8 +102,12 @@ site_counts_sorted$All <- site_counts_sorted$L + site_counts_sorted$H
 site_counts_sorted <- subset(site_counts_sorted, site_counts_sorted$All >= 10)
 site_counts_sorted <- site_counts_sorted[, -4]
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_site_", newDate, ".csv")
-write.csv(site_counts_sorted, file.path(statiDir, name), row.names = F)
+# 将p值绑定到数据框的右边
+site_counts_sorted_to_save <- site_counts_sorted
+site_counts_sorted_to_save[1,4] <- paste0("p = ", site_pvalue[["p.value"]])
+
+name <- paste0("asd_male_dev_SC_statis_site_", newDate, ".csv")
+write.csv(site_counts_sorted_to_save, file.path(statiDir, name), row.names = F)
 
 data_long <- melt(site_counts_sorted, id.vars = "Site")
 
@@ -105,12 +125,12 @@ ggplot(data_long, aes(x = Site, y = value, fill = variable)) +
   theme_minimal() +
   xlab("") +
   ylab("") +
-  scale_fill_manual(values = c("#ffb699", "#add8e6")) +
+  scale_fill_manual(values = c("#f9ae78", "#86b5a1")) +
   theme(legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold", angle = 45, hjust = 1))
 # save plot
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_site_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_site_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 6, height = 4, units = "in", dpi = 500)
 
 objects_to_keep <- c("plotDir", "newDate", "statiDir", "All", "evalu", "Pvalue")
@@ -205,7 +225,6 @@ freq_var <- table(var$Scan, var$clusterID)
 filtered_freq <- freq_var[rowSums(freq_var) >= 30, ]
 # fisher检验
 scan_pvalue <- fisher.test(filtered_freq, simulate.p.value = TRUE, B = 1e5)
-print(paste0("机型之间统计差异是否显著？答案是：p = ", scan_pvalue[["p.value"]]))
 
 L <- subset(var[, c(1,3)], clusterID == "L")
 H <- subset(var[, c(1,3)], clusterID == "H")
@@ -220,8 +239,12 @@ scan_counts_sorted$All <- scan_counts_sorted$L + scan_counts_sorted$H
 scan_counts_sorted <- subset(scan_counts_sorted, scan_counts_sorted$All >= 30)
 scan_counts_sorted <- scan_counts_sorted[, -4]
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_scaner_", newDate, ".csv")
-write.csv(scan_counts_sorted, file.path(statiDir, name), row.names = F)
+# 将p值绑定到数据框的右边
+scan_counts_sorted_to_save <- scan_counts_sorted
+scan_counts_sorted_to_save[1,4] <- paste0("p = ", scan_pvalue[["p.value"]])
+
+name <- paste0("asd_male_dev_SC_statis_scaner_", newDate, ".csv")
+write.csv(scan_counts_sorted_to_save, file.path(statiDir, name), row.names = F)
 
 data_long <- melt(scan_counts_sorted, id.vars = "Scan")
 
@@ -239,12 +262,12 @@ ggplot(data_long, aes(x = Scan, y = value, fill = variable)) +
   theme_minimal() +
   xlab("") +
   ylab("") +
-  scale_fill_manual(values = c("#ffb699", "#add8e6")) +
+  scale_fill_manual(values = c("#f9ae78", "#86b5a1")) +
   theme(legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold", angle = 45, hjust = 1))
 # save plot
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_scanner_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_scanner_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 
 ################## 再看厂家有没有差异
@@ -252,7 +275,6 @@ ggsave(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 freq_var <- table(var$Manu, var$clusterID)
 # fisher检验
 manu_pvalue <- fisher.test(filtered_freq, simulate.p.value = TRUE, B = 1e5)
-print(paste0("厂家之间统计差异是否显著？答案是：p = ", manu_pvalue[["p.value"]]))
 
 L <- subset(var[, c(1,4)], clusterID == "L")
 H <- subset(var[, c(1,4)], clusterID == "H")
@@ -263,8 +285,12 @@ manu_count <- merge(L_manu_counts, H_manu_counts, by = "Var1")
 manu_counts_sorted <- arrange(manu_count, desc(Freq.x))
 colnames(manu_counts_sorted) <- c("Manu", "L", "H")
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_manu_", newDate, ".csv")
-write.csv(manu_counts_sorted, file.path(statiDir, name), row.names = F)
+# 将p值绑定到数据框的右边
+manu_counts_sorted_to_save <- manu_counts_sorted
+manu_counts_sorted_to_save[1,4] <- paste0("p = ", manu_pvalue[["p.value"]])
+
+name <- paste0("asd_male_dev_SC_statis_manu_", newDate, ".csv")
+write.csv(manu_counts_sorted_to_save, file.path(statiDir, name), row.names = F)
 
 data_long <- melt(manu_counts_sorted, id.vars = "Manu")
 
@@ -282,13 +308,13 @@ ggplot(data_long, aes(x = Manu, y = value, fill = variable)) +
   theme_minimal() +
   xlab("") +
   ylab("") +
-  scale_fill_manual(values = c("#ffb699", "#add8e6")) +
+  scale_fill_manual(values = c("#f9ae78", "#86b5a1")) +
   theme(legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold"))
 
 # save plot
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_manu_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_manu_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 
 objects_to_keep <- c("plotDir", "newDate", "statiDir", "All", "evalu", "Pvalue")
@@ -312,7 +338,6 @@ freq_var <- table(var$variable, var$clusterID)
 
 # fisher检验
 type_pvalue <- fisher.test(freq_var, simulate.p.value = TRUE, B = 1e5)
-print(paste0("类型之间统计差异是否显著？答案是：p = ", type_pvalue[["p.value"]]))
 
 L <- subset(var, clusterID == "L")
 H <- subset(var, clusterID == "H")
@@ -323,8 +348,12 @@ type_count <- merge(L_type_counts, H_type_counts, by = "Var1")
 type_counts_sorted <- arrange(type_count, desc(Freq.x)) # 将结果按Count列从大到小排序
 colnames(type_counts_sorted) <- c("type", "L", "H")
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_type_", newDate, ".csv")
-write.csv(type_counts_sorted, file.path(statiDir, name), row.names = F)
+# 将p值绑定到数据框的右边
+type_counts_sorted_to_save <- type_counts_sorted
+type_counts_sorted_to_save[1,4] <- paste0("p = ", type_pvalue[["p.value"]])
+
+name <- paste0("asd_male_dev_SC_statis_type_", newDate, ".csv")
+write.csv(type_counts_sorted_to_save, file.path(statiDir, name), row.names = F)
 
 data_long <- melt(type_counts_sorted, id.vars = "type")
 
@@ -342,12 +371,12 @@ ggplot(data_long, aes(x = type, y = value, fill = variable)) +
   theme_minimal() +
   xlab("") +
   ylab("") +
-  scale_fill_manual(values = c("#ffb699", "#add8e6")) +
+  scale_fill_manual(values = c("#f9ae78", "#86b5a1")) +
   theme(legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold"))
 # save plot
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_type_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_type_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 
 objects_to_keep <- c("plotDir", "newDate", "statiDir", "All", "evalu", "Pvalue")
@@ -362,7 +391,7 @@ colnames(var)[2] <- "variable"
 ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill = clusterID)) +
   geom_density_ridges(scale = 1.2, quantile_lines = TRUE, size = 1, quantiles = 4) +
   scale_x_continuous(breaks = seq(6, 18, by = 3), labels = c("6 yrs", "9", "12", "15", "18")) +
-  scale_fill_manual(values = c("L" = "#add8e6", "H" = "#ffb699")) +
+  scale_fill_manual(values = c("L" = "#86b5a1", "H" = "#f9ae78")) +
   coord_fixed(ratio = 6) + 
   xlab("") +
   ylab("") +
@@ -371,7 +400,7 @@ ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill 
         axis.text.y = element_text(size = 20, face = "bold"),
         axis.text.x = element_text(size = 16, face = "bold", vjust = 10))
 # save plot
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_age_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_age_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 6, height = 4, units = "in", dpi = 500)
 
 # 统计检验
@@ -390,10 +419,10 @@ sta_ana[2,1] <- round(median(L$variable, na.rm = T), 2)
 sta_ana[2,2] <- round(mean(L$variable, na.rm = T), 2)
 sta_ana[2,3] <- round(sd(L$variable, na.rm = T), 2)
 sta_ana[2,4] <- round(length(L$clusterID))
-colnames(sta_ana)[4] <- "N"
+colnames(sta_ana)[4] <- "Count"
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_age_", newDate, ".csv")
-write.csv(sta_ana, file.path(statiDir, name), row.names = F)
+name <- paste0("asd_male_dev_SC_statis_age_", newDate, ".csv")
+write.csv(sta_ana, file.path(statiDir, name))
 
 Pvalue["t-test","age"] <- t.test(L$variable, H$variable)[["p.value"]]
 Pvalue["w-test","age"] <- wilcox.test(L$variable, H$variable)[["p.value"]]
@@ -415,9 +444,9 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = c("L FIQ", "H FI
                                                                   "H VIQ", "L PIQ", "H PIQ")),
                      fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L FIQ" = "#add8e6", "H FIQ" = "#ffb699",
-                               "L VIQ" = "#add8e6", "H VIQ" = "#ffb699",
-                               "L PIQ" = "#add8e6", "H PIQ" = "#ffb699")) +
+  scale_fill_manual(values = c("L FIQ" = "#86b5a1", "H FIQ" = "#f9ae78",
+                               "L VIQ" = "#86b5a1", "H VIQ" = "#f9ae78",
+                               "L PIQ" = "#86b5a1", "H PIQ" = "#f9ae78")) +
   xlim(50, 160) +
   xlab("") +
   ylab("") +
@@ -427,7 +456,7 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = c("L FIQ", "H FI
         axis.text.x = element_text(size = 16, face = "bold", vjust = 5))
 
 # save plot
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_IQ_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_iq_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 6, height = 6, units = "in", dpi = 500)
 
 # 统计检验
@@ -464,7 +493,7 @@ for (v in varia) {
   }
 }
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_iq_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_iq_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 for (v in varia) {
@@ -501,10 +530,10 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L ADOS_G_Total" = "#add8e6", "H ADOS_G_Total" = "#ffb699",
-                               "L ADOS_G_Commu" = "#add8e6", "H ADOS_G_Commu" = "#ffb699",
-                               "L ADOS_G_Socia" = "#add8e6", "H ADOS_G_Socia" = "#ffb699",
-                               "L ADOS_G_Stere" = "#add8e6", "H ADOS_G_Stere" = "#ffb699")) +
+  scale_fill_manual(values = c("L ADOS_G_Total" = "#86b5a1", "H ADOS_G_Total" = "#f9ae78",
+                               "L ADOS_G_Commu" = "#86b5a1", "H ADOS_G_Commu" = "#f9ae78",
+                               "L ADOS_G_Socia" = "#86b5a1", "H ADOS_G_Socia" = "#f9ae78",
+                               "L ADOS_G_Stere" = "#86b5a1", "H ADOS_G_Stere" = "#f9ae78")) +
   coord_cartesian(xlim = c(NA, max(var_long$variable))) +
   xlab("") +
   ylab("") +
@@ -513,7 +542,7 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_ADOS_G_raw_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_ADOS_G_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 
 
@@ -540,7 +569,7 @@ for (v in varia) {
 }
 sta_ana$Median <- round(sta_ana$Median)
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statistic_ADOS_G_raw_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_ADOS_G_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 for (v in varia) {
@@ -578,10 +607,10 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L ADOS_2_Sever" = "#add8e6", "H ADOS_2_Sever" = "#ffb699",
-                               "L ADOS_2_Total" = "#add8e6", "H ADOS_2_Total" = "#ffb699",
-                               "L ADOS_2_Socia" = "#add8e6", "H ADOS_2_Socia" = "#ffb699",
-                               "L ADOS_2_Restr" = "#add8e6", "H ADOS_2_Restr" = "#ffb699")) +
+  scale_fill_manual(values = c("L ADOS_2_Sever" = "#86b5a1", "H ADOS_2_Sever" = "#f9ae78",
+                               "L ADOS_2_Total" = "#86b5a1", "H ADOS_2_Total" = "#f9ae78",
+                               "L ADOS_2_Socia" = "#86b5a1", "H ADOS_2_Socia" = "#f9ae78",
+                               "L ADOS_2_Restr" = "#86b5a1", "H ADOS_2_Restr" = "#f9ae78")) +
   coord_cartesian(xlim = c(NA, 25)) +
   xlab("") +
   ylab("") +
@@ -590,7 +619,7 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_ADOS_2_raw_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_ADOS_2_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 
 
@@ -616,7 +645,7 @@ for (v in varia) {
     eval(parse(text = paste0("sta_ana[rname, 'Count'] <- sum[rname]")))
   }
 }
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_stastic_ADOS_2_raw_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_ADOS_2_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 for (v in varia) {
@@ -655,11 +684,11 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L SRS_Aware_r" = "#add8e6", "H SRS_Aware_r" = "#ffb699",
-                               "L SRS_Cogni_r" = "#add8e6", "H SRS_Cogni_r" = "#ffb699",
-                               "L SRS_Commu_r" = "#add8e6", "H SRS_Commu_r" = "#ffb699",
-                               "L SRS_Motiv_r" = "#add8e6", "H SRS_Motiv_r" = "#ffb699",
-                               "L SRS_Manne_r" = "#add8e6", "H SRS_Manne_r" = "#ffb699")) +
+  scale_fill_manual(values = c("L SRS_Aware_r" = "#86b5a1", "H SRS_Aware_r" = "#f9ae78",
+                               "L SRS_Cogni_r" = "#86b5a1", "H SRS_Cogni_r" = "#f9ae78",
+                               "L SRS_Commu_r" = "#86b5a1", "H SRS_Commu_r" = "#f9ae78",
+                               "L SRS_Motiv_r" = "#86b5a1", "H SRS_Motiv_r" = "#f9ae78",
+                               "L SRS_Manne_r" = "#86b5a1", "H SRS_Manne_r" = "#f9ae78")) +
   xlab("") +
   ylab("") +
   theme_ridges() +
@@ -667,7 +696,7 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_SRS_sub_raw_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_SRS_scale_raw_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 
 
@@ -694,7 +723,7 @@ for (v in varia) {
   }
 }
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_SRS_sub_raw_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_SRS_scale_raw_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 for (v in varia) {
@@ -729,11 +758,11 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L SRS_Aware_t" = "#add8e6", "H SRS_Aware_t" = "#ffb699",
-                               "L SRS_Cogni_t" = "#add8e6", "H SRS_Cogni_t" = "#ffb699",
-                               "L SRS_Commu_t" = "#add8e6", "H SRS_Commu_t" = "#ffb699",
-                               "L SRS_Motiv_t" = "#add8e6", "H SRS_Motiv_t" = "#ffb699",
-                               "L SRS_Manne_t" = "#add8e6", "H SRS_Manne_t" = "#ffb699")) +
+  scale_fill_manual(values = c("L SRS_Aware_t" = "#86b5a1", "H SRS_Aware_t" = "#f9ae78",
+                               "L SRS_Cogni_t" = "#86b5a1", "H SRS_Cogni_t" = "#f9ae78",
+                               "L SRS_Commu_t" = "#86b5a1", "H SRS_Commu_t" = "#f9ae78",
+                               "L SRS_Motiv_t" = "#86b5a1", "H SRS_Motiv_t" = "#f9ae78",
+                               "L SRS_Manne_t" = "#86b5a1", "H SRS_Manne_t" = "#f9ae78")) +
   xlab("") +
   ylab("") +
   theme_ridges() +
@@ -741,7 +770,7 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_SRS_sub_trans_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_SRS_scale_trans_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 
 
@@ -768,7 +797,7 @@ for (v in varia) {
   }
 }
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_SRS_sub_trans_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_SRS_scale_trans_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 for (v in varia) {
@@ -802,8 +831,8 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L SRS_Total_t" = "#add8e6", "H SRS_Total_t" = "#ffb699",
-                               "L SRS_Total_r" = "#add8e6", "H SRS_Total_r" = "#ffb699")) +
+  scale_fill_manual(values = c("L SRS_Total_t" = "#86b5a1", "H SRS_Total_t" = "#f9ae78",
+                               "L SRS_Total_r" = "#86b5a1", "H SRS_Total_r" = "#f9ae78")) +
   coord_cartesian(xlim = c(NA, 200)) +
   xlab("") +
   ylab("") +
@@ -812,7 +841,7 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 15))
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_SRS_total_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_SRS_total_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 
 
@@ -839,7 +868,7 @@ for (v in varia) {
   }
 }
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_SRS_total_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_SRS_total_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 for (v in varia) {
@@ -877,10 +906,10 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L ADI_R_Socia" = "#add8e6", "H ADI_R_Socia" = "#ffb699",
-                               "L ADI_R_Verba" = "#add8e6", "H ADI_R_Verba" = "#ffb699",
-                               "L ADI_R_Nonve" = "#add8e6", "H ADI_R_Nonve" = "#ffb699",
-                               "L ADI_R_Restr" = "#add8e6", "H ADI_R_Restr" = "#ffb699")) +
+  scale_fill_manual(values = c("L ADI_R_Socia" = "#86b5a1", "H ADI_R_Socia" = "#f9ae78",
+                               "L ADI_R_Verba" = "#86b5a1", "H ADI_R_Verba" = "#f9ae78",
+                               "L ADI_R_Nonve" = "#86b5a1", "H ADI_R_Nonve" = "#f9ae78",
+                               "L ADI_R_Restr" = "#86b5a1", "H ADI_R_Restr" = "#f9ae78")) +
   xlab("") +
   ylab("") +
   theme_ridges() +
@@ -888,7 +917,7 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_ADIR_raw_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_ADIR_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 
 
@@ -914,7 +943,7 @@ for (v in varia) {
     eval(parse(text = paste0("sta_ana[rname, 'Count'] <- sum[rname]")))
   }
 }
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_ADIR_raw_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_ADIR_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 for (v in varia) {
@@ -959,10 +988,10 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L VIN_Commu_t" = "#add8e6", "H VIN_Commu_t" = "#ffb699",
-                               "L VIN_Daily_t" = "#add8e6", "H VIN_Daily_t" = "#ffb699",
-                               "L VIN_Socia_t" = "#add8e6", "H VIN_Socia_t" = "#ffb699",
-                               "L VIN_ABC_t" = "#add8e6", "H VIN_ABC_t" = "#ffb699")) +
+  scale_fill_manual(values = c("L VIN_Commu_t" = "#86b5a1", "H VIN_Commu_t" = "#f9ae78",
+                               "L VIN_Daily_t" = "#86b5a1", "H VIN_Daily_t" = "#f9ae78",
+                               "L VIN_Socia_t" = "#86b5a1", "H VIN_Socia_t" = "#f9ae78",
+                               "L VIN_ABC_t" = "#86b5a1", "H VIN_ABC_t" = "#f9ae78")) +
   xlim(40, 120) +
   xlab("") +
   ylab("") +
@@ -971,7 +1000,7 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_VIN_stand_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_VIN_trans_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 
 
@@ -998,7 +1027,7 @@ for (v in varia) {
   }
 }
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_VIN_stand_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_VIN_trans_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 for (v in varia) {
@@ -1041,15 +1070,15 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L VIN_Recep" = "#add8e6", "H VIN_Recep" = "#ffb699",
-                               "L VIN_Expre" = "#add8e6", "H VIN_Expre" = "#ffb699",
-                               "L VIN_Write" = "#add8e6", "H VIN_Write" = "#ffb699",
-                               "L VIN_Perso" = "#add8e6", "H VIN_Perso" = "#ffb699",
-                               "L VIN_Domes" = "#add8e6", "H VIN_Domes" = "#ffb699",
-                               "L VIN_Commu" = "#add8e6", "H VIN_Commu" = "#ffb699",
-                               "L VIN_Inter" = "#add8e6", "H VIN_Inter" = "#ffb699",
-                               "L VIN_Play" = "#add8e6", "H VIN_Play" = "#ffb699",
-                               "L VIN_Copin" = "#add8e6", "H VIN_Copin" = "#ffb699")) +
+  scale_fill_manual(values = c("L VIN_Recep" = "#86b5a1", "H VIN_Recep" = "#f9ae78",
+                               "L VIN_Expre" = "#86b5a1", "H VIN_Expre" = "#f9ae78",
+                               "L VIN_Write" = "#86b5a1", "H VIN_Write" = "#f9ae78",
+                               "L VIN_Perso" = "#86b5a1", "H VIN_Perso" = "#f9ae78",
+                               "L VIN_Domes" = "#86b5a1", "H VIN_Domes" = "#f9ae78",
+                               "L VIN_Commu" = "#86b5a1", "H VIN_Commu" = "#f9ae78",
+                               "L VIN_Inter" = "#86b5a1", "H VIN_Inter" = "#f9ae78",
+                               "L VIN_Play" = "#86b5a1", "H VIN_Play" = "#f9ae78",
+                               "L VIN_Copin" = "#86b5a1", "H VIN_Copin" = "#f9ae78")) +
   xlim(2, 22) +
   xlab("") +
   ylab("") +
@@ -1058,7 +1087,7 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_VIN_scale_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_VIN_scale_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7, height = 7, units = "in", dpi = 500)
 
 
@@ -1085,7 +1114,7 @@ for (v in varia) {
   }
 }
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_VIN_scale_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_VIN_scale_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 for (v in varia) {
@@ -1106,7 +1135,7 @@ var <- na.omit(var)
 ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill = clusterID)) +
   geom_density_ridges(scale = 1.2, quantile_lines = TRUE, size = 1, quantiles = 4) +
   scale_x_continuous(breaks = c(18.5, 24.9, 29.9), limits = c(NA, 30)) +
-  scale_fill_manual(values = c("L" = "#add8e6", "H" = "#ffb699")) +
+  scale_fill_manual(values = c("L" = "#86b5a1", "H" = "#f9ae78")) +
   # coord_fixed(ratio = 6) + 
   xlab("") +
   ylab("") +
@@ -1115,7 +1144,7 @@ ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill 
         axis.text.y = element_text(size = 20, face = "bold"),
         axis.text.x = element_text(size = 16, face = "bold", vjust = 10))
 # save plot
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_differ_bmi_", newDate, ".png")
+name <- paste0("asd_male_dev_SC_differ_bmi_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 6, height = 4, units = "in", dpi = 500)
 
 # 统计检验
@@ -1134,10 +1163,10 @@ sta_ana[2,1] <- round(median(L$variable, na.rm = T), 2)
 sta_ana[2,2] <- round(mean(L$variable, na.rm = T), 2)
 sta_ana[2,3] <- round(sd(L$variable, na.rm = T), 2)
 sta_ana[2,4] <- round(length(L$clusterID))
-colnames(sta_ana)[4] <- "N"
+colnames(sta_ana)[4] <- "Count"
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_bmi_", newDate, ".csv")
-write.csv(sta_ana, file.path(statiDir, name), row.names = F)
+name <- paste0("asd_male_dev_SC_statis_bmi_", newDate, ".csv")
+write.csv(sta_ana, file.path(statiDir, name))
 
 Pvalue["t-test","bmi"] <- t.test(L$variable, H$variable)[["p.value"]]
 Pvalue["w-test","bmi"] <- wilcox.test(L$variable, H$variable)[["p.value"]]
@@ -1149,5 +1178,5 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 ################################# Part Z：保存P值文件 ##############################################
 Pvalue <- Pvalue[, -1]
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_statis_Pvalue_Part1_", newDate, ".csv")
+name <- paste0("asd_male_dev_SC_statis_Pvalue_Part1_", newDate, ".csv")
 write.csv(Pvalue, file.path(statiDir, name))

@@ -1,7 +1,11 @@
 # this script is used to analysis ABIDE subject composition
 # Xue-Ru Fan 24 Oct 2023 @BNU
 # 提取用于后续数据分析的被试做人口学统计（性别、年龄和智商）
-
+###################################################
+# Part 1: 对全部被试做人口学统计（性别、年龄和智商），csv
+# Part 2: 仅统计年龄6.0~17.9岁被试，csv
+# Part 3: 仅统计做谱聚类分析使用的被试（发育阶段年龄6.0~17.9岁的男性ASD，且脑数据完整），csv
+###################################################
 rm(list=ls())
 packages <- c("openxlsx")
 #sapply(packages,install.packages,character.only=TRUE)
@@ -16,7 +20,8 @@ newDate <- "240610"
 
 abide_pheno <- read.csv(file.path(dataDir, paste0("abide_A_all_", resDate, ".csv")))
 
-####################### Part 1: Calculate how many #################################################
+
+####################### Part 1: Calculate All #################################################
 
 # 统计分析
 sample <- data.frame()
@@ -74,7 +79,7 @@ sample[2,6] <- paste0(round(mean(na.omit(nc$PIQ)), 2), "±", round(sd(na.omit(nc
 colnames(sample)[6] <- "PIQ(M±SD)"
 
 # save result
-name <- paste0("abide_A_all_summary_", newDate, ".xlsx")
+name <- paste0("asd_all_summary_", newDate, ".xlsx")
 write.xlsx(sample, file.path(resDir, name), sheetName = "Sheet1", rowNames = T)
 
 
@@ -138,13 +143,18 @@ sample[2,6] <- paste0(round(mean(na.omit(nc$PIQ)), 2), "±", round(sd(na.omit(nc
 colnames(sample)[6] <- "PIQ(M±SD)"
 
 # save result
-name <- paste0("abide_A_dev_summary_", newDate, ".xlsx")
+name <- paste0("asd_dev_summary_", newDate, ".xlsx")
 write.xlsx(sample, file.path(resDir, name), sheetName = "Sheet1", rowNames = T)
 
 
 ####################### Part 3: Calculate asd male dev #############################################
-# 仅统计发育阶段年龄6.0~17.9岁的男性ASD
+# 仅统计做谱聚类分析时使用的被试（发育阶段年龄6.0~17.9岁的男性ASD，且脑数据完整）
 asd_male <- subset(abide_pheno, SEX == "1" & DX_GROUP == "1")
+# 获取用于谱聚类分析的被试编号
+name <- paste0("asd_male_Spectral_Cluster_", newDate, ".csv")
+cluster_id <- read.csv(file.path(abideDir, "Analysis/Cluster/SpectralCluster", name))[, 2]
+
+asd_male <- asd_male[asd_male$Participant %in% cluster_id, ]
 
 # 统计分析
 sample <- data.frame()
@@ -179,5 +189,5 @@ sample[1,6] <- paste0(round(mean(na.omit(asd_male$PIQ)), 2), "±", round(sd(na.o
 colnames(sample)[6] <- "PIQ(M±SD)"
 
 # save result
-name <- paste0("abide_A_asd_male_dev_summary_", newDate, ".xlsx")
+name <- paste0("asd_male_dev_4SC_summary_", newDate, ".xlsx")
 write.xlsx(sample, file.path(resDir, name), sheetName = "Sheet1", rowNames = T)

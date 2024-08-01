@@ -1,10 +1,10 @@
 # 整合人口信息和MRI指标测量数据，并且按照LBCC要求的格式进行整理，便于之后进行Combat分析，以及紧接着
 # 的个体偏离百分位数的计算
 # Xue-Ru Fan 11 May 2023 @BNU
-
-############################ Part 1: Sum All #######################################################
-# 整合abide1和2的人口信息、行为数据和mri指标测量
-
+###################################################
+# Part 1: 整合abide1和2的人口信息、行为数据和mri指标测量，csv
+# Part 2: 整理成做combat需要的格式，csv
+###################################################
 rm(list=ls())
 packages <- c("plyr", "dplyr")
 #sapply(packages,install.packages,character.only=TRUE)
@@ -14,6 +14,9 @@ sapply(packages, require, character.only = TRUE)
 abideDir <- 'E:/PhDproject/ABIDE'
 dataDir <- file.path(abideDir, "Preprocessed")
 resDate <- "240315"
+
+############################ Part 1: Sum All #######################################################
+# 整合abide1和2的人口信息、行为数据和mri指标测量
 
 ################## abide 1
 abide1_global <- read.csv(file.path(dataDir, "abide_1_global_afterqc.csv"))

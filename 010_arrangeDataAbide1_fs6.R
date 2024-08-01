@@ -1,59 +1,78 @@
-# this script is used to arrange preprocessed ABIDE II data
-# please note, this works for freesurfer6 results only
-# Xue-Ru Fan 15 May 2023 @BNU
+# this script is used to arrange preprocessed ABIDE I data
+# please note, this works for freesurfer6 results
+# Xue-Ru Fan 2 Jan 2024 @BNU
+###################################################
+# Part 0: 解压tar文件
+# Part 1: 整理出有预处理结果和通过人工质控的被试列表，csv
+# Part 2: 提取7个全局指标的结果，csv
+# Part 3：提取34个DK分区体积的结果，并计算出CT，SA，Vertex，csv
+###################################################
 
 rm(list=ls())
-packages <- c("openxlsx")
-# sapply(packages, install.packages, character.only = TRUE)
-sapply(packages, require, character.only = TRUE)
+# install.packages("R.utils")
+# library(R.utils)
 
 ## define filefolder
 abideDir <- 'E:/PhDproject/ABIDE'
-dataDir <- file.path(abideDir, "Preprocessed/ABIDE_II")
-resDate <- "240315"
+
 
 ############################ Part 0: Untar Files ###################################################
-# # 解压freesurfer预处理完的tar.gz文件
-# tarDir <- file.path(dataDir, "SiteWise")
-# untarDir <- file.path(dataDir, "SubWise")
 
-# ## get sub_id
-# SUB_file <- list.files(tarDir)
+# dataDir <- file.path(abideDir, "Preprocessed/ABIDE_I")
+# tarDir <- file.path(dataDir, "SiteWise_tar")
+# untarDir <- file.path(dataDir, "SubWise")
 # 
-# ## untar files
 # setwd(tarDir)
-# for (s in SUB_file) {
-#   untar(s, exdir = untarDir)
+# 
+# ## get site_id
+# SITE_list <- list.files(tarDir)
+# 
+# for (site in SITE_list) {
+#   tarDir_site <- file.path(tarDir, site)
+#   setwd(tarDir_site)
+#   
+#   ## get sub_id
+#   SUB_file <- list.files(pattern = "*.tar.gz")
+#   
+#   ## untar files
+#   for (s in SUB_file) {
+#     untar(s, exdir = untarDir)
+#   }
 # }
 
-############################ Part 1: get sub list after qc #########################################
-# 导入做完人工质控后的被试清单，与有预处理结果的被试清单取交集，整合出最终用于后续分析的被试清单
+
+############################ Part 1: Clean subject #################################################
+
+library(openxlsx)
+
+############## load in list of subjects after manual qc
 abide_qc <- read.xlsx(file.path(abideDir, "ABIDE_T1qc/abide_qc_result_afterVisualQc.xlsx"))
 
-# 筛选出非0数据
+# 筛选出需要再看分割情况的数据
 sub_qc <- subset(abide_qc, Rate == "2" | Rate == "1")
 
-sub_qc_2 <- subset(sub_qc, ABIDE == "2") # 提取abide2的结果
+sub_qc_1 <- subset(sub_qc, ABIDE == "1") # 提取abide1的结果
 
-sub_qc_2 <- unique(sub_qc_2$SUB_ID) # 注意：有些被试有重复个run，这里只保留一次被试编码
+sub_qc_1 <- unique(sub_qc_1$SUB_ID) # 注意：有些被试有重复个run，这里只保留一次被试编码
 
 
 ## get sub_id
-procDir <- file.path(dataDir, "SubWise")
-SUB_file_all <- list.files(procDir) # 有预处理结果的所有被试
-SUB_file <- intersect(sub_qc_2, SUB_file_all) # 取通过了qc的被试编号和有预处理结果的被试编号的交集
+dataDir <- file.path(abideDir, "Preprocessed/ABIDE_I/SubWise")
+
+SUB_file_all <- list.files(dataDir) # 有预处理结果的所有被试
+SUB_file <- intersect(sub_qc_1, SUB_file_all) # 取通过了qc的被试编号和有预处理结果的被试编号的交集
 
 # 保存一份用于后续研究分析的被试清单
-name <- paste0("abide_2_sub4analysis_", resDate, ".csv")
-write.csv(SUB_file, file.path(abideDir, "Preprocessed", name), row.names = F, col.names = F)
+write.table(SUB_file, file.path(abideDir, "Preprocessed/abide1_sub4analysis.csv"), row.names = F,
+            col.names = F)
 
 
 ############################ Part 2: Get global data from raw freesurfer results ###################
-# 从freesurfer结果文件中提取7个全局指标的结果
+# 从freesurfer结果文件中提取全局指标的结果
 
 ## make an empty dataframe to save global data
-abide2_global <- data.frame(matrix(ncol = 10, nrow = 0))
-colnames(abide2_global) <- c("Participant",
+abide1_global <- data.frame(matrix(ncol = 10, nrow = 0))
+colnames(abide1_global) <- c("Participant",
                              "Left hemisphere cortical gray matter volume",
                              "Right hemisphere cortical gray matter volume",
                              "Total cortical gray matter volume",
@@ -67,38 +86,38 @@ colnames(abide2_global) <- c("Participant",
 
 ## extra data one by one
 for (s in 1:length(SUB_file)) { 
-  setwd(file.path(dataDir, "SubWise", SUB_file[s], "stats"))
+  setwd(file.path(dataDir, SUB_file[s], "stats"))
   ## sub_id
-  abide2_global[s, 1] <- SUB_file[s] 
+  abide1_global[s, 1] <- SUB_file[s] 
   ## global
   note <- data.frame(readLines("aseg.stats"))
   global <- data.frame(do.call('rbind', strsplit(as.character(note[14:35,]), ", ")))
   note <- data.frame(read.table("aseg.stats"))
   
-  names <- names(abide2_global)[2:10]
+  names <- names(abide1_global)[2:10]
   for (n in names) {
     where <- which(apply(global, 1, function(x) any(grep(paste0("\\b", n, "\\b"), x, value = F))))
-    com_str <- paste0("abide2_global[s, '", n, "'] <- global[where, 'X4']")
+    com_str <- paste0("abide1_global[s, '", n, "'] <- global[where, 'X4']")
     eval(parse(text = com_str))
   }
 }
 
 # save result
-name <- paste0("abide_2_global_afterqc_", resDate, ".csv")
-write.csv(abide2_global, file.path(abideDir, "Preprocessed", name), row.names = F)
+write.csv(abide1_global, file.path(abideDir, "Preprocessed/abide1_global_afterqc.csv"),
+          row.names = F)
 
 
 ############################ Part 3: Get regional data from raw freesurfer results #################
-# 从freesurfer结果文件中提取34个DK分区体积的结果，并计算出CT，SA，Vertex 
+# 从freesurfer结果文件中提取分区体积的结果
 
-abide2_regional <- data.frame()
+abide1_regional <- data.frame()
 
 ## extra data one by one
 for (s in 1:length(SUB_file)) {
-  setwd(file.path(dataDir, "SubWise", SUB_file[s], "stats"))
+  setwd(file.path(dataDir, SUB_file[s], "stats"))
   
   # sub_id
-  abide2_regional[s, 1] <- SUB_file[s] 
+  abide1_regional[s, 1] <- SUB_file[s] 
   
   ###################################  lh
   lh <- data.frame(readLines("lh.aparc.stats"))
@@ -109,7 +128,8 @@ for (s in 1:length(SUB_file)) {
   whereW <- which(apply(lh, 1, function(x) any(grep("WhiteSurfArea, White Surface Total Area", x,
                                                     value = F))))
   # CT
-  whereM <- which(apply(lh, 1, function(x) any(grep("MeanThickness, Mean Thickness", x, value = F))))
+  whereM <- which(apply(lh, 1, function(x) any(grep("MeanThickness, Mean Thickness", x,
+                                                    value = F))))
   
   whereL <- c(whereV, whereW, whereM)
   regional_lh <- data.frame(do.call('rbind', strsplit(as.character(lh[whereL, ]), ", ")))
@@ -120,7 +140,8 @@ for (s in 1:length(SUB_file)) {
   whereV <- which(apply(rh, 1, function(x) any(grep("NumVert, Number of Vertices", x, value = F))))
   whereW <- which(apply(rh, 1, function(x) any(grep("WhiteSurfArea, White Surface Total Area", x,
                                                     value = F))))
-  whereM <- which(apply(rh, 1, function(x) any(grep("MeanThickness, Mean Thickness", x, value = F))))
+  whereM <- which(apply(rh, 1, function(x) any(grep("MeanThickness, Mean Thickness", x,
+                                                    value = F))))
   whereR <- c(whereV, whereW, whereM)
   regional_rh <- data.frame(do.call('rbind', strsplit(as.character(rh[whereR, ]), ", ")))
   
@@ -130,11 +151,11 @@ for (s in 1:length(SUB_file)) {
   for (n in names) {
     ######## lh
     where <- which(apply(regional_lh, 1, function(x) any(grep(n, x, value = F))))
-    com_str <- paste0("abide2_regional[s, 'lh", n, "'] <- regional_lh[where, 'X4']")
+    com_str <- paste0("abide1_regional[s, 'lh", n, "'] <- regional_lh[where, 'X4']")
     eval(parse(text = com_str))
     ######## rh
     where <- which(apply(regional_rh, 1, function(x) any(grep(n, x, value = F))))
-    com_str <- paste0("abide2_regional[s, 'rh", n, "'] <- regional_rh[where, 'X4']")
+    com_str <- paste0("abide1_regional[s, 'rh", n, "'] <- regional_rh[where, 'X4']")
     eval(parse(text = com_str))
   }
   
@@ -142,20 +163,20 @@ for (s in 1:length(SUB_file)) {
     ######## lh
     where <- which(apply(lh_dk, 1, function(x) any(grep(paste0("\\b", d, "\\b"), x, value = F))))
     if (length(where) != 0) {
-      com_str <- paste0("abide2_regional[s, 'lh", d, "'] <- lh_dk[where, 'V4']")
+      com_str <- paste0("abide1_regional[s, 'lh", d, "'] <- lh_dk[where, 'V4']")
       eval(parse(text = com_str))
     } 
     ######## rh
     where <- which(apply(rh_dk, 1, function(x) any(grep(paste0("\\b", d, "\\b"), x, value = F))))
     if (length(where) != 0) {
-      com_str <- paste0("abide2_regional[s, 'rh", d, "'] <- rh_dk[where, 'V4']")
+      com_str <- paste0("abide1_regional[s, 'rh", d, "'] <- rh_dk[where, 'V4']")
       eval(parse(text = com_str))
     }
   }
 }
 
-colnames(abide2_regional)[1] <- "Participant"
+colnames(abide1_regional)[1] <- "Participant"
 
 # save result
-name <- paste0("abide_2_regional_afterqc_", resDate, ".csv")
-write.csv(abide2_regional, file.path(abideDir, "Preprocessed", name), row.names = F)
+write.csv(abide1_regional, file.path(abideDir, "Preprocessed/abide1_regional_afterqc.csv"),
+          row.names = F)
