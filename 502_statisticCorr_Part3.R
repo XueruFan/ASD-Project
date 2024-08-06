@@ -317,7 +317,7 @@ for (i in 1:nrow(sorted)) {
 
 
 
-#################################### Part 2: 仅Site作为控制变量 ####################################
+######################### Part 2: 仅Site作为控制变量 ###############################################
 
 names_cog <- c("FIQ", "VIQ", "PIQ", "ADOS_2_SEVERITY_TOTAL", "ADOS_2_TOTAL", "ADOS_2_SOCAFFECT",
                "ADOS_2_RRB", "SRS_AWARENESS_RAW", "SRS_COGNITION_RAW", "SRS_COMMUNICATION_RAW",

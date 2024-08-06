@@ -1,7 +1,8 @@
-# 画出谱聚类分出的ASD男性两个亚型的34个脑指标的发育轨线+散点图
-# 画常模和两个cluster的校正值散点及拟合的线，不画ABIDE经过矫正后的组平均线
+# 本代码用来可视化两个聚类人群脑指标的发育轨线
+# 画LBCC和两个cluster的校正值散点及拟合的线，不画ABIDE经过矫正后的组平均线
+# 画线的时候使用GAM拟合的散点
 # Xue-Ru Fan 04 Jan 2024 @BNU
-
+##################################
 rm(list=ls())
 
 # load packages
@@ -20,15 +21,15 @@ sapply(packages, require, character.only = TRUE)
 # define filefolder
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # mac
 abideDir <- 'E:/PhDproject/ABIDE' # winds
-clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster34DK")
-plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK/GAMMlbcc")
+clustDir <- file.path(abideDir, "Analysis/Cluster/SpectralCluster")
+plotDir <- file.path(abideDir, "Plot/Cluster/SpectralCluster/LBCC")
 newDate <- "240610"
 
 # define variables
 id_group <- c("1", "2") # this code is for 2 clusters
 ageRange <- log((seq(6, 18, 0.1)*365.245)+280)
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_", newDate, ".csv")
+name <- paste0("asd_male_Spectral_Cluster_", newDate, ".csv")
 exampleFIT <- read.csv(file.path(clustDir, name))
 
 volumeNames <- names(exampleFIT)[c(which(names(exampleFIT) == "GMV"):which(names(exampleFIT) == "insula"))]
@@ -133,6 +134,7 @@ for (volumeName in volumeNames){
               lwd = 2, alpha = .5, aes(x = AgeTransformed, y = value, group = sex, linetype = sex)) +
 
     theme_cowplot() +
+    
     scale_x_continuous(limits = ageLimits, breaks = ageTicks,
                        label = c("6 yr", "8 yr", "10 yr", "12 yr", "14 yr", "16 yr", "18 yr")) +
     xlab("") + ylab("") +
@@ -140,7 +142,7 @@ for (volumeName in volumeNames){
           axis.text = element_text(size = 8)) +
     theme(legend.position = "None")
   
-  name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_", volumeName, "_GAMLSS_lbcc_", newDate,".png")
+  name <- paste0("SC_LBCC_", volumeName, "_", newDate,".png")
   ggsave(file.path(plotDir, name), dpi = 300, width = 10, height = 10, unit = "cm")
   
 }

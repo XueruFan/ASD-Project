@@ -1,7 +1,7 @@
-# 画出ASD男性两个亚型的34+7个脑指标的百分位数随龄发育GAMM曲线
+# 本代码用来可视化两个聚类人群脑指标centile的发育轨线
 # GAMM模型，95%置信区间
 # Xue-Ru Fan 04 Jan 2024 @BNU
-
+##################################
 rm(list=ls())
 
 # load packages
@@ -15,16 +15,15 @@ sapply(packages, require, character.only = TRUE)
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # mac
 abideDir <- 'E:/PhDproject/ABIDE' # winds
 phenoDir <- file.path(abideDir, "Preprocessed")
-clustDir <- file.path(abideDir, "Analysis/Cluster/Cluster_A/SpectralCluster34DK")
-plotDir <- file.path(abideDir, "Plot/Cluster/Cluster_A/SpectralCluster34DK/GAMMcentile")
+clustDir <- file.path(abideDir, "Analysis/Cluster/SpectralCluster")
+plotDir <- file.path(abideDir, "Plot/Cluster/SpectralCluster/Centile")
 resDate <- "240315"
 newDate <- "240610"
 
 # define variables
-# id_group <- c("1", "2") # this code is for 2 clusters
 ageRange <- log((seq(6, 18, 0.1)*365.245)+280)
 
-name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_", newDate, ".csv")
+name <- paste0("asd_male_Spectral_Cluster_", newDate, ".csv")
 cluster <- read.csv(file.path(clustDir, name))
 cluster <- cluster[, c("clusterID", "participant")]
 centile <- read.csv(file.path(phenoDir, paste0("abide_A_centile_", resDate, ".csv")))
@@ -85,7 +84,7 @@ for (volumeName in volumeNames){
     theme(legend.position = "None")
   
 
-  name <- paste0("abide_A_asd_male_dev_Spectral_Cluster_34DK_", volumeName, "_GAMMcentile_", newDate,".png")
+  name <- paste0("SC_Centile_", volumeName, "_", newDate,".png")
   ggsave(file.path(plotDir, name), dpi = 300, width = 10,
          height = 10, unit = "cm")
 }
