@@ -30,13 +30,6 @@ cluster <- cluster[, c("clusterID", "participant")]
 centile <- read.csv(file.path(phenoDir, paste0("abide_A_centile_", resDate, ".csv")))
 All <- merge(cluster, centile, by = "participant", All.x = TRUE)
 
-# 认知行为
-pheno <- read.csv(file.path(phenoDir, paste0("abide_A_all_", resDate, ".csv")))
-colnames(pheno)[which(names(pheno) == "Participant")] <- "participant"
-FIQ <- pheno[, c("participant", "FIQ")]
-
-All <- merge(All, FIQ, by = "participant", All.x = TRUE)
-
 # 修改各自站点名字的缩写
 All$Site <- gsub("ABIDEII-NYU_1", "NYU", All$Site)
 All$Site <- gsub("ABIDEII-NYU_2", "NYU", All$Site)
@@ -63,109 +56,118 @@ All$Site <- gsub("LEUVEN_2", "KUL", All$Site)
 All$Site <- gsub("CALTECH", "CALT", All$Site)
 
 
+# 提取前一步建模平滑项（年龄）p值显著的脑指标
+volumes <- read.xlsx(file.path(statDir, paste0("asd_male_dev_SC_statis_GAMM_NegSite_", newDate, ".xlsx")))
+
+# # 筛选出平滑项p值小于0.01的VolumeName
+# filtered_volumes <- volumes %>%
+#   dplyr::filter(volumes[[11]] < 0.01) %>%
+#   dplyr::pull(VolumeName)  # 将结果转换为向量
+
 volumeNames <- names(centile)[c(which(names(centile) == "GMV"):which(names(centile) == "insula"))]
 
-# 创建一个空的数据框来保存模型统计值
-model_stats <- data.frame(VolumeName = character(), ClusterID = integer(), 
-                          R_squared = numeric(), Estimate = numeric(), SE = numeric(),
-                          t_value = numeric(), P_value_t = character(),
-                          edf = numeric(), red_edf = numeric(),
-                          F_value = numeric(), P_value_smooth = character())
-
-for (volumeName in volumeNames){
-  # volumeName <- "GMV"
-
-  studyFIT <- All[, c("clusterID", "Age", volumeName)]
+for (volumeName in volumeNames) {
+  # volumeName <- "WMV"
+  
+  studyFIT <- All[, c("clusterID", "Age", volumeName, "Site")]
   colnames(studyFIT)[2:3] <- c("x", "y")
   
-  predictions <- list()
+  predictions_site <- list()
+  predictions_no_site <- list()
   
+  # 定义颜色（黄绿色和橙色）对应每个 clusterID
+  cluster_colors <- c("#719988", "#faa264")
+  
+  # 第一部分：包含站点固定效应，收集透明颜色线条数据
   for (cluster in unique(studyFIT$clusterID)) {
-    # 筛选当前cluster的数据
+    # 筛选当前 clusterID 的数据
     cluster_data <- filter(studyFIT, clusterID == cluster)
     cluster_data$Site <- factor(cluster_data$Site)
-
-    # 拟合GAMM模型
-    gamm_model <- gamm4(y ~ s(x, k = 4) + Site + FIQ, data = cluster_data)
-
-    # 提取模型统计值
-    model_summary <- summary(gamm_model$gam)
     
-    # 提取平滑项和t检验的统计值
-    r_squared <- model_summary$r.sq
-    estimate <- model_summary$p.table[1, "Estimate"]
-    se <- model_summary$p.table[1, "Std. Error"]
-    t_value <- model_summary$p.table[1, "t value"]
-    p_value_t <- model_summary$p.table[1, "Pr(>|t|)"]
+    # 拟合 GAMM 模型（包含站点固定效应）
+    gamm_model_site <- gamm4(y ~ s(x, k = 4) + Site, data = cluster_data)
     
-    edf <- model_summary$s.table[1, "edf"]
-    red_edf <- model_summary$s.table[1, "Ref.df"]
-    f_value <- model_summary$s.table[1, "F"]
-    p_value_smooth <- model_summary$s.table[1, "p-value"]
+    # 准备预测数据，增加 Site 信息
+    pred_data_site <- expand.grid(x = seq(6, 18, length.out = 100), Site = levels(cluster_data$Site))
     
-   
-    # 保存模型统计值
-    model_stats <- rbind(model_stats, 
-                         data.frame(VolumeName = volumeName, ClusterID = cluster, 
-                                    R_squared = r_squared, Estimate = estimate, SE = se,
-                                    t_value = t_value, P_value_t = p_value_t,
-                                    edf = edf, red_edf = red_edf,
-                                    F_value = f_value, P_value_smooth = p_value_smooth))
+    # 获取预测值（包含站点效应）
+    preds_site <- predict(gamm_model_site$gam, newdata = pred_data_site, type = "response")
     
-    # 准备预测数据
-    pred_data <- data.frame(x = seq(6, 18, length.out = 100))
-
-    # 获取预测值及其标准误差
-    preds <- predict(gamm_model$gam, newdata = pred_data, type = "response", se = TRUE)
-
-    # 向pred_data中添加预测值和置信区间
-    pred_data$y_pred <- preds$fit
-    pred_data$ci_lower <- preds$fit - 1.96 * preds$se.fit
-    pred_data$ci_upper <- preds$fit + 1.96 * preds$se.fit
-    pred_data$clusterID <- cluster  # 添加分组标识
-
+    # 将预测值加入 pred_data_site
+    pred_data_site$y_pred <- preds_site
+    pred_data_site$clusterID <- cluster  # 添加 clusterID 标识
+    
     # 将预测结果添加到列表中
-    predictions[[cluster]] <- pred_data
+    predictions_site[[cluster]] <- pred_data_site
   }
-
-  # 合并所有预测结果
-  all_predictions <- bind_rows(predictions)
-
-
-  # 使用ggplot2绘制预测结果
-  ggplot(all_predictions, aes(x = x, y = y_pred, color = factor(clusterID))) +
-    geom_line(lwd = 2, alpha = 1) +
-    geom_ribbon(aes(ymin = ci_lower, ymax = ci_upper, fill = factor(clusterID)), alpha = 0.1,
-                lwd = 0.1) +
-    scale_color_manual(values = c("#719988", "#faa264")) +
-    scale_fill_manual(values = c("#719988", "#faa264")) +
-    geom_point(data = studyFIT, aes(x = x, y = y, color = factor(clusterID)), alpha = .2, size = 2,
-               shape = 16) +
-    scale_x_continuous(breaks = seq(6, 18, 2), labels = c("6 yr", "8 yr", "10 yr", "12 yr", "14 yr",
-                                                          "16 yr", "18 yr")) +
+  
+  # 合并所有站点的预测结果
+  all_predictions_site <- bind_rows(predictions_site)
+  
+  # 第二部分：忽略站点效应，收集彩色线条数据，并恢复置信区间
+  for (cluster in unique(studyFIT$clusterID)) {
+    # 筛选当前 clusterID 的数据
+    cluster_data <- filter(studyFIT, clusterID == cluster)
+    
+    # 拟合 GAMM 模型（不包含站点效应）
+    gamm_model_no_site <- gamm4(y ~ s(x, k = 4), data = cluster_data)
+    
+    # 准备预测数据（忽略站点）
+    pred_data_no_site <- data.frame(x = seq(6, 18, length.out = 100))
+    
+    # 获取预测值和标准误（忽略站点效应）
+    preds_no_site <- predict(gamm_model_no_site$gam, newdata = pred_data_no_site,
+                             type = "response", se.fit = TRUE)
+    
+    # 将预测值加入 pred_data_no_site
+    pred_data_no_site$y_pred <- preds_no_site$fit
+    pred_data_no_site$se_fit <- preds_no_site$se.fit
+    
+    # 计算置信区间上下限
+    pred_data_no_site$ci_lower <- pred_data_no_site$y_pred - 1.96 * pred_data_no_site$se_fit
+    pred_data_no_site$ci_upper <- pred_data_no_site$y_pred + 1.96 * pred_data_no_site$se_fit
+    
+    # 截断置信区间使其保持在0和1之间
+    pred_data_no_site$ci_lower <- pmax(pred_data_no_site$ci_lower, 0)
+    pred_data_no_site$ci_upper <- pmin(pred_data_no_site$ci_upper, 1)
+    
+    pred_data_no_site$clusterID <- cluster  # 添加 clusterID 标识
+    
+    # 将预测结果添加到列表中
+    predictions_no_site[[cluster]] <- pred_data_no_site
+  }
+  
+  # 合并忽略站点效应的预测结果
+  all_predictions_no_site <- bind_rows(predictions_no_site)
+  
+  # 创建 ggplot2 图形，先添加透明的彩色线条来表示站点效应
+  ggplot() +
+    geom_point(data = studyFIT, aes(x = x, y = y, color = factor(clusterID)),
+               alpha = 0.2, size = 2, shape = 16) + # 透明原始数据点
+    annotate("segment", x = 6, xend = 18, y = 0.5, yend = 0.5, color = "#e6e6e6",
+             linetype = "solid", size = 3, alpha = 0.5) +
+    # geom_line(data = all_predictions_site, aes(x = x, y = y_pred,
+    #                                            group = interaction(Site, clusterID), 
+    #                                            color = factor(clusterID)),
+    #           lwd = 0.5, alpha = 0.2) +  # 彩色透明线条表示站点效应
+    # 添加彩色的忽略站点效应的线条和置信区间
+    geom_ribbon(data = all_predictions_no_site, aes(x = x, ymin = ci_lower, ymax = ci_upper,
+                                                    fill = factor(clusterID)), 
+                alpha = 0.2, linetype = 0) +  # 绘制彩色置信区间带
+    geom_line(data = all_predictions_no_site,
+              aes(x = x, y = y_pred, color = factor(clusterID)), lwd = 3) +
+    scale_color_manual(values = cluster_colors) +  # 自定义颜色（黄绿色和橙色）
+    scale_fill_manual(values = cluster_colors) +   # 填充颜色与线条颜色一致
+    scale_x_continuous(breaks = seq(6, 18, 2),
+                       labels = c("6 yr", "8 yr", "10 yr", "12 yr", "14 yr", "16 yr", "18 yr")) +
+    scale_y_continuous(breaks = seq(0, 1, 0.25)) +
     theme_cowplot() +
     xlab("") + ylab("") +
     theme(axis.text = element_text(size = 12)) +
-    theme(legend.position = "None")
-
-
-  name <- paste0("SC_Centile_GAMM_", volumeName, "_", newDate,".png")
-  ggsave(file.path(plotDir, name), dpi = 300, width = 10,
-         height = 10, unit = "cm")
+    theme(legend.position = "None")  # 不显示图例
+  
+  
+  # 保存图像
+  name <- paste0("SC_Centile_GAMM_", volumeName, "_", newDate, ".png")
+  ggsave(file.path(plotDir, name), dpi = 300, width = 20, height = 20, unit = "cm")
 }
-
-# 对除前两列（"VolumeName" 和 "ClusterID"）以外的数值型列保留4位小数
-model_stats[, -c(1, 2)] <- lapply(model_stats[, -c(1, 2)], function(x) {
-  if(is.numeric(x)) {
-    sprintf("%.4f", x)  # 保留4位小数并转换为字符格式
-  } else {
-    x
-  }
-})
-
-colnames(model_stats)[3:11] <- c("R²", "估计值", "标准误", "t值", "p值", "有效自由度", "剩余自由度",
-                                "F值", "p值")
-
-# 保存模型统计值到 Excel 文件
-write.xlsx(model_stats, file.path(statDir, paste0("asd_male_dev_SC_statis_GAMM_", newDate,
-                                                  ".xlsx")), rowNames = F, colNames = T)
