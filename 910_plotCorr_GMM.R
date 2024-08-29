@@ -1,7 +1,6 @@
 # 本代码用来可视化两个聚类人群不同的认知行为和脑指标之间的相关
 # 只画上一步里相关大于0.4的相关
-# 为了使所有的线都能集中一些，画图时给y做了标准化
-# Vineland量表和PIQ的得分是越高越好，因此画图时原始值*-1，这样图示中都是y越高症状越严重
+# Site Part3
 # 雪如 2024年8月5日于北师大办公室
 ##################################
 # Part 1: L组，png
@@ -131,16 +130,6 @@ dev.off()
 
 
 
-
-
-
-
-
-
-
-
-
-
 ##################### Part 2: 画H组 ################################################################
 # 创建一个空的数据框来累积所有的绘图数据
 plot_data <- data.frame(x = numeric(), y = numeric(), type = character())
@@ -160,57 +149,63 @@ for (i in 1:nrow(corr_H)) {
 grouped_data <- group_by(plot_data, type)
 
 # 给y值都做一下标准化，这样画出的线之间距离不远
-plot_data <- mutate(grouped_data, y_scaled = as.numeric(scale(y)))
+# plot_data <- mutate(grouped_data, y_scaled = as.numeric(scale(y)))
 
-# Vineland量表、IQ是得分越高越好
-plot_data <- plot_data %>%
-  mutate(y_scaled = case_when(
-    type %in% c("parsorbitalis_centile_VINELAND_SOCIAL_STANDARD", "medialorbitofrontal_centile_PIQ")
-    ~ -1 * y_scaled,
-    TRUE ~ y_scaled
-  ))
+# # Vineland量表、IQ是得分越高越好
+# plot_data <- plot_data %>%
+#   mutate(y_scaled = case_when(
+#     type %in% c("parsorbitalis_centile_VINELAND_SOCIAL_STANDARD", "medialorbitofrontal_centile_PIQ")
+#     ~ -1 * y_scaled,
+#     TRUE ~ y_scaled
+#   ))
 
 
 # 设置 type 的顺序
 plot_data <- plot_data %>%
-  mutate(type = factor(type, levels = c("temporalpole_centile_BMI",
-                                        "medialorbitofrontal_centile_PIQ",
-                                        "rostralanteriorcingulate_centile_SRS_MANNERISMS_T",
-                                        "rostralanteriorcingulate_centile_SRS_AWARENESS_T",
-                                        "caudalanteriorcingulate_centile_SRS_AWARENESS_T",
-                                        "parsorbitalis_centile_VINELAND_SOCIAL_STANDARD")))
+  mutate(type = factor(type, levels = c("superiorfrontal_centile_BMI",
+                                        "caudalmiddlefrontal_centile_BMI",
+                                        "superiorparietal_centile_BMI",
+                                        "isthmuscingulate_centile_BMI",
+                                        "pericalcarine_centile_BMI",
+                                        "temporalpole_centile_BMI")))
+
+plot_data$y[plot_data$y < 0] <- NA
+plot_data <- na.omit(plot_data)
 
 
 # modify name
 levels(plot_data$type)[levels(plot_data$type) ==
-                         "rostralanteriorcingulate_centile_SRS_MANNERISMS_T"] <- "RAC - SRS M"
+                         "superiorfrontal_centile_BMI"] <- "额上回"
 levels(plot_data$type)[levels(plot_data$type) ==
-                         "rostralanteriorcingulate_centile_SRS_AWARENESS_T"] <- "RAC - SRS A"
+                         "caudalmiddlefrontal_centile_BMI"] <- "额中回尾部"
 levels(plot_data$type)[levels(plot_data$type) ==
-                         "caudalanteriorcingulate_centile_SRS_AWARENESS_T"] <- "CAC - SRS A"
+                         "superiorparietal_centile_BMI"] <- "顶上皮层"
 levels(plot_data$type)[levels(plot_data$type) ==
-                         "parsorbitalis_centile_VINELAND_SOCIAL_STANDARD"] <- "PA - VL S"
+                         "isthmuscingulate_centile_BMI"] <- "扣带回峡部"
 levels(plot_data$type)[levels(plot_data$type) ==
-                         "medialorbitofrontal_centile_PIQ"] <- "MOF - PIQ"
+                         "pericalcarine_centile_BMI"] <- "距状沟周围皮层"
 levels(plot_data$type)[levels(plot_data$type) ==
-                         "temporalpole_centile_BMI"] <- "TP - BMI"
+                         "temporalpole_centile_BMI"] <- "颞极"
 
-ggplot(plot_data, aes(x = x, y = y_scaled, group = type, color = type)) +
+name <- paste0("GC_corr_Site_H_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 7, height = 7, units = "in", dpi = 500)
+
+ggplot(plot_data, aes(x = x, y = y, group = type, color = type)) +
   geom_smooth(method = "lm", se = FALSE, lwd = 2) +
   scale_x_continuous(limits = c(0, 1), breaks = c(0, 0.25, 0.5, 0.75, 1)) +
-  coord_fixed(ratio = .7) +  # 设置坐标轴比例为 1:1
   theme_cowplot() +
-  theme(legend.position = "right",
-        axis.text.y = element_blank(),    # 去掉y轴文字
-        axis.ticks.y = element_blank(),  # 去掉y轴刻度
+  theme(text = element_text(family = "STSong"),
+        legend.position = "right",
+        legend.title = element_blank(),
+        # axis.text.y = element_blank(),    # 去掉y轴文字
+        # axis.ticks.y = element_blank(),  # 去掉y轴刻度
         axis.title = element_blank(),
         axis.text.x = element_text(size = 15, face = "bold")) +
-  scale_color_manual(values = c("RAC - SRS M" = "#FB9A99",
-                                "RAC - SRS A" = "#FB9A99",
-                                "CAC - SRS A" = "#FB9A99",
-                                "PA - VL S" = "#E3B839",
-                                "MOF - PIQ" = "#999999",         
-                                "TP - BMI" = "black"))
+  scale_color_manual(values = c("额上回" = "#f8b500",
+                                "额中回尾部" = "black",
+                                "顶上皮层" = "#007bbb",
+                                "扣带回峡部" = "#884898",
+                                "距状沟周围皮层" = "#df7163",
+                                "颞极" = "#00a381"))
 
-name <- paste0("SC_corr_Site_H_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 7, height = 7, units = "in", dpi = 500)
+dev.off()
