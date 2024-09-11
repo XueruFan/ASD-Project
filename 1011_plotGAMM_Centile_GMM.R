@@ -56,71 +56,75 @@ All$Site <- gsub("LEUVEN_2", "KUL", All$Site)
 All$Site <- gsub("CALTECH", "CALT", All$Site)
 
 
-# 提取前一步建模平滑项（年龄）p值显著的脑指标
+# 提取前一步建模平滑项（年龄）p值显著(经过FDR矫正)的脑指标
 volumes <- read.xlsx(file.path(statDir, 
-                               paste0("asd_male_dev_GC_statis_GAMM_NegSite_", newDate, ".xlsx")))
+                               paste0("asd_male_dev_GC_statis_GAMM_", newDate, ".xlsx")))
 
 # # 筛选出平滑项p值小于0.01的VolumeName
 # filtered_volumes <- volumes %>%
 #   dplyr::filter(volumes[[11]] < 0.01) %>%
 #   dplyr::pull(VolumeName)  # 将结果转换为向量
 
-volumeNames <- names(centile)[c(which(names(centile) == "GMV"):which(names(centile) == "insula"))]
+volumeNames <- names(centile)[c(which(names(centile) == "bankssts"):which(names(centile) == "insula"))]
 
 for (volumeName in volumeNames) {
-  # volumeName <- "WMV"
+  # volumeName <- "bankssts"
   
-  studyFIT <- All[, c("clusterID", "Age", volumeName, "Site")]
-  colnames(studyFIT)[2:3] <- c("x", "y")
+  studyFIT <- All[, c("clusterID", "Age", "TCV", volumeName)]
+  colnames(studyFIT)[4] <- "y"
   
-  predictions_site <- list()
+  # predictions_site <- list()
   predictions_no_site <- list()
   
   # 定义颜色（黄绿色和橙色）对应每个 clusterID
   cluster_colors <- c("#719988", "#faa264")
   
-  # 第一部分：包含站点固定效应，收集透明颜色线条数据
-  for (cluster in unique(studyFIT$clusterID)) {
-    # 筛选当前 clusterID 的数据
-    cluster_data <- filter(studyFIT, clusterID == cluster)
-    cluster_data$Site <- factor(cluster_data$Site)
-    
-    # 拟合 GAMM 模型（包含站点固定效应）
-    gamm_model_site <- gamm4(y ~ s(x, k = 4) + Site, data = cluster_data)
-    
-    # 准备预测数据，增加 Site 信息
-    pred_data_site <- expand.grid(x = seq(6, 18, length.out = 100), Site = levels(cluster_data$Site))
-    
-    # 获取预测值（包含站点效应）
-    preds_site <- predict(gamm_model_site$gam, newdata = pred_data_site, type = "response")
-    
-    # 将预测值加入 pred_data_site
-    pred_data_site$y_pred <- preds_site
-    pred_data_site$clusterID <- cluster  # 添加 clusterID 标识
-    
-    # 将预测结果添加到列表中
-    predictions_site[[cluster]] <- pred_data_site
-  }
-  
-  # 合并所有站点的预测结果
-  all_predictions_site <- bind_rows(predictions_site)
+  # # 第一部分：包含站点固定效应，收集透明颜色线条数据
+  # for (cluster in unique(studyFIT$clusterID)) {
+  #   # 筛选当前 clusterID 的数据
+  #   cluster_data <- filter(studyFIT, clusterID == cluster)
+  #   cluster_data$Site <- factor(cluster_data$Site)
+  #   
+  #   # 拟合 GAMM 模型（包含站点固定效应）
+  #   gamm_model_site <- gamm4(y ~ s(x, k = 4) + Site, data = cluster_data)
+  #   
+  #   # 准备预测数据，增加 Site 信息
+  #   pred_data_site <- expand.grid(x = seq(6, 18, length.out = 100), Site = levels(cluster_data$Site))
+  #   
+  #   # 获取预测值（包含站点效应）
+  #   preds_site <- predict(gamm_model_site$gam, newdata = pred_data_site, type = "response")
+  #   
+  #   # 将预测值加入 pred_data_site
+  #   pred_data_site$y_pred <- preds_site
+  #   pred_data_site$clusterID <- cluster  # 添加 clusterID 标识
+  #   
+  #   # 将预测结果添加到列表中
+  #   predictions_site[[cluster]] <- pred_data_site
+  # }
+  # 
+  # # 合并所有站点的预测结果
+  # all_predictions_site <- bind_rows(predictions_site)
   
   # 第二部分：忽略站点效应，收集彩色线条数据，并恢复置信区间
   for (cluster in unique(studyFIT$clusterID)) {
-    # 筛选当前 clusterID 的数据
+    # cluster <- 1
+    
+    # 筛选当前cluster的数据
     cluster_data <- filter(studyFIT, clusterID == cluster)
     
-    # 拟合 GAMM 模型（不包含站点效应）
-    gamm_model_no_site <- gamm4(y ~ s(x, k = 4), data = cluster_data)
+    # 拟合GAMM模型
+    gamm_model <- gamm4(y ~ s(Age, bs = "tp", k = 4) + TCV, data = cluster_data)
     
     # 准备预测数据（忽略站点）
-    pred_data_no_site <- data.frame(x = seq(6, 18, length.out = 100))
+    pred_data_no_site <- data.frame(Age = seq(6, 18, length.out = 100))
+    pred_data_no_site$TCV <- mean(cluster_data$TCV)  # 使用TCV的平均值
+    
     
     # 获取预测值和标准误（忽略站点效应）
-    preds_no_site <- predict(gamm_model_no_site$gam, newdata = pred_data_no_site,
+    preds_no_site <- predict(gamm_model$gam, newdata = pred_data_no_site,
                              type = "response", se.fit = TRUE)
     
-    # 将预测值加入 pred_data_no_site
+     # 将预测值加入 pred_data_no_site
     pred_data_no_site$y_pred <- preds_no_site$fit
     pred_data_no_site$se_fit <- preds_no_site$se.fit
     
@@ -143,7 +147,7 @@ for (volumeName in volumeNames) {
   
   # 创建 ggplot2 图形，先添加透明的彩色线条来表示站点效应
   ggplot() +
-    geom_point(data = studyFIT, aes(x = x, y = y, color = factor(clusterID)),
+    geom_point(data = studyFIT, aes(x = Age, y = y, color = factor(clusterID)),
                alpha = 0.2, size = 2, shape = 16) + # 透明原始数据点
     annotate("segment", x = 6, xend = 18, y = 0.5, yend = 0.5, color = "#e6e6e6",
              linetype = "solid", size = 3, alpha = 0.5) +
@@ -152,11 +156,11 @@ for (volumeName in volumeNames) {
     #                                            color = factor(clusterID)),
     #           lwd = 0.5, alpha = 0.2) +  # 彩色透明线条表示站点效应
     # 添加彩色的忽略站点效应的线条和置信区间
-    geom_ribbon(data = all_predictions_no_site, aes(x = x, ymin = ci_lower, ymax = ci_upper,
+    geom_ribbon(data = all_predictions_no_site, aes(x = Age, ymin = ci_lower, ymax = ci_upper,
                                                     fill = factor(clusterID)), 
                 alpha = 0.2, linetype = 0) +  # 绘制彩色置信区间带
     geom_line(data = all_predictions_no_site,
-              aes(x = x, y = y_pred, color = factor(clusterID)), lwd = 3) +
+              aes(x = Age, y = y_pred, color = factor(clusterID)), lwd = 3) +
     scale_color_manual(values = cluster_colors) +  # 自定义颜色（黄绿色和橙色）
     scale_fill_manual(values = cluster_colors) +   # 填充颜色与线条颜色一致
     scale_x_continuous(breaks = seq(6, 18, 2),

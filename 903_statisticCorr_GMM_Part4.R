@@ -1,5 +1,5 @@
 # 本代码用来分析两组ASD发育男性的变量之间的相关系数和显著性水平
-# 使用斯皮尔曼相关，Site和FIQ作为控制变量
+# 使用斯皮尔曼相关，Site和age作为控制变量
 # 雪如 2024年2月28日于北师大办公室
 ##################################
 # Part 1: 34个局部脑指标（centile）加权合成的新指标作为自变量
@@ -44,7 +44,7 @@ All <- merge(cluster, pheno, by = "participant", All.x = TRUE)
 # 选择自变量列
 names_brain <- names(cluster)[3:ncol(cluster)]
 
-names_cog <- c("ADOS_2_SEVERITY_TOTAL", "ADOS_2_TOTAL", "ADOS_2_SOCAFFECT",
+names_cog <- c("FIQ", "VIQ", "PIQ", "ADOS_2_SEVERITY_TOTAL", "ADOS_2_TOTAL", "ADOS_2_SOCAFFECT",
                "ADOS_2_RRB", "SRS_AWARENESS_RAW", "SRS_COGNITION_RAW", "SRS_COMMUNICATION_RAW",
                "SRS_MOTIVATION_RAW", "SRS_MANNERISMS_RAW", "SRS_AWARENESS_T", "SRS_COGNITION_T",
                "SRS_COMMUNICATION_T", "SRS_MOTIVATION_T", "SRS_MANNERISMS_T", "SRS_TOTAL_T",
@@ -56,7 +56,7 @@ names_cog <- c("ADOS_2_SEVERITY_TOTAL", "ADOS_2_TOTAL", "ADOS_2_SOCAFFECT",
 
 
 #### select: 控制变量、自变量、因变量
-names_col <- c("clusterID", "SITE_ID", "FIQ", names_brain, names_cog)
+names_col <- c("clusterID", "SITE_ID", "AGE_AT_SCAN", names_brain, names_cog)
 All <- All[, names_col]
 All[All < 0] <- NA
 
@@ -116,7 +116,7 @@ importance <- rank
 
 # 确保 SITE_ID 和 FIQ 是因子和数值类型
 L$SITE_ID <- as.factor(L$SITE_ID)
-L$FIQ <- as.numeric(L$FIQ)
+L$AGE_AT_SCAN <- as.numeric(L$AGE_AT_SCAN)
 
 # 对 L 数据框中的 names_brain 列进行加权
 weighted_names_brain <- L %>%
@@ -142,14 +142,14 @@ for (name_cog in names_cog) {
     # 确保 y 中非 NA 值不少于 30 个
     if (sum(!is.na(y)) >= 30) {
       # 创建临时数据框，包含做相关分析需要的列，并过滤掉 FIQ 为 NA 的行
-      temp_L <- L[!is.na(y) & !is.na(L$FIQ), c("weighted_var", "SITE_ID", "FIQ", name_cog)]
-      temp_L$y <- y[!is.na(y) & !is.na(L$FIQ)]
+      temp_L <- L[!is.na(y) & !is.na(L$AGE_AT_SCAN), c("weighted_var", "SITE_ID", "AGE_AT_SCAN", name_cog)]
+      temp_L$y <- y[!is.na(y) & !is.na(L$AGE_AT_SCAN)]
       
       if (nrow(temp_L) >= 30) {
         if (length(unique(temp_L$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
-          # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 FIQ
-          y_lm <- lm(y ~ SITE_ID + FIQ, data = temp_L)
-          x_lm <- lm(weighted_var ~ SITE_ID + FIQ, data = temp_L)
+          # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 AGE_AT_SCAN
+          y_lm <- lm(y ~ SITE_ID + AGE_AT_SCAN, data = temp_L)
+          x_lm <- lm(weighted_var ~ SITE_ID + AGE_AT_SCAN, data = temp_L)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -159,8 +159,8 @@ for (name_cog in names_cog) {
           cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
         } else {
           # 如果 SITE_ID 只有一个水平，不控制 SITE_ID，但仍然控制 FIQ
-          y_lm <- lm(y ~ FIQ, data = temp_L)
-          x_lm <- lm(weighted_var ~ FIQ, data = temp_L)
+          y_lm <- lm(y ~ AGE_AT_SCAN, data = temp_L)
+          x_lm <- lm(weighted_var ~ AGE_AT_SCAN, data = temp_L)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -181,12 +181,13 @@ for (name_cog in names_cog) {
   }
 }
 
+results_L$p_value <- p.adjust(results_L$p_value, method = "BH")
 ########### 给P值排序
 L_sorted <- arrange(results_L, p_value)
 
-### 保存下来结果
-name <- paste0("asd_male_dev_GC_corr_Part1_34_L_", newDate, ".csv")
-write.csv(L_sorted, file.path(statiDir, name), row.names = F)
+# ### 保存下来结果
+# name <- paste0("asd_male_dev_GC_corr_Part4_34_L_", newDate, ".csv")
+# write.csv(L_sorted, file.path(statiDir, name), row.names = F)
 
 
 
@@ -195,7 +196,7 @@ write.csv(L_sorted, file.path(statiDir, name), row.names = F)
 
 # 确保 SITE_ID 和 FIQ 是因子和数值类型
 H$SITE_ID <- as.factor(H$SITE_ID)
-H$FIQ <- as.numeric(H$FIQ)
+H$AGE_AT_SCAN <- as.numeric(H$AGE_AT_SCAN)
 
 # 对 H 数据框中的 names_brain 列进行加权
 weighted_names_brain <- H %>%
@@ -221,14 +222,14 @@ for (name_cog in names_cog) {
     # 确保 y 中非 NA 值不少于 30 个
     if (sum(!is.na(y)) >= 30) {
       # 创建临时数据框，包含做相关分析需要的列，并过滤掉 FIQ 为 NA 的行
-      temp_H <- H[!is.na(y) & !is.na(H$FIQ), c("weighted_var", "SITE_ID", "FIQ", name_cog)]
-      temp_H$y <- y[!is.na(y) & !is.na(H$FIQ)]
+      temp_H <- H[!is.na(y) & !is.na(H$AGE_AT_SCAN), c("weighted_var", "SITE_ID", "AGE_AT_SCAN", name_cog)]
+      temp_H$y <- y[!is.na(y) & !is.na(H$AGE_AT_SCAN)]
       
       if (nrow(temp_H) >= 30) {
         if (length(unique(temp_H$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
           # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 FIQ
-          y_lm <- lm(y ~ SITE_ID + FIQ, data = temp_H)
-          x_lm <- lm(weighted_var ~ SITE_ID + FIQ, data = temp_H)
+          y_lm <- lm(y ~ SITE_ID + AGE_AT_SCAN, data = temp_H)
+          x_lm <- lm(weighted_var ~ SITE_ID + AGE_AT_SCAN, data = temp_H)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -238,8 +239,8 @@ for (name_cog in names_cog) {
           cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
         } else {
           # 如果 SITE_ID 只有一个水平，不控制 SITE_ID，但仍然控制 FIQ
-          y_lm <- lm(y ~ FIQ, data = temp_H)
-          x_lm <- lm(weighted_var ~ FIQ, data = temp_H)
+          y_lm <- lm(y ~ AGE_AT_SCAN, data = temp_H)
+          x_lm <- lm(weighted_var ~ AGE_AT_SCAN, data = temp_H)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -259,13 +260,13 @@ for (name_cog in names_cog) {
     }
   }
 }
-
+results_H$p_value <- p.adjust(results_H$p_value, method = "BH")
 ########### 给P值排序
 H_sorted <- arrange(results_H, p_value)
 
-### 保存下来结果
-name <- paste0("asd_male_dev_GC_corr_Part1_34_H_", newDate, ".csv")
-write.csv(H_sorted, file.path(statiDir, name), row.names = F)
+# ### 保存下来结果
+# name <- paste0("asd_male_dev_GC_corr_Part4_34_H_", newDate, ".csv")
+# write.csv(H_sorted, file.path(statiDir, name), row.names = F)
 
 
 
@@ -392,9 +393,10 @@ importance <- rank
 
 ################### L组
 
+
 # 确保 SITE_ID 和 FIQ 是因子和数值类型
 L$SITE_ID <- as.factor(L$SITE_ID)
-L$FIQ <- as.numeric(L$FIQ)
+L$AGE_AT_SCAN <- as.numeric(L$AGE_AT_SCAN)
 
 # 对 L 数据框中的 names_brain 列进行加权
 weighted_names_brain <- L %>%
@@ -420,14 +422,14 @@ for (name_cog in names_cog) {
     # 确保 y 中非 NA 值不少于 30 个
     if (sum(!is.na(y)) >= 30) {
       # 创建临时数据框，包含做相关分析需要的列，并过滤掉 FIQ 为 NA 的行
-      temp_L <- L[!is.na(y) & !is.na(L$FIQ), c("weighted_var", "SITE_ID", "FIQ", name_cog)]
-      temp_L$y <- y[!is.na(y) & !is.na(L$FIQ)]
+      temp_L <- L[!is.na(y) & !is.na(L$AGE_AT_SCAN), c("weighted_var", "SITE_ID", "AGE_AT_SCAN", name_cog)]
+      temp_L$y <- y[!is.na(y) & !is.na(L$AGE_AT_SCAN)]
       
       if (nrow(temp_L) >= 30) {
         if (length(unique(temp_L$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
-          # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 FIQ
-          y_lm <- lm(y ~ SITE_ID + FIQ, data = temp_L)
-          x_lm <- lm(weighted_var ~ SITE_ID + FIQ, data = temp_L)
+          # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 AGE_AT_SCAN
+          y_lm <- lm(y ~ SITE_ID + AGE_AT_SCAN, data = temp_L)
+          x_lm <- lm(weighted_var ~ SITE_ID + AGE_AT_SCAN, data = temp_L)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -437,8 +439,8 @@ for (name_cog in names_cog) {
           cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
         } else {
           # 如果 SITE_ID 只有一个水平，不控制 SITE_ID，但仍然控制 FIQ
-          y_lm <- lm(y ~ FIQ, data = temp_L)
-          x_lm <- lm(weighted_var ~ FIQ, data = temp_L)
+          y_lm <- lm(y ~ AGE_AT_SCAN, data = temp_L)
+          x_lm <- lm(weighted_var ~ AGE_AT_SCAN, data = temp_L)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -459,12 +461,13 @@ for (name_cog in names_cog) {
   }
 }
 
+results_L$p_value <- p.adjust(results_L$p_value, method = "BH")
 ########### 给P值排序
 L_sorted <- arrange(results_L, p_value)
 
-### 保存下来结果
-name <- paste0("asd_male_dev_GC_corr_Part1_top_L_", newDate, ".csv")
-write.csv(L_sorted, file.path(statiDir, name), row.names = F)
+# ### 保存下来结果
+# name <- paste0("asd_male_dev_GC_corr_Part4_top_L_", newDate, ".csv")
+# write.csv(L_sorted, file.path(statiDir, name), row.names = F)
 
 
 
@@ -473,7 +476,7 @@ write.csv(L_sorted, file.path(statiDir, name), row.names = F)
 
 # 确保 SITE_ID 和 FIQ 是因子和数值类型
 H$SITE_ID <- as.factor(H$SITE_ID)
-H$FIQ <- as.numeric(H$FIQ)
+H$AGE_AT_SCAN <- as.numeric(H$AGE_AT_SCAN)
 
 # 对 H 数据框中的 names_brain 列进行加权
 weighted_names_brain <- H %>%
@@ -499,14 +502,14 @@ for (name_cog in names_cog) {
     # 确保 y 中非 NA 值不少于 30 个
     if (sum(!is.na(y)) >= 30) {
       # 创建临时数据框，包含做相关分析需要的列，并过滤掉 FIQ 为 NA 的行
-      temp_H <- H[!is.na(y) & !is.na(H$FIQ), c("weighted_var", "SITE_ID", "FIQ", name_cog)]
-      temp_H$y <- y[!is.na(y) & !is.na(H$FIQ)]
+      temp_H <- H[!is.na(y) & !is.na(H$AGE_AT_SCAN), c("weighted_var", "SITE_ID", "AGE_AT_SCAN", name_cog)]
+      temp_H$y <- y[!is.na(y) & !is.na(H$AGE_AT_SCAN)]
       
       if (nrow(temp_H) >= 30) {
         if (length(unique(temp_H$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
           # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 FIQ
-          y_lm <- lm(y ~ SITE_ID + FIQ, data = temp_H)
-          x_lm <- lm(weighted_var ~ SITE_ID + FIQ, data = temp_H)
+          y_lm <- lm(y ~ SITE_ID + AGE_AT_SCAN, data = temp_H)
+          x_lm <- lm(weighted_var ~ SITE_ID + AGE_AT_SCAN, data = temp_H)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -516,8 +519,8 @@ for (name_cog in names_cog) {
           cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
         } else {
           # 如果 SITE_ID 只有一个水平，不控制 SITE_ID，但仍然控制 FIQ
-          y_lm <- lm(y ~ FIQ, data = temp_H)
-          x_lm <- lm(weighted_var ~ FIQ, data = temp_H)
+          y_lm <- lm(y ~ AGE_AT_SCAN, data = temp_H)
+          x_lm <- lm(weighted_var ~ AGE_AT_SCAN, data = temp_H)
           
           # 提取残差
           y_residuals <- residuals(y_lm)
@@ -537,13 +540,13 @@ for (name_cog in names_cog) {
     }
   }
 }
-
+results_H$p_value <- p.adjust(results_H$p_value, method = "BH")
 ########### 给P值排序
 H_sorted <- arrange(results_H, p_value)
 
-### 保存下来结果
-name <- paste0("asd_male_dev_GC_corr_Part1_top_H_", newDate, ".csv")
-write.csv(H_sorted, file.path(statiDir, name), row.names = F)
+# ### 保存下来结果
+# name <- paste0("asd_male_dev_GC_corr_Part4_top_H_", newDate, ".csv")
+# write.csv(H_sorted, file.path(statiDir, name), row.names = F)
 
 
 
@@ -555,187 +558,3 @@ L_sorted <- L_sorted %>%
 # 【没有，因此后续省略】
 
 
-################################## Part 3: 34个脑区中前6个脑区合成的新指标作为自变量 ##########
-
-# 根据脑指标对于人群聚类的贡献进行加权
-rank <- read.xlsx(file.path(clustDir, paste0("asd_male_GMM_Cluster_RMrank_", newDate, ".xlsx")))
-
-rank <- rank[1:6,] # 选择有积极贡献的10个脑区
-
-# 给rank中的脑指标按照贡献大小赋值
-rank$Feature <- paste0(rank$Feature, "_centile")
-rank$Rank <- 0 # 创建一个新的列来保存排名
-# 将正数和负数分开排名
-positive_ranks <- rank(rank$贡献度[rank$贡献度 > 0], ties.method = "first")
-negative_ranks <- rank(-rank$贡献度[rank$贡献度 < 0], ties.method = "first")
-# 将排名结果赋值回数据框中
-rank$Rank[rank$贡献度 > 0] <- positive_ranks
-rank$Rank[rank$贡献度 < 0] <- -negative_ranks
-rank$贡献度 <- rank$Rank
-
-importance <- rank
-
-
-################### L组
-
-# 确保 SITE_ID 和 FIQ 是因子和数值类型
-L$SITE_ID <- as.factor(L$SITE_ID)
-L$FIQ <- as.numeric(L$FIQ)
-
-# 对 L 数据框中的 names_brain 列进行加权
-weighted_names_brain <- L %>%
-  select(all_of(importance$Feature)) %>%
-  mutate(across(everything(), ~ . * importance$贡献度[match(cur_column(), importance$Feature)]))
-
-# 将加权后的列合并成一个新的自变量
-weighted_var <- rowSums(weighted_names_brain, na.rm = TRUE)
-if(length(weighted_var) != nrow(L)) {
-  stop("Length of weighted_var does not match number of rows in L")
-}
-
-# 将加权合成的新变量添加到 L 数据框中
-L$weighted_var <- weighted_var
-
-# 初始化空数据框来存储相关计算的结果
-results_L <- data.frame()
-
-# 循环 names_cog 列，计算 Spearman 相关性
-for (name_cog in names_cog) {
-  if (name_cog %in% names(L)) {
-    y <- L[[name_cog]] # 提取因变量
-    # 确保 y 中非 NA 值不少于 30 个
-    if (sum(!is.na(y)) >= 30) {
-      # 创建临时数据框，包含做相关分析需要的列，并过滤掉 FIQ 为 NA 的行
-      temp_L <- L[!is.na(y) & !is.na(L$FIQ), c("weighted_var", "SITE_ID", "FIQ", name_cog)]
-      temp_L$y <- y[!is.na(y) & !is.na(L$FIQ)]
-      
-      if (nrow(temp_L) >= 30) {
-        if (length(unique(temp_L$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
-          # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 FIQ
-          y_lm <- lm(y ~ SITE_ID + FIQ, data = temp_L)
-          x_lm <- lm(weighted_var ~ SITE_ID + FIQ, data = temp_L)
-          
-          # 提取残差
-          y_residuals <- residuals(y_lm)
-          x_residuals <- residuals(x_lm)
-          
-          # 使用 Spearman 相关性计算残差之间的相关性
-          cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
-        } else {
-          # 如果 SITE_ID 只有一个水平，不控制 SITE_ID，但仍然控制 FIQ
-          y_lm <- lm(y ~ FIQ, data = temp_L)
-          x_lm <- lm(weighted_var ~ FIQ, data = temp_L)
-          
-          # 提取残差
-          y_residuals <- residuals(y_lm)
-          x_residuals <- residuals(x_lm)
-          
-          # 使用 Spearman 相关性计算残差之间的相关性
-          cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
-        }
-        
-        # 保存 Spearman 相关系数和显著性到新的数据框中
-        results_L <- rbind(results_L, data.frame(
-          name_cog = name_cog,
-          coef = cor_test$estimate,
-          p_value = cor_test$p.value
-        ))
-      }
-    }
-  }
-}
-
-########### 给P值排序
-L_sorted <- arrange(results_L, p_value)
-
-### 保存下来结果
-name <- paste0("asd_male_dev_GC_corr_Part1_top6_L_", newDate, ".csv")
-write.csv(L_sorted, file.path(statiDir, name), row.names = F)
-
-
-
-################### H组
-
-
-# 确保 SITE_ID 和 FIQ 是因子和数值类型
-H$SITE_ID <- as.factor(H$SITE_ID)
-H$FIQ <- as.numeric(H$FIQ)
-
-# 对 H 数据框中的 names_brain 列进行加权
-weighted_names_brain <- H %>%
-  select(all_of(importance$Feature)) %>%
-  mutate(across(everything(), ~ . * importance$贡献度[match(cur_column(), importance$Feature)]))
-
-# 将加权后的列合并成一个新的自变量
-weighted_var <- rowSums(weighted_names_brain, na.rm = TRUE)
-if(length(weighted_var) != nrow(H)) {
-  stop("Length of weighted_var does not match number of rows in H")
-}
-
-# 将加权合成的新变量添加到 H 数据框中
-H$weighted_var <- weighted_var
-
-# 初始化空数据框来存储相关计算的结果
-results_H <- data.frame()
-
-# 循环 names_cog 列，计算 Spearman 相关性
-for (name_cog in names_cog) {
-  if (name_cog %in% names(H)) {
-    y <- H[[name_cog]] # 提取因变量
-    # 确保 y 中非 NA 值不少于 30 个
-    if (sum(!is.na(y)) >= 30) {
-      # 创建临时数据框，包含做相关分析需要的列，并过滤掉 FIQ 为 NA 的行
-      temp_H <- H[!is.na(y) & !is.na(H$FIQ), c("weighted_var", "SITE_ID", "FIQ", name_cog)]
-      temp_H$y <- y[!is.na(y) & !is.na(H$FIQ)]
-      
-      if (nrow(temp_H) >= 30) {
-        if (length(unique(temp_H$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
-          # 对 y 和 weighted_var 进行回归，控制 SITE_ID 和 FIQ
-          y_lm <- lm(y ~ SITE_ID + FIQ, data = temp_H)
-          x_lm <- lm(weighted_var ~ SITE_ID + FIQ, data = temp_H)
-          
-          # 提取残差
-          y_residuals <- residuals(y_lm)
-          x_residuals <- residuals(x_lm)
-          
-          # 使用 Spearman 相关性计算残差之间的相关性
-          cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
-        } else {
-          # 如果 SITE_ID 只有一个水平，不控制 SITE_ID，但仍然控制 FIQ
-          y_lm <- lm(y ~ FIQ, data = temp_H)
-          x_lm <- lm(weighted_var ~ FIQ, data = temp_H)
-          
-          # 提取残差
-          y_residuals <- residuals(y_lm)
-          x_residuals <- residuals(x_lm)
-          
-          # 使用 Spearman 相关性计算残差之间的相关性
-          cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
-        }
-        
-        # 保存 Spearman 相关系数和显著性到新的数据框中
-        results_H <- rbind(results_H, data.frame(
-          name_cog = name_cog,
-          coef = cor_test$estimate,
-          p_value = cor_test$p.value
-        ))
-      }
-    }
-  }
-}
-
-########### 给P值排序
-H_sorted <- arrange(results_H, p_value)
-
-### 保存下来结果
-name <- paste0("asd_male_dev_GC_corr_Part1_top6_H_", newDate, ".csv")
-write.csv(H_sorted, file.path(statiDir, name), row.names = F)
-
-
-
-################### 筛选显著p < 0.05
-H_sorted <- H_sorted %>%
-  filter(p_value < 0.05)
-L_sorted <- L_sorted %>%
-  filter(p_value < 0.05)
-# 【没有，因此后续省略】

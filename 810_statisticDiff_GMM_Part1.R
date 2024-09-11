@@ -20,7 +20,7 @@
 
 
 rm(list=ls())
-packages <- c("ggplot2", "ggridges", "tidyr", "bestNormalize", "dplyr", "reshape2")
+packages <- c("ggplot2", "ggridges", "tidyr", "bestNormalize", "dplyr", "reshape2", "Cairo")
 # sapply(packages,install.packages,character.only=TRUE)
 sapply(packages, require, character.only = TRUE)
 
@@ -119,19 +119,21 @@ sorted_Site <- data_long %>%
 data_long$Site <- factor(data_long$Site, levels = unique(sorted_Site))
 data_long$variable <- factor(data_long$variable, levels = c("H", "L"))
 
-# plot
+# save plot
+name <- paste0("asd_male_dev_GC_differ_site_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 6, height = 4, units = "in", dpi = 500)
 ggplot(data_long, aes(x = Site, y = value, fill = variable)) +
   geom_bar(stat = "identity", position = "fill") +
   theme_minimal() +
   xlab("") +
   ylab("") +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
   scale_fill_manual(values = c("#f0cfa0", "#a6c8b2")) +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold", angle = 45, hjust = 1))
-# save plot
-name <- paste0("asd_male_dev_GC_differ_site_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 6, height = 4, units = "in", dpi = 500)
+dev.off()
 
 objects_to_keep <- c("plotDir", "newDate", "statiDir", "All", "evalu", "Pvalue")
 rm(list = (setdiff(ls(), objects_to_keep)))
@@ -256,19 +258,21 @@ sorted_Scan <- data_long %>%
 data_long$Scan <- factor(data_long$Scan, levels = unique(sorted_Scan))
 data_long$variable <- factor(data_long$variable, levels = c("H", "L"))
 
-# plot
+
+name <- paste0("asd_male_dev_GC_differ_scanner_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 ggplot(data_long, aes(x = Scan, y = value, fill = variable)) +
   geom_bar(stat = "identity", position = "fill") +
   theme_minimal() +
   xlab("") +
   ylab("") +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
   scale_fill_manual(values = c("#f0cfa0", "#a6c8b2")) +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
-        axis.text.x = element_text(size = 10, face = "bold", angle = 45, hjust = 1))
-# save plot
-name <- paste0("asd_male_dev_GC_differ_scanner_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
+        axis.text.x = element_text(size = 10, face = "bold"))
+dev.off()
 
 ################## 再看厂家有没有差异
 
@@ -302,20 +306,20 @@ sorted_Manu <- data_long %>%
 data_long$Manu <- factor(data_long$Manu, levels = unique(sorted_Manu))
 data_long$variable <- factor(data_long$variable, levels = c("H", "L"))
 
-# plot
+name <- paste0("asd_male_dev_GC_differ_manu_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 ggplot(data_long, aes(x = Manu, y = value, fill = variable)) +
   geom_bar(stat = "identity", position = "fill") +
   theme_minimal() +
   xlab("") +
   ylab("") +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
   scale_fill_manual(values = c("#f0cfa0", "#a6c8b2")) +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold"))
-
-# save plot
-name <- paste0("asd_male_dev_GC_differ_manu_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
+dev.off()
 
 objects_to_keep <- c("plotDir", "newDate", "statiDir", "All", "evalu", "Pvalue")
 rm(list = (setdiff(ls(), objects_to_keep)))
@@ -365,19 +369,21 @@ sorted_type <- data_long %>%
 data_long$type <- factor(data_long$type, levels = unique(sorted_type))
 data_long$variable <- factor(data_long$variable, levels = c("H", "L"))
 
-# plot
+# save plot
+name <- paste0("asd_male_dev_GC_differ_type_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 ggplot(data_long, aes(x = type, y = value, fill = variable)) +
   geom_bar(stat = "identity", position = "fill") +
   theme_minimal() +
   xlab("") +
   ylab("") +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
   scale_fill_manual(values = c("#f0cfa0", "#a6c8b2")) +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(size = 10, face = "bold"))
-# save plot
-name <- paste0("asd_male_dev_GC_differ_type_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
+dev.off()
 
 objects_to_keep <- c("plotDir", "newDate", "statiDir", "All", "evalu", "Pvalue")
 rm(list = (setdiff(ls(), objects_to_keep)))
@@ -388,20 +394,22 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 var <- All[, c("clusterID", "AGE_AT_SCAN")]
 colnames(var)[2] <- "variable"
 
+# save plot
+name <- paste0("asd_male_dev_GC_differ_age_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 5, height = 5, units = "in", dpi = 500)
 ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill = clusterID)) +
   geom_density_ridges(scale = 1.2, quantile_lines = TRUE, size = 1, quantiles = 4) +
   scale_x_continuous(breaks = seq(6, 18, by = 3), labels = c("6 yrs", "9", "12", "15", "18")) +
   scale_fill_manual(values = c("L" = "#a6c8b2", "H" = "#f0cfa0")) +
-  coord_fixed(ratio = 6) + 
+  # coord_fixed(ratio = 6) + 
   xlab("") +
   ylab("") +
   theme_ridges() + 
-  theme(legend.position = "none", # without legend
-        axis.text.y = element_text(size = 20, face = "bold"),
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
+        axis.text.y = element_blank(),
         axis.text.x = element_text(size = 16, face = "bold", vjust = 10))
-# save plot
-name <- paste0("asd_male_dev_GC_differ_age_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 6, height = 4, units = "in", dpi = 500)
+dev.off()
 
 # 统计检验
 L <- subset(var, clusterID == "L")
@@ -440,6 +448,9 @@ var_long <- gather(var, key = "measure", value = "variable", FIQ:PIQ, na.rm = TR
 var_long$measure <- paste0(var_long$clusterID, " ", var_long$measure)
 var_long <- var_long[, -1]
 
+# save plot
+name <- paste0("asd_male_dev_GC_differ_iq_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 6, height = 6, units = "in", dpi = 500)
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = c("L FIQ", "H FIQ", "L VIQ",
                                                                   "H VIQ", "L PIQ", "H PIQ")),
                      fill = measure)) +
@@ -447,17 +458,20 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = c("L FIQ", "H FI
   scale_fill_manual(values = c("L FIQ" = "#a6c8b2", "H FIQ" = "#f0cfa0",
                                "L VIQ" = "#a6c8b2", "H VIQ" = "#f0cfa0",
                                "L PIQ" = "#a6c8b2", "H PIQ" = "#f0cfa0")) +
-  xlim(50, 160) +
+  scale_x_continuous(breaks = seq(50, 150, by = 25)) +
+  xlim(50, 150) +
   xlab("") +
   ylab("") +
+  scale_y_discrete(labels = c("L FIQ" = "FIQ", "H FIQ" = "", 
+                              "L VIQ" = "VIQ", "H VIQ" = "", 
+                              "L PIQ" = "PIQ", "H PIQ" = "")) +  # 自定义y轴标签
   theme_ridges() +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 16, face = "bold"),
         axis.text.x = element_text(size = 16, face = "bold", vjust = 5))
+dev.off()
 
-# save plot
-name <- paste0("asd_male_dev_GC_differ_iq_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 6, height = 6, units = "in", dpi = 500)
 
 # 统计检验
 L <- subset(var, clusterID == "L")
@@ -507,80 +521,82 @@ objects_to_keep <- c("plotDir", "newDate", "statiDir", "All", "evalu", "Pvalue")
 rm(list = (setdiff(ls(), objects_to_keep)))
 
 
+
 ################################# Part 3: ADOS_G ###################################################
-var <- All[, c("clusterID", "ADOS_G_TOTAL", "ADOS_G_COMM", "ADOS_G_SOCIAL", "ADOS_G_STEREO_BEHAV")]
-colnames(var)[2:5] <- c("ADOS_G_Total", "ADOS_G_Commu", "ADOS_G_Socia", "ADOS_G_Stere")
-var[, 2:ncol(var)][var[, 2:ncol(var)] < 0] <- NA
-
-var_long <- gather(var, key = "measure", value = "variable", names(var[2]):names(var[ncol(var)]),
-                   na.rm = TRUE, factor_key = TRUE)
-var_long$measure <- paste0(var_long$clusterID, " ", var_long$measure)
-var_long <- var_long[, -1]
-
-group <- c("L", "H")
-varia <- names(var)[2:ncol(var)]
-
-rnames <- NULL
-for (v in varia) {
-  for (g in group) {
-    rname <- paste0(g, " ", v)
-    rnames <- c(rnames, rname)
-  }
-}
-
-ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
-  geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L ADOS_G_Total" = "#a6c8b2", "H ADOS_G_Total" = "#f0cfa0",
-                               "L ADOS_G_Commu" = "#a6c8b2", "H ADOS_G_Commu" = "#f0cfa0",
-                               "L ADOS_G_Socia" = "#a6c8b2", "H ADOS_G_Socia" = "#f0cfa0",
-                               "L ADOS_G_Stere" = "#a6c8b2", "H ADOS_G_Stere" = "#f0cfa0")) +
-  coord_cartesian(xlim = c(NA, max(var_long$variable))) +
-  xlab("") +
-  ylab("") +
-  theme_ridges() +
-  theme(legend.position = "none", # without legend
-        axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
-        axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
-
-name <- paste0("asd_male_dev_GC_differ_ADOS_G_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
-
-
-# 统计检验
-L <- subset(var, clusterID == "L")
-H <- subset(var, clusterID == "H")
-
-##### mean and sd
-sta_ana <- data.frame(matrix(ncol = length(evalu), nrow = length(group)*length(varia)))
-colnames(sta_ana) <- evalu
-rownames(sta_ana) <- rev(rnames)
-sta_ana$Count <- NA
-sum <- summary(as.factor(var_long$measure))
-for (v in varia) {
-  for (g in group) {
-    rname <- paste0(g, " ", v)
-    eval(parse(text = paste0("sta_ana[rname, 'Median'] <- round(median(", g, "$", v,
-                             ", na.rm = T), 2)")))
-    eval(parse(text = paste0("sta_ana[rname, 'Mean'] <- round(mean(", g, "$", v,
-                             ", na.rm = T), 2)")))
-    eval(parse(text = paste0("sta_ana[rname, 'SD'] <- round(sd(", g, "$", v, ", na.rm = T), 2)")))
-    eval(parse(text = paste0("sta_ana[rname, 'Count'] <- sum[rname]")))
-  }
-}
-sta_ana$Median <- round(sta_ana$Median)
-
-name <- paste0("asd_male_dev_GC_statis_ADOS_G_", newDate, ".csv")
-write.csv(sta_ana, file.path(statiDir, name))
-
-for (v in varia) {
-  eval(parse(text = paste0("Pvalue['t-test', '", v, "'] <- t.test(L$", v, ", H$", v,
-                           ")[['p.value']]")))
-  eval(parse(text = paste0("Pvalue['w-test', '", v, "'] <- wilcox.test(L$", v, ", H$", v,
-                           ")[['p.value']]")))
-}
-
-objects_to_keep <- c("plotDir", "newDate", "statiDir", "All", "evalu", "Pvalue")
-rm(list = (setdiff(ls(), objects_to_keep)))
+# var <- All[, c("clusterID", "ADOS_G_TOTAL", "ADOS_G_COMM", "ADOS_G_SOCIAL", "ADOS_G_STEREO_BEHAV")]
+# colnames(var)[2:5] <- c("ADOS_G_Total", "ADOS_G_Commu", "ADOS_G_Socia", "ADOS_G_Stere")
+# var[, 2:ncol(var)][var[, 2:ncol(var)] < 0] <- NA
+# 
+# var_long <- gather(var, key = "measure", value = "variable", names(var[2]):names(var[ncol(var)]),
+#                    na.rm = TRUE, factor_key = TRUE)
+# var_long$measure <- paste0(var_long$clusterID, " ", var_long$measure)
+# var_long <- var_long[, -1]
+# 
+# group <- c("L", "H")
+# varia <- names(var)[2:ncol(var)]
+# 
+# rnames <- NULL
+# for (v in varia) {
+#   for (g in group) {
+#     rname <- paste0(g, " ", v)
+#     rnames <- c(rnames, rname)
+#   }
+# }
+# 
+# name <- paste0("asd_male_dev_GC_differ_ADOS_G_", newDate, ".png")
+# CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
+# ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
+#   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
+#   scale_fill_manual(values = c("L ADOS_G_Total" = "#a6c8b2", "H ADOS_G_Total" = "#f0cfa0",
+#                                "L ADOS_G_Commu" = "#a6c8b2", "H ADOS_G_Commu" = "#f0cfa0",
+#                                "L ADOS_G_Socia" = "#a6c8b2", "H ADOS_G_Socia" = "#f0cfa0",
+#                                "L ADOS_G_Stere" = "#a6c8b2", "H ADOS_G_Stere" = "#f0cfa0")) +
+#   coord_cartesian(xlim = c(NA, max(var_long$variable))) +
+#   xlab("") +
+#   ylab("") +
+#   theme_ridges() +
+#   theme(text = element_text(family = "STSong"),
+#         legend.position = "none", # without legend
+#         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
+#         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
+# 
+# 
+# 
+# # 统计检验
+# L <- subset(var, clusterID == "L")
+# H <- subset(var, clusterID == "H")
+# 
+# ##### mean and sd
+# sta_ana <- data.frame(matrix(ncol = length(evalu), nrow = length(group)*length(varia)))
+# colnames(sta_ana) <- evalu
+# rownames(sta_ana) <- rev(rnames)
+# sta_ana$Count <- NA
+# sum <- summary(as.factor(var_long$measure))
+# for (v in varia) {
+#   for (g in group) {
+#     rname <- paste0(g, " ", v)
+#     eval(parse(text = paste0("sta_ana[rname, 'Median'] <- round(median(", g, "$", v,
+#                              ", na.rm = T), 2)")))
+#     eval(parse(text = paste0("sta_ana[rname, 'Mean'] <- round(mean(", g, "$", v,
+#                              ", na.rm = T), 2)")))
+#     eval(parse(text = paste0("sta_ana[rname, 'SD'] <- round(sd(", g, "$", v, ", na.rm = T), 2)")))
+#     eval(parse(text = paste0("sta_ana[rname, 'Count'] <- sum[rname]")))
+#   }
+# }
+# sta_ana$Median <- round(sta_ana$Median)
+# 
+# name <- paste0("asd_male_dev_GC_statis_ADOS_G_", newDate, ".csv")
+# write.csv(sta_ana, file.path(statiDir, name))
+# 
+# for (v in varia) {
+#   eval(parse(text = paste0("Pvalue['t-test', '", v, "'] <- t.test(L$", v, ", H$", v,
+#                            ")[['p.value']]")))
+#   eval(parse(text = paste0("Pvalue['w-test', '", v, "'] <- wilcox.test(L$", v, ", H$", v,
+#                            ")[['p.value']]")))
+# }
+# 
+# objects_to_keep <- c("plotDir", "newDate", "statiDir", "All", "evalu", "Pvalue")
+# rm(list = (setdiff(ls(), objects_to_keep)))
 
 
 ################################# Part 4: ADOS_2 ###################################################
@@ -605,6 +621,8 @@ for (v in varia) {
   }
 }
 
+name <- paste0("asd_male_dev_GC_differ_ADOS_2_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
   scale_fill_manual(values = c("L ADOS_2_Sever" = "#a6c8b2", "H ADOS_2_Sever" = "#f0cfa0",
@@ -612,15 +630,18 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
                                "L ADOS_2_Socia" = "#a6c8b2", "H ADOS_2_Socia" = "#f0cfa0",
                                "L ADOS_2_Restr" = "#a6c8b2", "H ADOS_2_Restr" = "#f0cfa0")) +
   coord_cartesian(xlim = c(NA, 25)) +
+  scale_y_discrete(labels = c("L ADOS_2_Sever" = "严重程度", "H ADOS_2_Sever" = "",
+                              "L ADOS_2_Total" = "总分", "H ADOS_2_Total" = "",
+                              "L ADOS_2_Socia" = "社交互动", "H ADOS_2_Socia" = "",
+                              "L ADOS_2_Restr" = "刻板行为", "H ADOS_2_Restr" = "")) +
   xlab("") +
   ylab("") +
   theme_ridges() +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
-
-name <- paste0("asd_male_dev_GC_differ_ADOS_2_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
+dev.off()
 
 
 # 统计检验
@@ -681,7 +702,8 @@ for (v in varia) {
     rnames <- c(rnames, rname)
   }
 }
-
+name <- paste0("asd_male_dev_GC_differ_SRS_scale_raw_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
   scale_fill_manual(values = c("L SRS_Aware_r" = "#a6c8b2", "H SRS_Aware_r" = "#f0cfa0",
@@ -689,15 +711,22 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
                                "L SRS_Commu_r" = "#a6c8b2", "H SRS_Commu_r" = "#f0cfa0",
                                "L SRS_Motiv_r" = "#a6c8b2", "H SRS_Motiv_r" = "#f0cfa0",
                                "L SRS_Manne_r" = "#a6c8b2", "H SRS_Manne_r" = "#f0cfa0")) +
+  scale_y_discrete(labels = c("L SRS_Aware_r" = "社交意识", "H SRS_Aware_r" = "",
+                              "L SRS_Cogni_r" = "社交认知", "H SRS_Cogni_r" = "",
+                              "L SRS_Commu_r" = "社交表达", "H SRS_Commu_r" = "",
+                              "L SRS_Motiv_r" = "社交动机", "H SRS_Motiv_r" = "",
+                              "L SRS_Manne_r" = "社交举止", "H SRS_Manne_r" = "")) +
+  scale_x_continuous(breaks = seq(0, 60, by = 15)) +
+  # xlim(50, 150) +
   xlab("") +
   ylab("") +
   theme_ridges() +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
+dev.off()
 
-name <- paste0("asd_male_dev_GC_differ_SRS_scale_raw_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 
 
 # 统计检验
@@ -756,6 +785,8 @@ for (v in varia) {
   }
 }
 
+name <- paste0("asd_male_dev_GC_differ_SRS_scale_trans_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
   scale_fill_manual(values = c("L SRS_Aware_t" = "#a6c8b2", "H SRS_Aware_t" = "#f0cfa0",
@@ -763,15 +794,21 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = 
                                "L SRS_Commu_t" = "#a6c8b2", "H SRS_Commu_t" = "#f0cfa0",
                                "L SRS_Motiv_t" = "#a6c8b2", "H SRS_Motiv_t" = "#f0cfa0",
                                "L SRS_Manne_t" = "#a6c8b2", "H SRS_Manne_t" = "#f0cfa0")) +
+  scale_y_discrete(labels = c("L SRS_Aware_t" = "社交意识", "H SRS_Aware_t" = "",
+                              "L SRS_Cogni_t" = "社交认知", "H SRS_Cogni_t" = "",
+                              "L SRS_Commu_t" = "社交表达", "H SRS_Commu_t" = "",
+                              "L SRS_Motiv_t" = "社交动机", "H SRS_Motiv_t" = "",
+                              "L SRS_Manne_t" = "社交举止", "H SRS_Manne_t" = "")) +
+  scale_x_continuous(breaks = seq(40, 110, by = 20)) +
+  xlim(40,110) +
   xlab("") +
   ylab("") +
   theme_ridges() +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
-
-name <- paste0("asd_male_dev_GC_differ_SRS_scale_trans_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
+dev.off()
 
 
 # 统计检验
@@ -904,21 +941,28 @@ for (v in varia) {
   }
 }
 
+name <- paste0("asd_male_dev_GC_differ_ADIR_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
   scale_fill_manual(values = c("L ADI_R_Socia" = "#a6c8b2", "H ADI_R_Socia" = "#f0cfa0",
                                "L ADI_R_Verba" = "#a6c8b2", "H ADI_R_Verba" = "#f0cfa0",
                                "L ADI_R_Nonve" = "#a6c8b2", "H ADI_R_Nonve" = "#f0cfa0",
                                "L ADI_R_Restr" = "#a6c8b2", "H ADI_R_Restr" = "#f0cfa0")) +
+  scale_y_discrete(labels = c("L ADI_R_Socia" = "社交互动", "H ADI_R_Socia" = "",
+                              "L ADI_R_Verba" = "语言沟通", "H ADI_R_Verba" = "",
+                              "L ADI_R_Nonve" = "非语言沟通", "H ADI_R_Nonve" = "",
+                              "L ADI_R_Restr" = "刻板行为", "H ADI_R_Restr" = "")) +
+  # scale_x_continuous(breaks = seq(40, 110, by = 20)) +
+  # xlim(40,110) +
   xlab("") +
   ylab("") +
   theme_ridges() +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
-
-name <- paste0("asd_male_dev_GC_differ_ADIR_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
+dev.off()
 
 
 # 统计检验
@@ -986,22 +1030,28 @@ for (v in varia) {
   }
 }
 
+name <- paste0("asd_male_dev_GC_differ_VIN_trans_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
   scale_fill_manual(values = c("L VIN_Commu_t" = "#a6c8b2", "H VIN_Commu_t" = "#f0cfa0",
                                "L VIN_Daily_t" = "#a6c8b2", "H VIN_Daily_t" = "#f0cfa0",
                                "L VIN_Socia_t" = "#a6c8b2", "H VIN_Socia_t" = "#f0cfa0",
                                "L VIN_ABC_t" = "#a6c8b2", "H VIN_ABC_t" = "#f0cfa0")) +
-  xlim(40, 120) +
+  scale_y_discrete(labels = c("L VIN_Commu_t" = "沟通", "H VIN_Commu_t" = "",
+                              "L VIN_Daily_t" = "日常生活", "H VIN_Daily_t" = "",
+                              "L VIN_Socia_t" = "社交", "H VIN_Socia_t" = "",
+                              "L VIN_ABC_t" = "适应行为综合得分", "H VIN_ABC_t" = "")) +
+  # scale_x_continuous(breaks = seq(40, 110, by = 20)) +
+  xlim(40,120) +
   xlab("") +
   ylab("") +
   theme_ridges() +
-  theme(legend.position = "none", # without legend
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
         axis.text.y = element_text(size = 14, face = "bold", hjust = 0),
         axis.text.x = element_text(size = 14, face = "bold", vjust = 5))
-
-name <- paste0("asd_male_dev_GC_differ_VIN_trans_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
+dev.off()
 
 
 # 统计检验
@@ -1132,20 +1182,24 @@ colnames(var)[2] <- "variable"
 var$variable[var$variable < 0] <- NA
 var <- na.omit(var)
 
+# save plot
+name <- paste0("asd_male_dev_GC_differ_bmi_", newDate, ".png")
+CairoPNG(file.path(plotDir, name), width = 6, height = 4, units = "in", dpi = 500)
 ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill = clusterID)) +
   geom_density_ridges(scale = 1.2, quantile_lines = TRUE, size = 1, quantiles = 4) +
-  scale_x_continuous(breaks = c(18.5, 24.9, 29.9), limits = c(NA, 30)) +
+  scale_x_continuous(breaks = c(13, 18, 23, 28, 33), limits = c(NA, 36)) +
   scale_fill_manual(values = c("L" = "#a6c8b2", "H" = "#f0cfa0")) +
   # coord_fixed(ratio = 6) + 
   xlab("") +
   ylab("") +
   theme_ridges() + 
-  theme(legend.position = "none", # without legend
-        axis.text.y = element_text(size = 20, face = "bold"),
+  theme(text = element_text(family = "STSong"),
+        legend.position = "none", # without legend
+        axis.text.y = element_blank(),
         axis.text.x = element_text(size = 16, face = "bold", vjust = 10))
-# save plot
-name <- paste0("asd_male_dev_GC_differ_bmi_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 6, height = 4, units = "in", dpi = 500)
+dev.off()
+
+
 
 # 统计检验
 L <- subset(var, clusterID == "L")

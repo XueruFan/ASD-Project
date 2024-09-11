@@ -104,25 +104,18 @@ all_data$Measure <- factor(all_data$Measure, levels = c("TCV", "WMV", "GMV", "sG
 name_global <- paste0("asd_male_GMM_Cluster_Centile_Global_", newDate, ".png")
 CairoPNG(file.path(plotDir, name_global), width = 6, height = 5, units = "in", dpi = 500)
 
-ggplot(all_data, aes(x = Centile, y = Measure, fill = Measure, group = interaction(Group, Measure))) +
-  geom_density_ridges(scale = 1.6, quantile_lines = TRUE, size = 0.5, quantiles = 2, alpha = .95) +
+ggplot(all_data, aes(x = Centile, y = Measure, fill = Group, group = interaction(Group, Measure))) +
+  geom_density_ridges(scale = 1.6, quantile_lines = TRUE, size = 0.7, quantiles = 2, alpha = .75) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  # scale_fill_manual(values = c("皮层灰质总体积" = "#4682b4",
-  #                              "白质总体积" = "#dcdcdc",
-  #                              "皮层下灰质总体积" = "#808080",
-  #                              "脑总容积" = "#f0e68c",
-  #                              "平均皮层厚度" = "#008b8b",
-  #                              "皮层总表面积" = "#ffa07a",
-  #                              "脑脊液总体积" = "#ffb6c1")) +
-  scale_fill_manual(values = rep("white", length(levels(all_data$Measure)))) +
+  scale_fill_manual(values = c("1" = "#a6c8b2", "2" = "#f0cfa0")) +  # 此处为两组人设置不同颜色
   coord_fixed(ratio = 0.2) + 
   xlab("") +
   ylab("") +
   theme_ridges() + 
   theme(text = element_text(family = "STSong"),
         legend.position = "none", # without legend
-        axis.text.y = element_text(size = 10, face = "bold"),
-        axis.text.x = element_text(size = 10, face = "bold"))
+        axis.text.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 15, face = "bold"))
 dev.off()
 
 
@@ -190,10 +183,10 @@ CairoPNG(file.path(plotDir, name_regional), width = 4, height = 8, units = "in",
 #            "#4a488e","#674598","#522f60","#460e44",
 #            "white")
 
-ggplot(all_data, aes(x = Centile, y = Measure, fill = Measure, group = interaction(Group, Measure))) +
-  geom_density_ridges(scale = 1.7, quantile_lines = TRUE, size = 0.5, quantiles = 2, alpha = .95) +
+ggplot(all_data, aes(x = Centile, y = Measure, fill = Group, group = interaction(Group, Measure))) +
+  geom_density_ridges(scale = 1.7, quantile_lines = TRUE, size = 0.5, quantiles = 2, alpha = .75) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  scale_fill_manual(values = rep("white", length(levels(all_data$Measure)))) +  # 使用提供的颜色列表
+  scale_fill_manual(values = c("1" = "#a6c8b2", "2" = "#f0cfa0")) +
   coord_fixed(ratio = 0.15) + 
   xlab("") +
   ylab("") +

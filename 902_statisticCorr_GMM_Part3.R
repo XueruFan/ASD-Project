@@ -9,6 +9,7 @@
 # Part 2: 仅Site作为控制变量
 # 保存原始的相关系数和p值csv文件，另外，筛选p小于0.05的结果，保存csv文件
 # 按照显著性水平结果，绘制相关图png
+# 做了多重比较校正
 ##################################
 
 rm(list=ls())
@@ -78,7 +79,7 @@ names_cog <- c("ADOS_2_SEVERITY_TOTAL", "ADOS_2_TOTAL", "ADOS_2_SOCAFFECT",
                "ADI_R_NONVERBAL_TOTAL_BV", "ADI_R_RRB_TOTAL_C", "VINELAND_ABC_Standard",
                "VINELAND_COMMUNICATION_STANDARD", "VINELAND_DAILYLIVING_STANDARD",
                "VINELAND_SOCIAL_STANDARD", "BMI")
-
+# names_brain <- c("middletemporal_centile", "insula_centile")
 
 #### select: 控制变量、自变量、因变量
 names_col <- c("clusterID", "SITE_ID", "FIQ", names_brain, names_cog)
@@ -150,12 +151,12 @@ for (name_brain in names_brain) {
     }
   }
 }
-
+# results_L$p_value <- p.adjust(results_L$p_value, method = "BH")
 ########### 给P值排序
 L_sorted <- arrange(results_L, p_value)
 
 ### 保存下来结果
-name <- paste0("asd_male_dev_GC_corr_Part3_SiteFIQ_L_", newDate, ".csv")
+name <- paste0("asd_male_dev_GC_corr_Part3_SiteFIQ_L_BH_", newDate, ".csv")
 write.csv(L_sorted, file.path(statiDir, name), row.names = F)
 
 ################### H组
@@ -213,21 +214,23 @@ for (name_brain in names_brain) {
     }
   }
 }
-
+# results_H$p_value <- p.adjust(results_H$p_value, method = "BH")
 ########### 给P值排序
 H_sorted <- arrange(results_H, p_value)
 
 ### 保存下来结果
-name <- paste0("asd_male_dev_GC_corr_Part3_SiteFIQ_H_", newDate, ".csv")
+name <- paste0("asd_male_dev_GC_corr_Part3_SiteFIQ_H_BH_", newDate, ".csv")
 write.csv(H_sorted, file.path(statiDir, name), row.names = F)
 
 
 
 #################### 筛选显著且相关大于0.2的结果
 H_sorted <- H_sorted %>%
-  filter(abs(coef) >= 0.2, p_value < 0.05)
+  # filter(abs(coef) > 0.2, p_value < 0.05)
+  filter(p_value < 0.05)
 L_sorted <- L_sorted %>%
-  filter(abs(coef) >= 0.2, p_value < 0.05)
+  # filter(abs(coef) > 0.2, p_value < 0.05)
+  filter(p_value < 0.05)
 colnames(L_sorted)[3:4] <- c("Lr", "Lp")
 colnames(H_sorted)[3:4] <- c("Hr", "Hp")
 sorted <- full_join(L_sorted, H_sorted, by = c("name_cog", "name_brain"))
@@ -259,20 +262,20 @@ write.csv(sorted[, -7], file.path(statiDir, name), row.names = F)
 
 for (i in 1:nrow(sorted)) {
   to_plot_names <- c(sorted[i, "name_brain"], sorted[i, "name_cog"])
-  
+
   plotPoint_L <- L[, to_plot_names]
   plotPoint_L <- plotPoint_L[!is.na(plotPoint_L[[2]]), ]
   plotPoint_H <- H[, to_plot_names]
   plotPoint_H <- plotPoint_H[!is.na(plotPoint_H[[2]]), ]
-  
+
   if (nrow(plotPoint_L) < 30 & nrow(plotPoint_H) < 30) {
     next  # 如果数据点过少，跳过当前循环
   }
-  
+
   colnames(plotPoint_L)[1:2] <- c("x","y")
   colnames(plotPoint_H)[1:2] <- c("x","y")
-  
-  
+
+
   if (is.na(sorted[i, "Lp"])) {
     ggplot() +
       geom_point(data = plotPoint_L, aes(x = x, y = y, color = "lightgray"),
@@ -328,7 +331,7 @@ names_cog <- c("FIQ", "VIQ", "PIQ", "ADOS_2_SEVERITY_TOTAL", "ADOS_2_TOTAL", "AD
                "VINELAND_COMMUNICATION_STANDARD", "VINELAND_DAILYLIVING_STANDARD",
                "VINELAND_SOCIAL_STANDARD", "BMI")
 
-
+# names_brain <- c("middletemporal_centile", "insula_centile")
 #### select: 控制变量、自变量、因变量
 names_col <- c("clusterID", "SITE_ID", names_brain, names_cog)
 temp <- All[, names_col]
@@ -399,7 +402,8 @@ for (name_brain in names_brain) {
     }
   }
 }
-
+# results_L$p_value <- p.adjust(results_L$p_value, method = "BH")
+# results_L$p_value <- p.adjust(results_L$p_value, method = "fdr")
 ########### 给P值排序
 L_sorted <- arrange(results_L, p_value)
 
@@ -460,20 +464,24 @@ for (name_brain in names_brain) {
     }
   }
 }
+# results_H$p_value <- p.adjust(results_H$p_value, method = "BH")
+# results_H$p_value <- p.adjust(results_H$p_value, method = "fdr")
 
 ########### 给P值排序
 H_sorted <- arrange(results_H, p_value)
 
 ### 保存下来结果
-name <- paste0("asd_male_dev_GC_corr_Part3_Site_H_", newDate, ".csv")
+name <- paste0("asd_male_dev_GC_corr_Part3_Site_H_BH_", newDate, ".csv")
 write.csv(H_sorted, file.path(statiDir, name), row.names = F)
 
 
 #################### 筛选显著且相关大于0.2的结果
 H_sorted <- H_sorted %>%
-  filter(abs(coef) > 0.2, p_value < 0.05)
+  # filter(abs(coef) > 0.2, p_value < 0.05)
+  filter(p_value < 0.05)
 L_sorted <- L_sorted %>%
-  filter(abs(coef) > 0.2, p_value < 0.05)
+  # filter(abs(coef) > 0.2, p_value < 0.05)
+  filter(p_value < 0.05)
 colnames(L_sorted)[3:4] <- c("Lr", "Lp")
 colnames(H_sorted)[3:4] <- c("Hr", "Hp")
 sorted <- full_join(L_sorted, H_sorted, by = c("name_cog", "name_brain"))
@@ -505,20 +513,20 @@ write.csv(sorted[, -7], file.path(statiDir, name), row.names = F)
 
 for (i in 1:nrow(sorted)) {
   to_plot_names <- c(sorted[i, "name_brain"], sorted[i, "name_cog"])
-  
+
   plotPoint_L <- L[, to_plot_names]
   plotPoint_L <- plotPoint_L[!is.na(plotPoint_L[[2]]), ]
   plotPoint_H <- H[, to_plot_names]
   plotPoint_H <- plotPoint_H[!is.na(plotPoint_H[[2]]), ]
-  
+
   if (nrow(plotPoint_L) < 30 & nrow(plotPoint_H) < 30) {
     next  # 如果数据点过少，跳过当前循环
   }
-  
+
   colnames(plotPoint_L)[1:2] <- c("x","y")
   colnames(plotPoint_H)[1:2] <- c("x","y")
-  
-  
+
+
   if (is.na(sorted[i, "Lp"])) {
     ggplot() +
       geom_point(data = plotPoint_L, aes(x = x, y = y, color = "lightgray"),

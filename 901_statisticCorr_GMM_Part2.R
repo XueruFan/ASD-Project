@@ -5,9 +5,14 @@
 # Part 1: 34个局部脑指标（centile）加权合成的新指标作为自变量
 # 保存原始的相关系数和p值csv文件，另外，筛选p小于0.05，保存csv文件
 
-# Part 2: 34个脑区中贡献top5的指标合成的新指标作为自变量
+# Part 2: 34个脑区中贡献top10的指标合成的新指标作为自变量
 # 保存原始的相关系数和p值csv文件，另外，筛选p小于0.05，保存csv文件
 # 按照显著性水平结果，绘制相关图png
+
+# Part 3: 34个脑区中贡献top6的指标合成的新指标作为自变量
+# 保存原始的相关系数和p值csv文件，另外，筛选p小于0.05，保存csv文件
+# 按照显著性水平结果，绘制相关图png
+
 ##################################
 
 rm(list=ls())
@@ -95,6 +100,7 @@ rank <- read.xlsx(file.path(clustDir, paste0("asd_male_GMM_Cluster_RMrank_", new
 # 初始化空数据框来存储相关计算的结果
 results_L <- data.frame()
 results_H <- data.frame()
+
 
 # 给rank中的脑指标按照贡献大小赋值
 rank$Feature <- paste0(rank$Feature, "_centile")
@@ -624,4 +630,276 @@ for (i in 1:nrow(sorted)) {
   name <- paste0("GC_corr_Part2_top_", to_plot_names[1], "_", to_plot_names[2], "_", newDate, ".png")
   ggsave(file.path(plotDir, name), width = 7, height = 7, units = "in", dpi = 500)
 }
+
+
+################################## Part 3: 34个脑区中前6个脑区合成的新指标作为自变量 ##########
+
+# 根据脑指标对于人群聚类的贡献进行加权
+rank <- read.xlsx(file.path(clustDir, paste0("asd_male_GMM_Cluster_RMrank_", newDate, ".xlsx")))
+
+rank <- rank[1:6,] # 选择有积极贡献的10个脑区
+
+
+# 给rank中的脑指标按照贡献大小赋值
+rank$Feature <- paste0(rank$Feature, "_centile")
+rank$Rank <- 0 # 创建一个新的列来保存排名
+# 将正数和负数分开排名
+positive_ranks <- rank(rank$贡献度[rank$贡献度 > 0], ties.method = "first")
+negative_ranks <- rank(-rank$贡献度[rank$贡献度 < 0], ties.method = "first")
+# 将排名结果赋值回数据框中
+rank$Rank[rank$贡献度 > 0] <- positive_ranks
+rank$Rank[rank$贡献度 < 0] <- -negative_ranks
+rank$贡献度 <- rank$Rank
+
+importance <- rank
+
+
+
+################### L组
+
+# 确保 SITE_ID 是因子类型
+L$SITE_ID <- as.factor(L$SITE_ID)
+
+
+# 对 L 数据框中的 names_brain 列进行加权
+weighted_names_brain <- L %>%
+  select(all_of(importance$Feature)) %>%
+  mutate(across(everything(), ~ . * importance$贡献度[match(cur_column(), importance$Feature)]))
+
+# 将加权后的列合并成一个新的自变量
+weighted_var <- rowSums(weighted_names_brain, na.rm = TRUE)
+if(length(weighted_var) != nrow(L)) {
+  stop("Length of weighted_var does not match number of rows in L")
+}
+
+# 将加权合成的新变量添加到 L 数据框中
+L$weighted_var <- weighted_var
+
+# 初始化空数据框来存储相关计算的结果
+results_L <- data.frame()
+
+# 循环 names_cog 列，计算 Spearman 相关性
+for (name_cog in names_cog) {
+  if (name_cog %in% names(L)) {
+    y <- L[[name_cog]] # 提取因变量
+    # 确保 y 中非 NA 值不少于 30 个
+    if (sum(!is.na(y)) >= 30) {
+      # 创建临时数据框，包含做相关分析需要的列
+      temp_L <- L[!is.na(y), c("weighted_var", "SITE_ID", name_cog)]
+      temp_L$y <- y[!is.na(y)]
+      
+      if (nrow(temp_L) >= 30) {
+        if (length(unique(temp_L$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
+          # 对 y 和 weighted_var 进行回归，控制 SITE_ID
+          y_lm <- lm(y ~ SITE_ID, data = temp_L)
+          x_lm <- lm(weighted_var ~ SITE_ID, data = temp_L)
+          
+          # 提取残差
+          y_residuals <- residuals(y_lm)
+          x_residuals <- residuals(x_lm)
+          
+          # 使用 Spearman 相关性计算残差之间的相关性
+          cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
+        } else {
+          # 如果 SITE_ID 只有一个水平，不控制 SITE_ID
+          y_lm <- lm(y ~ 1, data = temp_L)
+          x_lm <- lm(weighted_var ~ 1, data = temp_L)
+          
+          # 提取残差
+          y_residuals <- residuals(y_lm)
+          x_residuals <- residuals(x_lm)
+          
+          # 使用 Spearman 相关性计算残差之间的相关性
+          cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
+        }
+        
+        # 保存 Spearman 相关系数和显著性到新的数据框中
+        results_L <- rbind(results_L, data.frame(
+          name_cog = name_cog,
+          coef = cor_test$estimate,
+          p_value = cor_test$p.value
+        ))
+      }
+    }
+  }
+}
+
+########### 给P值排序
+L_sorted <- arrange(results_L, p_value)
+
+### 保存下来结果
+name <- paste0("asd_male_dev_GC_corr_Part2_top6_L_", newDate, ".csv")
+write.csv(L_sorted, file.path(statiDir, name), row.names = F)
+
+
+
+################### H组
+
+
+# 确保 SITE_ID 是因子类型
+H$SITE_ID <- as.factor(H$SITE_ID)
+
+# 对 H 数据框中的 names_brain 列进行加权
+weighted_names_brain <- H %>%
+  select(all_of(importance$Feature)) %>%
+  mutate(across(everything(), ~ . * importance$贡献度[match(cur_column(), importance$Feature)]))
+
+# 将加权后的列合并成一个新的自变量
+weighted_var <- rowSums(weighted_names_brain, na.rm = TRUE)
+if(length(weighted_var) != nrow(H)) {
+  stop("Length of weighted_var does not match number of rows in H")
+}
+
+# 将加权合成的新变量添加到 H 数据框中
+H$weighted_var <- weighted_var
+
+# 初始化空数据框来存储相关计算的结果
+results_H <- data.frame()
+
+# 循环 names_cog 列，计算 Spearman 相关性
+for (name_cog in names_cog) {
+  if (name_cog %in% names(H)) {
+    y <- H[[name_cog]] # 提取因变量
+    # 确保 y 中非 NA 值不少于 30 个
+    if (sum(!is.na(y)) >= 30) {
+      # 创建临时数据框，包含做相关分析需要的列
+      temp_H <- H[!is.na(y), c("weighted_var", "SITE_ID", name_cog)]
+      temp_H$y <- y[!is.na(y)]
+      
+      if (nrow(temp_H) >= 30) {
+        if (length(unique(temp_H$SITE_ID)) > 1) { # 确保 SITE_ID 还有多个水平
+          # 对 y 和 weighted_var 进行回归，控制 SITE_ID
+          y_lm <- lm(y ~ SITE_ID, data = temp_H)
+          x_lm <- lm(weighted_var ~ SITE_ID, data = temp_H)
+          
+          # 提取残差
+          y_residuals <- residuals(y_lm)
+          x_residuals <- residuals(x_lm)
+          
+          # 使用 Spearman 相关性计算残差之间的相关性
+          cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
+        } else {
+          # 如果 SITE_ID 只有一个水平，不控制 SITE_ID
+          y_lm <- lm(y ~ 1, data = temp_H)
+          x_lm <- lm(weighted_var ~ 1, data = temp_H)
+          
+          # 提取残差
+          y_residuals <- residuals(y_lm)
+          x_residuals <- residuals(x_lm)
+          
+          # 使用 Spearman 相关性计算残差之间的相关性
+          cor_test <- cor.test(y_residuals, x_residuals, method = "spearman")
+        }
+        
+        # 保存 Spearman 相关系数和显著性到新的数据框中
+        results_H <- rbind(results_H, data.frame(
+          name_cog = name_cog,
+          coef = cor_test$estimate,
+          p_value = cor_test$p.value
+        ))
+      }
+    }
+  }
+}
+
+########### 给P值排序
+H_sorted <- arrange(results_H, p_value)
+
+### 保存下来结果
+name <- paste0("asd_male_dev_GC_corr_Part2_top6_H_", newDate, ".csv")
+write.csv(H_sorted, file.path(statiDir, name), row.names = F)
+
+
+#################### 筛选p 小于0.05 显著
+H_sorted <- H_sorted %>%
+  filter(p_value < 0.05)
+L_sorted <- L_sorted %>%
+  filter(p_value < 0.05) # 没有
+colnames(L_sorted)[2:3] <- c("Lr", "Lp") # 没有
+colnames(H_sorted)[2:3] <- c("Hr", "Hp")
+sorted <- full_join(L_sorted, H_sorted, by = c("name_cog"))
+
+sorted <- sorted %>%
+  mutate(SortValue = ifelse(is.na(Lp), abs(Hp), abs(Lp)))
+# 根据 SortValue 列对数据框进行排序
+sorted <- sorted %>%
+  arrange(SortValue)
+
+sorted$Ln <- NA
+sorted$Hn <- NA
+
+for (i in 1:nrow(sorted)) {
+  temp <- L[, c("weighted_var", sorted[i, "name_cog"])]
+  temp <- temp[!is.na(temp[[2]]),]
+  sorted[i, "Ln"] <- nrow(temp)
+  temp <- H[, c("weighted_var", sorted[i, "name_cog"])]
+  temp <- temp[!is.na(temp[[2]]),]
+  sorted[i, "Hn"] <- nrow(temp)
+}
+
+name <- paste0("asd_male_dev_GC_corr_Part2_top6_LH_", newDate, ".csv")
+write.csv(sorted[, -6], file.path(statiDir, name), row.names = F)
+
+
+################画图 
+
+
+for (i in 1:nrow(sorted)) {
+  to_plot_names <- c("weighted_var", sorted[i, "name_cog"])
+  
+  plotPoint_L <- L[, to_plot_names]
+  plotPoint_L <- plotPoint_L[!is.na(plotPoint_L[[2]]), ]
+  plotPoint_H <- H[, to_plot_names]
+  plotPoint_H <- plotPoint_H[!is.na(plotPoint_H[[2]]), ]
+  
+  if (nrow(plotPoint_L) < 30 & nrow(plotPoint_H) < 30) {
+    next  # 如果数据点过少，跳过当前循环
+  }
+  
+  colnames(plotPoint_L)[1:2] <- c("x","y")
+  colnames(plotPoint_H)[1:2] <- c("x","y")
+  
+  
+  if (is.na(sorted[i, "Lp"])) {
+    ggplot() +
+      geom_point(data = plotPoint_L, aes(x = x, y = y, color = "lightgray"),
+                 alpha = .8, size = 2, shape = 16) +
+      geom_smooth(data = plotPoint_L, aes(x = x, y = y), method = "lm", se = TRUE, lwd = 2,
+                  color = "lightgray", fill = "lightgray") +
+      geom_point(data = plotPoint_H, aes(x = x, y = y, color = "#faa264"),
+                 alpha = .8, size = 2, shape = 16) +
+      geom_smooth(data = plotPoint_H, aes(x = x, y = y), method = "lm", se = TRUE, lwd = 2,
+                  color = "#faa264", fill = "#faa264") +
+      # scale_x_continuous(limits = c(0,1), breaks = c(0,0.25,0.5,0.75,1)) +
+      xlab(to_plot_names[1]) +
+      ylab(to_plot_names[2]) +
+      theme_cowplot() +
+      theme(legend.position = "none", # without legend
+            axis.text.y = element_text(size = 15, face = "bold"),
+            axis.text.x = element_text(size = 15, face = "bold")) +
+      scale_color_identity()
+  } else {
+    ggplot() +
+      geom_point(data = plotPoint_H, aes(x = x, y = y, color = ifelse(is.na(sorted[i, "Hp"]), "lightgray", "#faa264")),
+                 alpha = .8, size = 2, shape = 16) +
+      geom_smooth(data = plotPoint_H, aes(x = x, y = y), method = "lm", se = TRUE, lwd = 2,
+                  color = ifelse(is.na(sorted[i, "Hp"]), "lightgray", "#faa264"),
+                  fill = ifelse(is.na(sorted[i, "Hp"]), "lightgray", "#faa264")) +
+      # scale_x_continuous(limits = c(0,1), breaks = c(0,0.25,0.5,0.75,1)) +
+      geom_point(data = plotPoint_L, aes(x = x, y = y, color = "#719988"),
+                 alpha = .8, size = 2, shape = 16) +
+      geom_smooth(data = plotPoint_L, aes(x = x, y = y), method = "lm", se = TRUE, lwd = 2,
+                  color = "#719988", fill = "#719988") +
+      xlab(to_plot_names[1]) +
+      ylab(to_plot_names[2]) +
+      theme_cowplot() +
+      theme(legend.position = "none", # without legend
+            axis.text.y = element_text(size = 15, face = "bold"),
+            axis.text.x = element_text(size = 15, face = "bold")) +
+      scale_color_identity()
+  }
+  name <- paste0("GC_corr_Part2_top6_", to_plot_names[1], "_", to_plot_names[2], "_", newDate, ".png")
+  ggsave(file.path(plotDir, name), width = 7, height = 7, units = "in", dpi = 500)
+}
+
 

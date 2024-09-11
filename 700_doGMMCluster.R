@@ -1,9 +1,8 @@
-# this script is used to do ABIDE All Clustering (age 6-17.9 male only)
 # 使用高斯混合模型算法对人群进行聚类分析，并把对分类特征的重要性评估出来
+# ASD 男性 6~17.9岁
 # 注意，这里只是用34个脑区作为分类指标
 # Xue-Ru Fan 13 march 2024 @BNU
 ###################################################
-# Part 0: 对每个特征值的centile进行标准化
 # Part 1: 选择不同聚类数的轮廓系数，确定最佳聚类数目，png
 # Part 2: 根据最佳聚类数目进行谱聚类，保存结果csv，保存了cluster编号和41个脑指标的原始centile
 # Part 3: 使用特征消除法评估每个特征的贡献，保存排序的png和xlsx
@@ -11,7 +10,7 @@
 
 rm(list=ls())
 
-packages <- c("mclust", "ggplot2", "cluster")
+packages <- c("mclust", "ggplot2", "cluster", "Cairo")
 # sapply(packages,install.packages,character.only=TRUE)
 sapply(packages, require, character.only = TRUE)
 
@@ -34,10 +33,12 @@ data_raw <- subset(abide_centile, dx == "ASD" & sex == "Male")
 data_centile <- na.omit(data_raw[, -2:-6])
 data <- data_centile[, -1:-8]
 
-################################## Part 0：标准化 ##################################################
-data <- data.frame(scale(data))
-
-
+################################## 标准化 ##################################################
+# data <- data.frame(scale(data))
+# 1.消除量纲影响：不同特征的量纲不同，会导致在计算距离时量纲大的特征主导结果。
+# 2.提高算法效率：许多算法（如梯度下降法）对特征的尺度敏感，标准化可以加快收敛速度。
+# 3.提高准确性：在聚类等算法中，标准化可以使所有特征对相似度计算同等重要，从而提高结果的准确性。
+# 后续结果发现标准化和不标准化特征值对聚类结果没有影响。另外百分位数的量纲一致，因此不应该标准化。
 
 ################################## Part 1: 选择最佳聚类数目 ########################################
 # 定义一个函数，用于计算不同聚类数目下的轮廓系数
@@ -45,14 +46,19 @@ calculate_silhouette <- function(data, max_clusters = 10) {
   silhouette_scores <- numeric(max_clusters - 1)
   
   for (k in 2:max_clusters) {
-    # 执行GMM聚类
     set.seed(941205)
-    gmm_model <- Mclust(as.matrix(data), G = k)
+    gmm_model <- Mclust(as.matrix(data), G = k)    # 执行GMM聚类
     cluster_membership <- gmm_model$classification
     
     # 计算轮廓系数
     silhouette_scores[k-1] <- mean(silhouette(cluster_membership, dist(data))[, 3])
   }
+  # 使用 silhouette 函数计算聚类的轮廓系数，该函数需要两个输入：
+  #   cluster_membership: 每个数据点所属的簇
+  #   dist(data): 计算数据集中各个点之间的距离矩阵
+  # silhouette 函数返回一个矩阵，第三列 [,3] 是每个点的轮廓系数
+  # mean 函数计算所有数据点的轮廓系数的平均值，表示当前聚类的平均轮廓系数
+  # 这个值存储在 silhouette_scores[k-1] 中
   
   return(silhouette_scores)
 }
@@ -88,7 +94,7 @@ ggplot(plot_data, aes(x = Cluster_Numbers, y = Silhouette_Scores)) +
 dev.off()
 
 
-# ################################## Part 1：进行GMM聚类并简单可视化 ###############################
+# ################################## 进行GMM聚类并简单可视化 ###############################
 # set.seed(941205)
 # model <- Mclust(data)
 # summary(model)
@@ -120,12 +126,9 @@ dev.off()
 # ggsave(name, width = 8, height = 6, units = "in", dpi = 500)
 
 
-################################## Part 2: 根据最佳聚类数目进行谱聚类 ##############################
-
-# 执行谱聚类
+################################## Part 2: 根据最佳聚类数目进行聚类 ##############################
 set.seed(941205)
 gmm_model <- Mclust(as.matrix(data), G = optimal_clusters)
-# 获取聚类结果
 cluster_membership <- gmm_model$classification
 
 ################################# save result
@@ -135,7 +138,7 @@ colnames(data_cluster)[1] <- "clusterID"
 name <- paste0("asd_male_GMM_Cluster_", newDate, ".csv")
 write.csv(data_cluster, file.path(resDir, name), row.names = F)
 
-# ################################## Part 2：保存模型结果 ##########################################
+# ################################## 保存模型结果 ##########################################
 # 
 # # 提取参数
 # parameters <- model$parameters
@@ -170,6 +173,7 @@ calculate_silhouette_for_gmm_clustering <- function(data, centers) {
 
 # 计算原始数据的轮廓系数（我们已经知道最佳聚类数为 optimal_clusters）
 original_silhouette <- calculate_silhouette_for_gmm_clustering(data, optimal_clusters)
+# original_silhouette：原始数据（即没有移除任何特征时）的聚类轮廓系数。
 
 # 初始化一个向量，用于存储每个特征移除后的轮廓系数
 silhouettes_after_removal <- numeric(length = ncol(data))
@@ -238,7 +242,7 @@ ggplot(plot_data, aes(x = reorder(Feature, Importance), y = Importance)) +
   geom_bar(stat = "identity", fill = "#66cdaa") +
   coord_flip() +  # 翻转坐标轴，使特征名称更容易阅读
   theme_minimal() +  # 使用简洁的主题
-  labs(x = "DK分区", y = "人群聚类贡献度") +
+  labs(x = "", y = "聚类贡献度") +
   theme(text = element_text(family = "STSong"),
         axis.title = element_text(size = 12, face = "bold"),
         axis.text.x = element_text(angle = 45, hjust = 1))  # x轴标签倾斜，以防重叠
