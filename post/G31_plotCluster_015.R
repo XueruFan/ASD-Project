@@ -2,6 +2,7 @@
 # 绘图使用高斯混合聚类算法（这里只是用34个脑区作为分类指标）对人群进行聚类后的两类人群
 # Xue-Ru Fan 25 April 2023 @BNU
 ###################################################
+# 0~14.9岁
 # Part 1: 画出两个分型34个分区体积centile中位数投射出的脑图，png
 # Part 2: 画出两个分型7个全局指标常模分（中位数+四分位距）的概率密度图，png
 # Part 3: 画出两个分型34个分区体积常模分（中位数+四分位距）的概率密度分布图，png
@@ -16,12 +17,12 @@ sapply(packages, require, character.only = TRUE)
 
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # MAC
 abideDir <- 'E:/PhDproject/ABIDE' # Windows
-resDir <- file.path(abideDir, "Analysis/Cluster/GmmCluster")
-plotDir <- file.path(abideDir, "Plot/Cluster/GmmCluster")
+resDir <- file.path(abideDir, "Analysis/Cluster/Gmm015")
+plotDir <- file.path(abideDir, "Plot/Cluster/Gmm015")
 resDate <- "240315"
 newDate <- "240610"
 
-name <- paste0("asd_male_GMM_Cluster_", newDate, ".csv")
+name <- paste0("Cluster_", newDate, ".csv")
 cluster_result <- read.csv(file.path(resDir, name))
 
 
@@ -48,7 +49,7 @@ ggseg(.data = asd_parc_centile, mapping = aes(fill = median), color = "black", a
   scale_fill_gradient(low = "#47885e", high = "white", limits = c(min(median), max(median))) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
 
-name <- paste0("asd_male_GMM_Cluster_1_Centile_Brain_", newDate, ".png")
+name <- paste0("Cluster_1_Centile_Brain_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 
 
@@ -70,7 +71,7 @@ ggseg(.data = asd_parc_centile, mapping = aes(fill = median), color = "black", a
   scale_fill_gradient(low = "white", high = "#db8449", limits = c(min(median), max(median))) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
 
-name <- paste0("asd_male_GMM_Cluster_2_Centile_Brain_", newDate, ".png")
+name <- paste0("Cluster_2_Centile_Brain_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 
 objects_to_keep <- c("plotDir", "abideDir", "newDate", "cluster_result", "resDir", "id_group")
@@ -101,7 +102,7 @@ all_data$Measure <- factor(all_data$Measure, levels = c("TCV", "WMV", "GMV", "sG
                                       "脑脊液总体积", "平均皮层厚度",
                                       "皮层总表面积"))
 
-name_global <- paste0("asd_male_GMM_Cluster_Centile_Global_", newDate, ".png")
+name_global <- paste0("Cluster_Centile_Global_", newDate, ".png")
 CairoPNG(file.path(plotDir, name_global), width = 6, height = 5, units = "in", dpi = 500)
 
 ggplot(all_data, aes(x = Centile, y = Measure, fill = Group, group = interaction(Group, Measure))) +
@@ -167,7 +168,7 @@ en_labels <- rev(c("superiorfrontal", "rostralmiddlefrontal", "caudalmiddlefront
 
 all_data$Measure <- factor(all_data$Measure, levels = en_labels, labels = cn_labels)
 
-name_regional <- paste0("asd_male_GMM_Cluster_Centile_Regional_", newDate, ".png")
+name_regional <- paste0("Cluster_Centile_Regional_", newDate, ".png")
 CairoPNG(file.path(plotDir, name_regional), width = 4, height = 8, units = "in", dpi = 500)
 
 # color <- c("#95483f","#a22041","#b7282e",
@@ -262,7 +263,7 @@ abno_g1_sorted <- abno_g1 %>% arrange(desc(perc))
 # 为 abno_g1_sorted 数据框添加中文标签列
 
 
-name <- paste0("asd_male_GMM_Cluster_1_Ab05rank_", newDate, ".xlsx")
+name <- paste0("Cluster_1_Ab05rank_", newDate, ".xlsx")
 write.xlsx(abno_g1_sorted, file.path(resDir, name))
 
 # 画脑图
@@ -274,23 +275,23 @@ ggseg(.data = abno_g1, mapping = aes(fill = perc), color = "black", atlas = dk,
         legend.key.width = unit(1, "cm")) +
   scale_fill_viridis_c(option = "inferno") +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
-name <- paste0("asd_male_GMM_Cluster_1_Ab05brain_", newDate, ".png")
+name <- paste0("Cluster_1_Ab05brain_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 # 大于95%
-abno <- apply(group1 >= (1-thr), 2, function(x) sum(x) / length(x) * 100)
-label <- names(abno)
-abno_g1 <- data.frame(label)
-abno_g1$perc <- as.numeric(abno)
-abno_g1$label <- as.character(paste0("lh_", abno_g1$label))
-ggseg(.data = abno_g1, mapping = aes(fill = perc), color = "black", atlas = dk,
-      position = "stacked", hemisphere = "left", size = 1.2) +
-  theme_void() +
-  theme(legend.title = element_blank(), legend.position = "bottom",
-        legend.key.width = unit(1, "cm")) +
-  scale_fill_viridis_c(option = "inferno") +
-  guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
-name <- paste0("asd_male_GMM_Cluster_1_Ab95brain_", newDate, ".png")
-ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
+# abno <- apply(group1 >= (1-thr), 2, function(x) sum(x) / length(x) * 100)
+# label <- names(abno)
+# abno_g1 <- data.frame(label)
+# abno_g1$perc <- as.numeric(abno)
+# abno_g1$label <- as.character(paste0("lh_", abno_g1$label))
+# ggseg(.data = abno_g1, mapping = aes(fill = perc), color = "black", atlas = dk,
+#       position = "stacked", hemisphere = "left", size = 1.2) +
+#   theme_void() +
+#   theme(legend.title = element_blank(), legend.position = "bottom",
+#         legend.key.width = unit(1, "cm")) +
+#   scale_fill_viridis_c(option = "inferno") +
+#   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
+# name <- paste0("Cluster_1_Ab95brain_", newDate, ".png")
+# ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 
 ############  cluster 2
 # 大于95% !!!
@@ -300,7 +301,7 @@ abno_g2 <- data.frame(label)
 abno_g2$perc <- as.numeric(abno)
 abno_g2 <- merge(abno_g2, label_map_df, by = "label")
 abno_g2_sorted <- abno_g2 %>% arrange(desc(perc))
-name <- paste0("asd_male_GMM_Cluster_2_Ab95rank_", newDate, ".xlsx")
+name <- paste0("Cluster_2_Ab95rank_", newDate, ".xlsx")
 write.xlsx(abno_g2_sorted, file.path(resDir, name))
 
 # 画脑图
@@ -312,7 +313,7 @@ ggseg(.data = abno_g2, mapping = aes(fill = perc), color = "black", atlas = dk,
         legend.key.width = unit(1, "cm")) +
   scale_fill_viridis_c(option = "inferno") +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
-name <- paste0("asd_male_GMM_Cluster_2_Ab95brain_", newDate, ".png")
+name <- paste0("Cluster_2_Ab95brain_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 # 小于5%
 abno <- apply(group2 <= thr, 2, function(x) sum(x) / length(x) * 100)
@@ -327,7 +328,7 @@ ggseg(.data = abno_g2, mapping = aes(fill = perc), color = "black", atlas = dk,
         legend.key.width = unit(1, "cm")) +
   scale_fill_viridis_c(option = "inferno") +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
-name <- paste0("asd_male_GMM_Cluster_2_Ab05brain_", newDate, ".png")
+name <- paste0("GMM_Cluster_2_Ab05brain_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 
 
@@ -335,12 +336,12 @@ ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 50
 ######################### Part 5: Agrrange extram percentage #######################################
 # merge
 AbP <- full_join(abno_g1_sorted, abno_g2_sorted, by = "label", suffix = c(".L", ".H"))
-AbP <- AbP[, c(3,2,4)]
-colnames(AbP) <- c("脑区", "L", "H")
+AbP <- AbP[, c(3,1,2,4)]
+colnames(AbP) <- c("脑区","Region","L", "H")
 # 保留小数点后四位
 AbP$L <- round(AbP$L, digits = 4)
 AbP$H <- round(AbP$H, digits = 4)
 
 # 保存文件
-name <- paste0("asd_male_GMM_Cluster_AbPerc_", newDate, ".xlsx")
+name <- paste0("Cluster_AbPerc_", newDate, ".xlsx")
 write.xlsx(AbP, file.path(resDir, name))

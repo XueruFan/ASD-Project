@@ -1,4 +1,4 @@
-# this script is used to visualize ABIDE centile (6-17.9 only)
+# this script is used to visualize ABIDE centile (0-14.9 only)
 # Xue-Ru Fan 25 April 2023 @BNU
 ###################################################
 # Part 1: ASD男性34个分区体积centile（中位数）的概率密度图，png
@@ -18,7 +18,7 @@ plotDir <- file.path(abideDir, "Plot/Density")
 resdate <- "240315"
 newDate <- "240610"
 
-abide_centile <- read.csv(file.path(dataDir, paste0("abide_All_centile_618_", resdate, ".csv")))
+abide_centile <- read.csv(file.path(dataDir, paste0("abide_All_centile_015_", resdate, ".csv")))
 asd_centile <- subset(abide_centile, dx == "ASD" & sex == "Male")
 
 
@@ -59,7 +59,7 @@ en_labels <- rev(c("superiorfrontal", "rostralmiddlefrontal", "caudalmiddlefront
 
 all_data$Measure <- factor(all_data$Measure, levels = en_labels, labels = cn_labels)
 
-name_regional <- paste0("centile_regional_density_618_", newDate, ".png")
+name_regional <- paste0("centile_regional_density_015_", newDate, ".png")
 CairoPNG(file.path(plotDir, name_regional), width = 4, height = 8, units = "in", dpi = 500)
 
 # color <- c("#95483f","#a22041","#b7282e",
@@ -112,7 +112,7 @@ ggseg(.data = asd_parc_centile, mapping = aes(fill = median), color = "black", a
   scale_fill_gradient2(low = "#126cb5", mid = "white", high = "#a52a2a", midpoint = 0.5) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
 
-name <- file.path(plotDir, paste0("centile_regional_median_618_", newDate, ".png"))
+name <- file.path(plotDir, paste0("centile_regional_median_015_", newDate, ".png"))
 ggsave(name, width = 7.8, height = 3, units = "in", dpi = 500)
 
 
@@ -133,7 +133,7 @@ all_data$Measure <- factor(all_data$Measure, levels = c("TCV", "WMV", "GMV", "sG
                                       "脑脊液总体积", "平均皮层厚度",
                                       "皮层总表面积"))
 
-name_global <- paste0("centile_global_density_618_", newDate, ".png")
+name_global <- paste0("centile_global_density_015_", newDate, ".png")
 CairoPNG(file.path(plotDir, name_global), width = 6, height = 5, units = "in", dpi = 500)
 
 ggplot(all_data, aes(x = Centile, y = Measure, fill = Measure)) +

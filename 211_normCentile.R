@@ -21,19 +21,14 @@ sapply(packages, require, character.only = TRUE)
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # MAC
 abideDir <- 'E:/PhDproject/ABIDE' # Windows
 dataDir <- file.path(abideDir, "Preprocessed")
-resDir <- file.path(abideDir, "Analysis/Cluster/GmmCluster")
-# plotDir <- file.path(abideDir, "Plot/Cluster/GmmCluster")
+resDir <- file.path(abideDir, "Analysis/Cluster/Gmm618")
 resDate <- "240315"
 newDate <- "240610"
 
-abide_centile <- read.csv(file.path(dataDir, paste0("abide_A_centile_dev_", resDate, ".csv")))
+abide_centile <- read.csv(file.path(dataDir, paste0("abide_All_centile_618_", resDate, ".csv")))
 
 data_raw <- subset(abide_centile, dx == "ASD" & sex == "Male")
 
-# 有4个ASD男性被去掉了，找到他们
-# rows_with_na <- apply(data_raw, 1, function(x) any(is.na(x)))
-# na_rows <- data_raw[rows_with_na, ]
-# 去掉他们
 data_centile <- na.omit(data_raw[, -2:-6])
 data <- data_centile[, -1]
 
@@ -53,4 +48,4 @@ datap <- data.frame(
 # 将 P_Value 列转换为字符类型，保留适当的小数位数
 datap$P_Value <- sprintf("%.4f", datap$P_Value)
 
-write.csv(datap, file.path(resDir, paste0("asd_male_GMM_Centile_NormTest_", resDate, ".csv")))
+write.csv(datap, file.path(resDir, paste0("Centile_NormTest_", newDate, ".csv")))

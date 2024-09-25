@@ -13,7 +13,7 @@ sapply(packages, require, character.only = TRUE)
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # MAC
 abideDir <- 'E:/PhDproject/ABIDE' # Windows
 dataDir <- file.path(abideDir, "Preprocessed")
-resDir <- file.path(abideDir, "Analysis/Statistic")
+resDir <- file.path(abideDir, "Analysis/Statistic/Gmm015")
 resDate <- "240315"
 newDate <- "240610"
 
@@ -22,8 +22,8 @@ abide_pheno <- read.csv(file.path(dataDir, paste0("abide_A_all_", resDate, ".csv
 
 asd_male <- subset(abide_pheno, SEX == "1" & DX_GROUP == "1")
 # 获取用于谱聚类分析的被试编号
-name <- paste0("asd_male_GMM_Cluster_", newDate, ".csv")
-cluster_id <- read.csv(file.path(abideDir, "Analysis/Cluster/GmmCluster", name))[, 2]
+name <- paste0("Cluster_", newDate, ".csv")
+cluster_id <- read.csv(file.path(abideDir, "Analysis/Cluster/Gmm015", name))[, 2]
 
 asd_male <- asd_male[asd_male$Participant %in% cluster_id, ]
 
@@ -60,5 +60,5 @@ sample[1,6] <- paste0(round(mean(na.omit(asd_male$PIQ)), 2), "±", round(sd(na.o
 colnames(sample)[6] <- "PIQ(M±SD)"
 
 # save result
-name <- paste0("asd_male_dev_4GC_summary_", newDate, ".xlsx")
+name <- paste0("pheno_summary_", newDate, ".xlsx")
 write.xlsx(sample, file.path(resDir, name), sheetName = "Sheet1", rowNames = T)

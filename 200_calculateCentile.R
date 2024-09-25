@@ -2,7 +2,7 @@
 # Xue-Ru Fan 25 April 2023 @BNU
 ###################################################
 # Part 1: 计算41个表型的Centile分，csv
-# Part 2: 提取出计算的Centile分，分全年龄版本和儿童青少年版本dev，csv
+# Part 2: 提取出计算的Centile分，csv
 ###################################################
 
 rm(list=ls())
@@ -15,12 +15,12 @@ sapply(packages, require, character.only = TRUE)
 # define filefolder
 abideDir <- 'E:/PhDproject/ABIDE'
 dataDir <- file.path(abideDir, "Preprocessed")
-resultsDir <- file.path(abideDir, "Centile_A")
+resultsDir <- file.path(abideDir, "Centile")
 lifeSpanDir <- "E:/PhDproject/LBCC/lbcc"
 resDate <- "240315"
 
 # get metric names
-abide_forCentile <- read.csv(file.path(dataDir, paste0("abide_forCentile_", resDate, ".csv")))
+abide_forCentile <- read.csv(file.path(dataDir, paste0("abide_All_forCentile_", resDate, ".csv")))
 abide_analysis <- abide_forCentile[, -3:-2] # 去掉Site和Release列
 volumeNames <- names(abide_analysis)[c(which(names(abide_analysis) == "GMV"):ncol(abide_analysis))]
 volumeNames <- volumeNames[-(which(volumeNames == "TCV_real"))] # 去掉真实的TCV用LBCC方法算出的TCV
@@ -66,7 +66,7 @@ colnames(FeatureCentile) <- "participant"
 
 for (feature in volumeNames) {
   centile <- paste0(feature, "Transformed.q.wre")
-  data <- read.csv(file.path(abideDir, "Centile_A", paste0(feature,".csv")))
+  data <- read.csv(file.path(abideDir, "Centile", paste0(feature,".csv")))
   data <- data[, c("participant", centile)]
   FeatureCentile <- merge(FeatureCentile, data, by = "participant", all.x = TRUE)
 }
@@ -77,10 +77,10 @@ colnames(FeatureCentile)[2:length(FeatureCentile)] <- volumeNames
 abide_centile <- merge(abide_forCentile[, c(1:4,7,13)], FeatureCentile, by = "participant", all = T)
 
 # save result
-name <- paste0("abide_A_centile_", resDate, ".csv")
+name <- paste0("abide_All_centile_", resDate, ".csv")
 write.csv(abide_centile, file.path(dataDir, name), row.names = F)
 
-############## save the results of participants aging 0~18
-abide_centile_dev <- subset(abide_centile, Age < 18 & Age >= 6)
-name <- paste0("abide_A_centile_dev_", resDate, ".csv")
-write.csv(abide_centile_dev, file.path(dataDir, name), row.names = F)
+############## save the results of participants aging 6~17.9
+abide_centile_618 <- subset(abide_centile, Age < 18 & Age >= 6)
+name <- paste0("abide_All_centile_618_", resDate, ".csv")
+write.csv(abide_centile_618, file.path(dataDir, name), row.names = F)

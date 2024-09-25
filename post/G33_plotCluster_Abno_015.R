@@ -11,16 +11,16 @@ sapply(packages, require, character.only = TRUE)
 
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # MAC
 abideDir <- 'E:/PhDproject/ABIDE' # Windows
-resDir <- file.path(abideDir, "Analysis/Cluster/GmmCluster")
-plotDir <- file.path(abideDir, "Plot/Cluster/GmmCluster")
+resDir <- file.path(abideDir, "Analysis/Cluster/Gmm015")
+plotDir <- file.path(abideDir, "Plot/Cluster/Gmm015")
 resDate <- "240315"
 newDate <- "240610"
 
-name <- paste0("asd_male_GMM_Cluster_AbPerc_", newDate, ".xlsx")
+name <- paste0("Cluster_AbPerc_", newDate, ".xlsx")
 abno <- read.xlsx(file.path(resDir, name))
 
 rownames(abno) <- abno[,1]
-abno <- abno[, 2:3]
+abno <- abno[, 3:4]
 
 abno <- abno/100
 abno <- data.frame(t(abno))
@@ -35,11 +35,11 @@ abno <- abno[1:2,]
 abno$人群 <- rownames(abno)
 abno <- abno[, c(35, 34:1)]
 
-name <- paste0("asd_male_GMM_Cluster_AbnoRadar_", newDate, ".png")
+name <- paste0("Cluster_AbnoRadar_", newDate, ".png")
 CairoPNG(file.path(plotDir, name), width = 10, height = 10, units = "in", dpi = 500)
 ggradar(plot.data = abno,
         font.radar = "STSong",
-        values.radar = c("0", "10%", "20%"),
+        values.radar = c(NA, "10%", "20%"),
         grid.min = 0, grid.mid = 0.1, grid.max = 0.2,
         background.circle.colour="lightgray",#雷达图背景色的颜色
         gridline.mid.colour="lightgray",#轴值中位圈的颜色

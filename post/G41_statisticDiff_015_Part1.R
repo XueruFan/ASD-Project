@@ -26,16 +26,16 @@ sapply(packages, require, character.only = TRUE)
 
 abideDir <- 'E:/PhDproject/ABIDE'
 phenoDir <- file.path(abideDir, "Preprocessed")
-statiDir <- file.path(abideDir, "Analysis/Statistic/GmmCluster")
-clustDir <- file.path(abideDir, "Analysis/Cluster/GmmCluster")
-plotDir <- file.path(abideDir, "Plot/Cluster/GmmCluster")
+statiDir <- file.path(abideDir, "Analysis/Statistic/Gmm015")
+clustDir <- file.path(abideDir, "Analysis/Cluster/Gmm015")
+plotDir <- file.path(abideDir, "Plot/Cluster/Gmm015")
 resDate <- "240315"
 newDate <- "240610"
 
 pheno <- read.csv(file.path(phenoDir, paste0("abide_A_all_", resDate, ".csv")))
 colnames(pheno)[1] <- "participant"
 
-name <- paste0("asd_male_GMM_Cluster_", newDate, ".csv")
+name <- paste0("Cluster_", newDate, ".csv")
 cluster <- read.csv(file.path(clustDir, name))
 colnames(cluster)[3:ncol(cluster)] <- paste0(colnames(cluster)[3:ncol(cluster)], "_centile")
 
@@ -106,7 +106,7 @@ site_counts_sorted <- site_counts_sorted[, -4]
 site_counts_sorted_to_save <- site_counts_sorted
 site_counts_sorted_to_save[1,4] <- paste0("p = ", site_pvalue[["p.value"]])
 
-name <- paste0("asd_male_dev_GC_statis_site_", newDate, ".csv")
+name <- paste0("statis_site_", newDate, ".csv")
 write.csv(site_counts_sorted_to_save, file.path(statiDir, name), row.names = F)
 
 data_long <- melt(site_counts_sorted, id.vars = "Site")
@@ -120,7 +120,7 @@ data_long$Site <- factor(data_long$Site, levels = unique(sorted_Site))
 data_long$variable <- factor(data_long$variable, levels = c("H", "L"))
 
 # save plot
-name <- paste0("asd_male_dev_GC_differ_site_", newDate, ".png")
+name <- paste0("differ_site_", newDate, ".png")
 CairoPNG(file.path(plotDir, name), width = 6, height = 4, units = "in", dpi = 500)
 ggplot(data_long, aes(x = Site, y = value, fill = variable)) +
   geom_bar(stat = "identity", position = "fill") +
@@ -245,7 +245,7 @@ scan_counts_sorted <- scan_counts_sorted[, -4]
 scan_counts_sorted_to_save <- scan_counts_sorted
 scan_counts_sorted_to_save[1,4] <- paste0("p = ", scan_pvalue[["p.value"]])
 
-name <- paste0("asd_male_dev_GC_statis_scaner_", newDate, ".csv")
+name <- paste0("statis_scaner_", newDate, ".csv")
 write.csv(scan_counts_sorted_to_save, file.path(statiDir, name), row.names = F)
 
 data_long <- melt(scan_counts_sorted, id.vars = "Scan")
@@ -259,7 +259,7 @@ data_long$Scan <- factor(data_long$Scan, levels = unique(sorted_Scan))
 data_long$variable <- factor(data_long$variable, levels = c("H", "L"))
 
 
-name <- paste0("asd_male_dev_GC_differ_scanner_", newDate, ".png")
+name <- paste0("differ_scanner_", newDate, ".png")
 CairoPNG(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 ggplot(data_long, aes(x = Scan, y = value, fill = variable)) +
   geom_bar(stat = "identity", position = "fill") +
@@ -293,7 +293,7 @@ colnames(manu_counts_sorted) <- c("Manu", "L", "H")
 manu_counts_sorted_to_save <- manu_counts_sorted
 manu_counts_sorted_to_save[1,4] <- paste0("p = ", manu_pvalue[["p.value"]])
 
-name <- paste0("asd_male_dev_GC_statis_manu_", newDate, ".csv")
+name <- paste0("statis_manu_", newDate, ".csv")
 write.csv(manu_counts_sorted_to_save, file.path(statiDir, name), row.names = F)
 
 data_long <- melt(manu_counts_sorted, id.vars = "Manu")
@@ -306,7 +306,7 @@ sorted_Manu <- data_long %>%
 data_long$Manu <- factor(data_long$Manu, levels = unique(sorted_Manu))
 data_long$variable <- factor(data_long$variable, levels = c("H", "L"))
 
-name <- paste0("asd_male_dev_GC_differ_manu_", newDate, ".png")
+name <- paste0("differ_manu_", newDate, ".png")
 CairoPNG(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 ggplot(data_long, aes(x = Manu, y = value, fill = variable)) +
   geom_bar(stat = "identity", position = "fill") +
@@ -356,7 +356,7 @@ colnames(type_counts_sorted) <- c("type", "L", "H")
 type_counts_sorted_to_save <- type_counts_sorted
 type_counts_sorted_to_save[1,4] <- paste0("p = ", type_pvalue[["p.value"]])
 
-name <- paste0("asd_male_dev_GC_statis_type_", newDate, ".csv")
+name <- paste0("statis_type_", newDate, ".csv")
 write.csv(type_counts_sorted_to_save, file.path(statiDir, name), row.names = F)
 
 data_long <- melt(type_counts_sorted, id.vars = "type")
@@ -370,7 +370,7 @@ data_long$type <- factor(data_long$type, levels = unique(sorted_type))
 data_long$variable <- factor(data_long$variable, levels = c("H", "L"))
 
 # save plot
-name <- paste0("asd_male_dev_GC_differ_type_", newDate, ".png")
+name <- paste0("differ_type_", newDate, ".png")
 CairoPNG(file.path(plotDir, name), width = 5, height = 4, units = "in", dpi = 500)
 ggplot(data_long, aes(x = type, y = value, fill = variable)) +
   geom_bar(stat = "identity", position = "fill") +
@@ -395,11 +395,11 @@ var <- All[, c("clusterID", "AGE_AT_SCAN")]
 colnames(var)[2] <- "variable"
 
 # save plot
-name <- paste0("asd_male_dev_GC_differ_age_", newDate, ".png")
+name <- paste0("differ_age_", newDate, ".png")
 CairoPNG(file.path(plotDir, name), width = 5, height = 5, units = "in", dpi = 500)
 ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill = clusterID)) +
   geom_density_ridges(scale = 1.2, quantile_lines = TRUE, size = 1, quantiles = 4) +
-  scale_x_continuous(breaks = seq(6, 18, by = 3), labels = c("6 yrs", "9", "12", "15", "18")) +
+  scale_x_continuous(breaks = seq(0, 15, by = 3), labels = c("0", "3", "6", "9", "12", "15岁")) +
   scale_fill_manual(values = c("L" = "#a6c8b2", "H" = "#f0cfa0")) +
   # coord_fixed(ratio = 6) + 
   xlab("") +
@@ -429,7 +429,7 @@ sta_ana[2,3] <- round(sd(L$variable, na.rm = T), 2)
 sta_ana[2,4] <- round(length(L$clusterID))
 colnames(sta_ana)[4] <- "Count"
 
-name <- paste0("asd_male_dev_GC_statis_age_", newDate, ".csv")
+name <- paste0("statis_age_", newDate, ".csv")
 write.csv(sta_ana, file.path(statiDir, name))
 
 Pvalue["t-test","age"] <- t.test(L$variable, H$variable)[["p.value"]]

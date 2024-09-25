@@ -14,12 +14,12 @@ sapply(packages, require, character.only = TRUE)
 
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # MAC
 abideDir <- 'E:/PhDproject/ABIDE' # Windows
-resDir <- file.path(abideDir, "Analysis/Cluster/GmmCluster")
-plotDir <- file.path(abideDir, "Plot/Cluster/GmmCluster")
+resDir <- file.path(abideDir, "Analysis/Cluster/Gmm015")
+plotDir <- file.path(abideDir, "Plot/Cluster/Gmm015")
 resDate <- "240315"
 newDate <- "240610"
 
-name <- paste0("asd_male_GMM_Cluster_", newDate, ".csv")
+name <- paste0("Cluster_", newDate, ".csv")
 cluster_result <- read.csv(file.path(resDir, name))
 
 

@@ -1,5 +1,5 @@
 # 使用高斯混合模型算法对人群进行聚类分析，并把对分类特征的重要性评估出来
-# ASD 男性 6~17.9岁
+# ASD 男性 6-17.9岁
 # 注意，这里只是用34个脑区作为分类指标
 # Xue-Ru Fan 13 march 2024 @BNU
 ###################################################
@@ -10,19 +10,19 @@
 
 rm(list=ls())
 
-packages <- c("mclust", "ggplot2", "cluster", "Cairo")
+packages <- c("mclust", "ggplot2", "cluster", "Cairo", "openxlsx")
 # sapply(packages,install.packages,character.only=TRUE)
 sapply(packages, require, character.only = TRUE)
 
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # MAC
 abideDir <- 'E:/PhDproject/ABIDE' # Windows
 dataDir <- file.path(abideDir, "Preprocessed")
-resDir <- file.path(abideDir, "Analysis/Cluster/GmmCluster")
-plotDir <- file.path(abideDir, "Plot/Cluster/GmmCluster")
+resDir <- file.path(abideDir, "Analysis/Cluster/Gmm618")
+plotDir <- file.path(abideDir, "Plot/Cluster/Gmm618")
 resDate <- "240315"
 newDate <- "240610"
 
-abide_centile <- read.csv(file.path(dataDir, paste0("abide_A_centile_dev_", resDate, ".csv")))
+abide_centile <- read.csv(file.path(dataDir, paste0("abide_All_centile_618_", resDate, ".csv")))
 
 data_raw <- subset(abide_centile, dx == "ASD" & sex == "Male")
 
@@ -31,7 +31,7 @@ data_raw <- subset(abide_centile, dx == "ASD" & sex == "Male")
 # na_rows <- data_raw[rows_with_na, ]
 # 去掉他们
 data_centile <- na.omit(data_raw[, -2:-6])
-data <- data_centile[, -1:-8]
+data <- data_centile[, -1:-8] # 全局脑指标不作为分类变量
 
 ################################## 标准化 ##################################################
 # data <- data.frame(scale(data))
@@ -75,7 +75,7 @@ optimal_clusters <- which.max(silhouette_scores) + 1
 plot_data <- data.frame(Cluster_Numbers = 2:max_clusters, Silhouette_Scores = silhouette_scores)
 
 ################################# save plot
-name <- paste0("asd_male_GMM_Cluster_Silhouette_", newDate, ".png")
+name <- paste0("Silhouette_", newDate, ".png")
 CairoPNG(file.path(plotDir, name), width = 8, height = 6, units = "in", dpi = 500)
 
 # 使用ggplot2进行绘图
@@ -135,7 +135,7 @@ cluster_membership <- gmm_model$classification
 data_cluster <- cbind(cluster_membership, data_centile)
 
 colnames(data_cluster)[1] <- "clusterID"
-name <- paste0("asd_male_GMM_Cluster_", newDate, ".csv")
+name <- paste0("Cluster_", newDate, ".csv")
 write.csv(data_cluster, file.path(resDir, name), row.names = F)
 
 # ################################## 保存模型结果 ##########################################
@@ -234,7 +234,7 @@ plot_data <- data.frame(Feature = features_chinese, Importance = feature_importa
 plot_data <- plot_data[order(plot_data$Importance, decreasing = TRUE), ]
 
 ################################# save plot
-name_rank <- paste0("asd_male_GMM_Cluster_RMrank_", newDate, ".png")
+name_rank <- paste0("Cluster_RMrank_", newDate, ".png")
 CairoPNG(file.path(plotDir, name_rank), width = 7, height = 8, units = "in", dpi = 500)
 
 # 使用ggplot2绘制条形图
@@ -254,5 +254,5 @@ dev.off()
 gmm_rank <- data.frame(脑区 = features_chinese, Feature = features, 贡献度 = feature_importance)
 gmm_rank <- gmm_rank[order(gmm_rank$贡献度, decreasing = TRUE), ]
 
-name <- paste0("asd_male_GMM_Cluster_RMrank_", newDate, ".xlsx")
+name <- paste0("Cluster_RMrank_", newDate, ".xlsx")
 write.xlsx(gmm_rank, file.path(resDir, name))

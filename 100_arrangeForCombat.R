@@ -19,8 +19,8 @@ resDate <- "240315"
 # 整合abide1和2的人口信息、行为数据和mri指标测量
 
 ################## abide 1
-abide1_global <- read.csv(file.path(dataDir, "abide_1_global_afterqc.csv"))
-abide1_regional <- read.csv(file.path(dataDir, "abide_1_regional_afterqc.csv"))
+abide1_global <- read.csv(file.path(dataDir, "abide1_global_afterqc.csv"))
+abide1_regional <- read.csv(file.path(dataDir, "abide1_regional_afterqc.csv"))
 abide1 <- merge(abide1_global, abide1_regional, by = "Participant")
 # load pheno
 abide1_pheno <- read.csv(file.path(abideDir, "ABIDE_info", "Phenotypic_V1_0b.csv"))
@@ -122,11 +122,11 @@ abide_analysis$totalSA2 <- as.numeric(abide_all$lhWhiteSurfArea) + as.numeric(ab
 # 随便拷来的一个结果文件，用来提取分区名字
 name_dk <- data.frame(read.table(file.path(dataDir, "toGetName.stats")))
 for (p in 1:nrow(name_dk)) {
-  com_str <- paste0("abide_analysis$", name_dk[p, 1], " <- as.numeric(abide_all$lh", name_dk[p, 1],
-                    ") + as.numeric(abide_all$rh", name_dk[p, 1], ")")
+  com_str <- paste0("abide_analysis$", name_dk[p, 1], " <- (as.numeric(abide_all$lh", name_dk[p, 1],
+                    ") + as.numeric(abide_all$rh", name_dk[p, 1], "))/2")
   eval(parse(text = com_str))
 }
 
 # save result
-name <- paste0("abide_A_forComBat_", resDate, ".csv")
+name <- paste0("abide_All_forComBat_", resDate, ".csv")
 write.csv(abide_analysis, file.path(dataDir, name), row.names = F)
