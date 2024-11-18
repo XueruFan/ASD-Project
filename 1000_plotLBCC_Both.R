@@ -36,8 +36,8 @@ abide <- read.csv(file.path(clustDir, name))
 abide <- subset(abide, clusterID == "2")
 abide$Data <- "ABIDE"
 
-volumeNames <- names(cabic)[c(which(names(cabic) == "paracentral"):
-                                     which(names(cabic) == "insula"))]
+volumeNames <- names(cabic)[c(which(names(cabic) == "bankssts"):
+                                     which(names(cabic) == "middletemporal"))]
 
 # load lbcc
 lifeSpanDir <- "E:/PhDproject/LBCC/lbcc"
@@ -120,14 +120,14 @@ for (volumeName in volumeNames){
   # 画常模和两个cluster的校正值散点及拟合的线，不画ABIDE经过矫正后的组平均线
   ggplot() +
     # 添加散点图
-    geom_point(data = C1_PointData, color = "#44617b", aes(x = (exp(AgeTransformed) - 280) / 365.25, y = y),
+    geom_point(data = C1_PointData, color = "#d9ca39", aes(x = (exp(AgeTransformed) - 280) / 365.25, y = y),
                alpha = .2, size = 2, shape = 16) +
-    geom_point(data = C2_PointData, color = "#bb5548", aes(x = (exp(AgeTransformed) - 280) / 365.25, y = y),
+    geom_point(data = C2_PointData, color = "#e29135", aes(x = (exp(AgeTransformed) - 280) / 365.25, y = y),
                alpha = .2, size = 2, shape = 16) +
     # 添加实际拟合的线
-    geom_line(data = plotData_1, lwd = 2, alpha = 1, color = "#44617b",
+    geom_line(data = plotData_1, lwd = 2, alpha = 1, color = "#d9ca39",
               aes(x = (exp(AgeTransformed) - 280) / 365.25, y = y)) +
-    geom_line(data = plotData_2, lwd = 2, alpha = 1, color = "#bb5548",
+    geom_line(data = plotData_2, lwd = 2, alpha = 1, color = "#e29135",
               aes(x = (exp(AgeTransformed) - 280) / 365.25, y = y)) +
     
     # 绘制LBCC常模

@@ -53,7 +53,7 @@ for (volumeName in volumeNames) {
   predictions_no_site <- list()
   
   # 定义颜色（黄绿色和橙色）对应每个 predicted_cluster
-  cluster_colors <- c("#5b7e91", "#d69090")
+  cluster_colors <- c("#d9ca39", "#e29135")
 
   
   # 第二部分：忽略站点效应，收集彩色线条数据，并恢复置信区间

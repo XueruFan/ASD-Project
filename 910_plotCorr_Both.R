@@ -110,7 +110,7 @@ ggplot(plotPoint, aes(x = x, y = y, color = Data, shape = Data, size = Data)) +
   scale_shape_manual(values = c("ABIDE" = 16, "CABIC" = 16)) +  # 自定义形状
   scale_size_manual(values = c("ABIDE" = 2.5, "CABIC" = 2.5)) +  # 自定义大小
   # 颜色自定义
-  scale_color_manual(values = c("ABIDE" = "#5b7e91", "CABIC" = "#d69090")) +
+  scale_color_manual(values = c("ABIDE" = "#d9ca39", "CABIC" = "#e29135")) +
   # 主题设置
   theme_cowplot() +
   # 设置X轴标题
@@ -157,7 +157,7 @@ ggplot(plotPoint, aes(x = x, y = y, color = Data, shape = Data, size = Data)) +
   scale_shape_manual(values = c("ABIDE" = 16, "CABIC" = 16)) +  # 自定义形状
   scale_size_manual(values = c("ABIDE" = 2.5, "CABIC" = 2.5)) +  # 自定义大小
   # 颜色自定义
-  scale_color_manual(values = c("ABIDE" = "#5b7e91", "CABIC" = "#d69090")) +
+  scale_color_manual(values = c("ABIDE" = "#d9ca39", "CABIC" = "#e29135")) +
   # 主题设置
   theme_cowplot() +
   # 设置X轴标题
@@ -205,7 +205,7 @@ ggplot(plotPoint, aes(x = x, y = y, color = Data, shape = Data, size = Data)) +
   scale_shape_manual(values = c("ABIDE" = 16, "CABIC" = 16)) +  # 自定义形状
   scale_size_manual(values = c("ABIDE" = 2.5, "CABIC" = 2.5)) +  # 自定义大小
   # 颜色自定义
-  scale_color_manual(values = c("ABIDE" = "#5b7e91", "CABIC" = "#d69090")) +
+  scale_color_manual(values = c("ABIDE" = "#d9ca39", "CABIC" = "#e29135")) +
   # 主题设置
   theme_cowplot() +
   # 设置X轴标题
@@ -253,7 +253,7 @@ ggplot(plotPoint, aes(x = x, y = y, color = Data, shape = Data, size = Data)) +
   scale_shape_manual(values = c("ABIDE" = 16, "CABIC" = 16)) +  # 自定义形状
   scale_size_manual(values = c("ABIDE" = 2.5, "CABIC" = 2.5)) +  # 自定义大小
   # 颜色自定义
-  scale_color_manual(values = c("ABIDE" = "#5b7e91", "CABIC" = "#d69090")) +
+  scale_color_manual(values = c("ABIDE" = "#d9ca39", "CABIC" = "#e29135")) +
   # 主题设置
   theme_cowplot() +
   # 设置X轴标题
@@ -275,23 +275,47 @@ ggsave(file.path(plotDir, name), width = 7, height = 7, units = "in", dpi = 500)
 
 
 ################画脑区示意图
-regions <- c("lh_transversetemporal")
-regions <- c("lh_isthmuscingulate")
-regions <- c("lh_inferiortemporal")
+regions <- c("rh_isthmuscingulate")
+to_plot <- data.frame(label = regions, value = 1)
 
+ggseg(.data = to_plot, mapping = aes(fill = value), color = "black", atlas = dk,
+      position = "stacked", hemisphere = "right", view = "medial", size = 1.2) +
+  theme_void() +
+  theme(legend.position = "none") +  # 去掉图例
+  scale_fill_gradientn(colors = c("#d26b66"), na.value = "#f5f5f5")
+
+name <- paste0("isthmuscingulate_on_brain_", resDate, ".png")
+ggsave(file.path(plotDir, name), width = 7, height = 5, units = "in", dpi = 500)
+
+
+regions <- c("lh_transversetemporal")
+
+regions <- c("lh_transversetemporal")
 to_plot <- data.frame(label = regions, value = 1)
 # to_plot$value <- as.numeric(to_plot$value)
 
 ggseg(.data = to_plot, mapping = aes(fill = value), color = "black", atlas = dk,
-      position = "stacked", hemisphere = "left", view = "ventral",size = 1.2) +
+      position = "stacked", hemisphere = "left", view = "lateral", size = 1.2) +
   theme_void() +
   theme(legend.position = "none") +  # 去掉图例
-  scale_fill_gradientn(colors = c("#e17b34"),na.value = "#f5f5f5")
+  scale_fill_gradientn(colors = c("#d26b66"), na.value = "#f5f5f5")
 
-name <- paste0("isthmuscingulate_on_brain_", resDate, ".png")
-ggsave(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
+name <- paste0("transversetemporal_on_brain_", resDate, ".png")
+ggsave(file.path(plotDir, name), width = 7, height = 5, units = "in", dpi = 500)
 
 
+regions <- c("lh_inferiortemporal")
+to_plot <- data.frame(label = regions, value = 1)
+# to_plot$value <- as.numeric(to_plot$value)
+
+ggseg(.data = to_plot, mapping = aes(fill = value), color = "black", atlas = dk,
+      position = "stacked", hemisphere = "left", view = "lateral", size = 1.2) +
+  theme_void() +
+  theme(legend.position = "none") +  # 去掉图例
+  scale_fill_gradientn(colors = c("#d26b66"), na.value = "#f5f5f5")
+
+name <- paste0("inferiortemporal_on_brain_", resDate, ".png")
+ggsave(file.path(plotDir, name), width = 7, height = 5, units = "in", dpi = 500)
 
 
 

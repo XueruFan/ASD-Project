@@ -38,7 +38,8 @@ ggseg(.data = asd_parc_centile, mapping = aes(fill = median), color = "black", a
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.key.width = unit(1, "cm")) +
   # scale_fill_gradient(low = "#7c9d97", high = "white", limits = c(min(median), max(median))) +
-  scale_fill_gradient(low = "#126cb5", high = "white", limits = c(min(median), max(median))) +
+  scale_fill_gradient(low = "#5378ac", high = "white", limits = c(0.20, 0.40),
+                      breaks = seq(0.20, 0.40, by = 0.05)) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
 
 name <- paste0("Cluster_1_Centile_Brain_", newDate, ".png")
@@ -63,7 +64,8 @@ ggseg(.data = asd_parc_centile, mapping = aes(fill = median), color = "black", a
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.key.width = unit(1, "cm")) +
   # scale_fill_gradient(low = "white", high = "#eab080", limits = c(min(median), max(median))) +
-  scale_fill_gradient(low = "white", high = "#a52a2a", limits = c(min(median), max(median))) +
+  scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0.50, 0.70),
+                      breaks = seq(0.50, 0.70, by = 0.05)) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
 
 name <- paste0("Cluster_2_Centile_Brain_", newDate, ".png")
@@ -105,9 +107,9 @@ name_global <- paste0("Cluster_Centile_Global_", newDate, ".png")
 # CairoPNG(file.path(plotDir, name_global), width = 6, height = 5, units = "in", dpi = 500)
 
 ggplot(all_data, aes(x = Centile, y = Measure, fill = Group, group = interaction(Group, Measure))) +
-  geom_density_ridges(scale = 1.6, quantile_lines = TRUE, size = 1, quantiles = 2, alpha = .94) +
+  geom_density_ridges(scale = 1.6, quantile_lines = TRUE, size = 1, quantiles = 2, alpha = .9) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  scale_fill_manual(values = c("1" = "#a6c8b2", "2" = "#f0cfa0")) +  # 此处为两组人设置不同颜色
+  scale_fill_manual(values = c("1" = "#b4d4c7", "2" = "#facaae")) +  # 此处为两组人设置不同颜色
   coord_fixed(ratio = 0.2) + 
   xlab("") +
   ylab("") +
@@ -200,9 +202,9 @@ name_regional <- paste0("Cluster_Centile_Regional_", newDate, ".png")
 
 ggplot(all_data, aes(x = Centile, y = Measure, fill = Group, group = interaction(Group, Measure))) +
   # geom_density_ridges(scale = 1.7, quantile_lines = TRUE, size = 0.5, quantiles = 2, alpha = .94) +
-  geom_density_ridges(scale = 2, quantile_lines = TRUE, size = 0.75, quantiles = 2, alpha = .94) +
+  geom_density_ridges(scale = 2, quantile_lines = TRUE, size = 0.75, quantiles = 2, alpha = .9) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  scale_fill_manual(values = c("1" = "#a6c8b2", "2" = "#f0cfa0")) +
+  scale_fill_manual(values = c("1" = "#b4d4c7", "2" = "#facaae")) +
   # coord_fixed(ratio = 0.15) + 
   xlab("") +
   ylab("") +
@@ -305,9 +307,12 @@ ggseg(.data = abno_g1, mapping = aes(fill = perc), color = "black", atlas = dk,
   theme_void() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.key.width = unit(1, "cm")) +
-  scale_fill_viridis_c(option = "inferno", limits = c(0, 18),  # 设置上下限
-                       breaks = seq(0, 18, by=6),  # 自定义区间
-                       labels = c("0", "6", "12", "18")) +
+  scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0, 18),
+                      breaks = seq(0, 18, by=6),  # 自定义区间
+                      labels = c("0", "6%", "12%", "18%")) +
+  # scale_fill_viridis_c(option = "inferno", limits = c(0, 18),  # 设置上下限
+  #                      breaks = seq(0, 18, by=6),  # 自定义区间
+  #                      labels = c("0", "6", "12", "18")) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
 name <- paste0("Cluster_1_Ab025brain_V2_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
@@ -345,11 +350,15 @@ ggseg(.data = abno_g2, mapping = aes(fill = perc), color = "black", atlas = dk,
   theme_void() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.key.width = unit(1, "cm")) +
-  scale_fill_viridis_c(option = "inferno", limits = c(0, 18),  # 设置上下限
-                       breaks = seq(0,18, by=6),  # 自定义区间
-                       labels = c("0", "6", "12", "18")) +
+  scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0, 7),
+                      # breaks = seq(0, 18, by=6),  # 自定义区间
+                      breaks = c(0, 2, 4, 6),  # 自定义区间
+                      labels = c("0", "2%", "4%", "6%")) +
+  # scale_fill_viridis_c(option = "inferno", limits = c(0, 18),  # 设置上下限
+  #                      breaks = seq(0,18, by=6),  # 自定义区间
+  #                      labels = c("0", "6", "12", "18")) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
-name <- paste0("Cluster_2_Ab975brain_V2_", newDate, ".png")
+name <- paste0("Cluster_2_Ab975brain_V1_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 # # 小于5%
 # abno <- apply(group2 <= thr, 2, function(x) sum(x) / length(x) * 100)

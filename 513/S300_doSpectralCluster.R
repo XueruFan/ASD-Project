@@ -62,18 +62,20 @@ optimal_clusters <- which.max(silhouette_scores) + 1
 # 创建一个数据框，用于绘图
 plot_data <- data.frame(Cluster_Numbers = 2:max_clusters, Silhouette_Scores = silhouette_scores)
 
-# 使用ggplot2进行绘图
 ggplot(plot_data, aes(x = Cluster_Numbers, y = Silhouette_Scores)) +
-  geom_line(color = "#00BFC4", size = 2) + # 定义线条颜色和大小
-  geom_point(color = "#F8766D", size = 4) + # 定义点的颜色和大小
+  geom_line(color = "#aec4dc", size = 3) + # 定义线条颜色和大小
+  geom_point(color = "#e78f89", size = 6) + # 定义点的颜色和大小
   theme_minimal() + # 使用简洁的主题
-  labs(x = "Number of Clusters",  y = "Silhouette Scores") + # 添加坐标轴标签
-  theme(axis.title = element_text(face = "bold", size = 12), # 自定义X轴标题样式
-        axis.text = element_text(face = "bold", size = 10), # 增大轴刻度文本大小
-        panel.background = element_rect(fill = "white"), # 背景颜色
-        panel.grid.major = element_line(color = "grey90"), # 主要网格线颜色
-        panel.grid.minor = element_blank(), # 不显示次要网格线
-        legend.position = "none") # 不显示图例
+  labs(x = "Number of Clusters", y = "Silhouette Scores") + # 添加坐标轴标签
+  theme(
+    axis.title = element_text(face = "bold", size = 16), # 自定义轴标题样式
+    axis.text = element_text(face = "bold", size = 16), # 增大轴刻度文本大小
+    panel.background = element_rect(fill = "white", color = NA), # 移除背景外框
+    panel.grid.major = element_line(color = "grey90", size = 0.5), # 主要网格线颜色和粗细
+    panel.grid.minor = element_line(color = "grey95", size = 0.25), # 次要网格线颜色和粗细
+    panel.border = element_blank(), # 移除黑色外框
+    legend.position = "none" # 不显示图例
+    )
 
 ################################# save plot
 name <- paste0("Silhouette_", newDate, ".png")

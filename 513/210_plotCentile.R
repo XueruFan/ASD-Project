@@ -127,7 +127,9 @@ ggseg(.data = asd_parc_centile, mapping = aes(fill = median), color = "black", a
   theme_void() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.key.width = unit(1, "cm")) +
-  scale_fill_gradient2(low = "#126cb5", mid = "white", high = "#a52a2a", midpoint = 0.5) +
+  scale_fill_gradient2(low = "#5378ac", mid = "white", high = "#d26b66", midpoint = 0.5,
+                       limits = c(0.35, 0.55),
+                       breaks = seq(0.35, 0.55, by = 0.05)) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
 
 name <- file.path(plotDir, paste0("centile_regional_median_513_", newDate, ".png"))

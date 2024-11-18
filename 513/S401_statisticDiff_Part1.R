@@ -134,7 +134,7 @@ ggplot(data_long, aes(x = Site, y = value, fill = variable)) +
   xlab("") +
   ylab("") +
   scale_y_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  scale_fill_manual(values = c("#eab080", "#7c9d97")) +
+  scale_fill_manual(values = c("#facaae", "#b4d4c7")) +
   theme(
   # theme(text = element_text(family = "STSong"),
         legend.position = "none", # without legend
@@ -279,7 +279,7 @@ ggplot(data_long, aes(x = Scan, y = value, fill = variable)) +
   xlab("") +
   ylab("") +
   scale_y_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  scale_fill_manual(values = c("#eab080", "#7c9d97")) +
+  scale_fill_manual(values = c("#facaae", "#b4d4c7")) +
   theme(
   # theme(text = element_text(family = "STSong"),
         legend.position = "none", # without legend
@@ -332,7 +332,7 @@ ggplot(data_long, aes(x = Manu, y = value, fill = variable)) +
   xlab("") +
   ylab("") +
   scale_y_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  scale_fill_manual(values = c("#eab080", "#7c9d97")) +
+  scale_fill_manual(values = c("#facaae", "#b4d4c7")) +
   theme(
   # theme(text = element_text(family = "STSong"),
         legend.position = "none", # without legend
@@ -402,7 +402,7 @@ ggplot(data_long, aes(x = type, y = value, fill = variable)) +
   xlab("") +
   ylab("") +
   scale_y_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  scale_fill_manual(values = c("#eab080", "#7c9d97")) +
+  scale_fill_manual(values = c("#facaae", "#b4d4c7")) +
   # theme(text = element_text(family = "STSong"),
   theme(
         legend.position = "none", # without legend
@@ -426,7 +426,7 @@ name <- paste0("differ_age_", newDate, ".png")
 ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill = clusterID)) +
   geom_density_ridges(scale = 1.2, quantile_lines = TRUE, size = 1, quantiles = 4) +
   scale_x_continuous(breaks = seq(5, 13, by = 2), labels = c("5", "7", "9", "11", "13")) +
-  scale_fill_manual(values = c("L" = "#7c9d97", "H" = "#eab080")) +
+  scale_fill_manual(values = c("L" = "#b4d4c7", "H" = "#facaae")) +
   # coord_fixed(ratio = 6) + 
   xlab("") +
   ylab("") +
@@ -488,9 +488,9 @@ ggplot(var_long, aes(x = variable, y = factor(measure, levels = c("L FIQ", "H FI
                                                                   "H VIQ", "L PIQ", "H PIQ")),
                      fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L FIQ" = "#7c9d97", "H FIQ" = "#eab080",
-                               "L VIQ" = "#7c9d97", "H VIQ" = "#eab080",
-                               "L PIQ" = "#7c9d97", "H PIQ" = "#eab080")) +
+  scale_fill_manual(values = c("L FIQ" = "#b4d4c7", "H FIQ" = "#facaae",
+                               "L VIQ" = "#b4d4c7", "H VIQ" = "#facaae",
+                               "L PIQ" = "#b4d4c7", "H PIQ" = "#facaae")) +
   scale_x_continuous(breaks = seq(50, 150, by = 25)) +
   xlim(50, 150) +
   xlab("") +
@@ -588,10 +588,10 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 # CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 # ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
 #   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-#   scale_fill_manual(values = c("L ADOS_G_Total" = "#7c9d97", "H ADOS_G_Total" = "#eab080",
-#                                "L ADOS_G_Commu" = "#7c9d97", "H ADOS_G_Commu" = "#eab080",
-#                                "L ADOS_G_Socia" = "#7c9d97", "H ADOS_G_Socia" = "#eab080",
-#                                "L ADOS_G_Stere" = "#7c9d97", "H ADOS_G_Stere" = "#eab080")) +
+#   scale_fill_manual(values = c("L ADOS_G_Total" = "#b4d4c7", "H ADOS_G_Total" = "#facaae",
+#                                "L ADOS_G_Commu" = "#b4d4c7", "H ADOS_G_Commu" = "#facaae",
+#                                "L ADOS_G_Socia" = "#b4d4c7", "H ADOS_G_Socia" = "#facaae",
+#                                "L ADOS_G_Stere" = "#b4d4c7", "H ADOS_G_Stere" = "#facaae")) +
 #   coord_cartesian(xlim = c(NA, max(var_long$variable))) +
 #   xlab("") +
 #   ylab("") +
@@ -681,10 +681,10 @@ name <- paste0("differ_ADOS_2_", newDate, ".png")
 # CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L ADOS_2_Sever" = "#7c9d97", "H ADOS_2_Sever" = "#eab080",
-                               "L ADOS_2_Total" = "#7c9d97", "H ADOS_2_Total" = "#eab080",
-                               "L ADOS_2_Socia" = "#7c9d97", "H ADOS_2_Socia" = "#eab080",
-                               "L ADOS_2_Restr" = "#7c9d97", "H ADOS_2_Restr" = "#eab080")) +
+  scale_fill_manual(values = c("L ADOS_2_Sever" = "#b4d4c7", "H ADOS_2_Sever" = "#facaae",
+                               "L ADOS_2_Total" = "#b4d4c7", "H ADOS_2_Total" = "#facaae",
+                               "L ADOS_2_Socia" = "#b4d4c7", "H ADOS_2_Socia" = "#facaae",
+                               "L ADOS_2_Restr" = "#b4d4c7", "H ADOS_2_Restr" = "#facaae")) +
   coord_cartesian(xlim = c(NA, 25)) +
   # scale_y_discrete(labels = c("L ADOS_2_Sever" = "严重程度", "H ADOS_2_Sever" = "",
   #                             "L ADOS_2_Total" = "总分", "H ADOS_2_Total" = "",
@@ -788,11 +788,11 @@ name <- paste0("differ_SRS_scale_raw_", newDate, ".png")
 # CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L SRS_Aware_r" = "#7c9d97", "H SRS_Aware_r" = "#eab080",
-                               "L SRS_Cogni_r" = "#7c9d97", "H SRS_Cogni_r" = "#eab080",
-                               "L SRS_Commu_r" = "#7c9d97", "H SRS_Commu_r" = "#eab080",
-                               "L SRS_Motiv_r" = "#7c9d97", "H SRS_Motiv_r" = "#eab080",
-                               "L SRS_Manne_r" = "#7c9d97", "H SRS_Manne_r" = "#eab080")) +
+  scale_fill_manual(values = c("L SRS_Aware_r" = "#b4d4c7", "H SRS_Aware_r" = "#facaae",
+                               "L SRS_Cogni_r" = "#b4d4c7", "H SRS_Cogni_r" = "#facaae",
+                               "L SRS_Commu_r" = "#b4d4c7", "H SRS_Commu_r" = "#facaae",
+                               "L SRS_Motiv_r" = "#b4d4c7", "H SRS_Motiv_r" = "#facaae",
+                               "L SRS_Manne_r" = "#b4d4c7", "H SRS_Manne_r" = "#facaae")) +
   # scale_y_discrete(labels = c("L SRS_Aware_r" = "社交意识", "H SRS_Aware_r" = "",
   #                             "L SRS_Cogni_r" = "社交认知", "H SRS_Cogni_r" = "",
   #                             "L SRS_Commu_r" = "社交表达", "H SRS_Commu_r" = "",
@@ -884,11 +884,11 @@ for (v in varia) {
 # CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 # ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
 #   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-#   scale_fill_manual(values = c("L SRS_Aware_t" = "#7c9d97", "H SRS_Aware_t" = "#eab080",
-#                                "L SRS_Cogni_t" = "#7c9d97", "H SRS_Cogni_t" = "#eab080",
-#                                "L SRS_Commu_t" = "#7c9d97", "H SRS_Commu_t" = "#eab080",
-#                                "L SRS_Motiv_t" = "#7c9d97", "H SRS_Motiv_t" = "#eab080",
-#                                "L SRS_Manne_t" = "#7c9d97", "H SRS_Manne_t" = "#eab080")) +
+#   scale_fill_manual(values = c("L SRS_Aware_t" = "#b4d4c7", "H SRS_Aware_t" = "#facaae",
+#                                "L SRS_Cogni_t" = "#b4d4c7", "H SRS_Cogni_t" = "#facaae",
+#                                "L SRS_Commu_t" = "#b4d4c7", "H SRS_Commu_t" = "#facaae",
+#                                "L SRS_Motiv_t" = "#b4d4c7", "H SRS_Motiv_t" = "#facaae",
+#                                "L SRS_Manne_t" = "#b4d4c7", "H SRS_Manne_t" = "#facaae")) +
 #   scale_y_discrete(labels = c("L SRS_Aware_t" = "社交意识", "H SRS_Aware_t" = "",
 #                               "L SRS_Cogni_t" = "社交认知", "H SRS_Cogni_t" = "",
 #                               "L SRS_Commu_t" = "社交表达", "H SRS_Commu_t" = "",
@@ -963,8 +963,8 @@ for (v in varia) {
 
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L SRS_Total_t" = "#7c9d97", "H SRS_Total_t" = "#eab080",
-                               "L SRS_Total_r" = "#7c9d97", "H SRS_Total_r" = "#eab080")) +
+  scale_fill_manual(values = c("L SRS_Total_t" = "#b4d4c7", "H SRS_Total_t" = "#facaae",
+                               "L SRS_Total_r" = "#b4d4c7", "H SRS_Total_r" = "#facaae")) +
   coord_cartesian(xlim = c(NA, 200)) +
   xlab("") +
   ylab("") +
@@ -1047,10 +1047,10 @@ name <- paste0("differ_ADIR_", newDate, ".png")
 # CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-  scale_fill_manual(values = c("L ADI_R_Socia" = "#7c9d97", "H ADI_R_Socia" = "#eab080",
-                               "L ADI_R_Verba" = "#7c9d97", "H ADI_R_Verba" = "#eab080",
-                               "L ADI_R_Nonve" = "#7c9d97", "H ADI_R_Nonve" = "#eab080",
-                               "L ADI_R_Restr" = "#7c9d97", "H ADI_R_Restr" = "#eab080")) +
+  scale_fill_manual(values = c("L ADI_R_Socia" = "#b4d4c7", "H ADI_R_Socia" = "#facaae",
+                               "L ADI_R_Verba" = "#b4d4c7", "H ADI_R_Verba" = "#facaae",
+                               "L ADI_R_Nonve" = "#b4d4c7", "H ADI_R_Nonve" = "#facaae",
+                               "L ADI_R_Restr" = "#b4d4c7", "H ADI_R_Restr" = "#facaae")) +
   # scale_y_discrete(labels = c("L ADI_R_Socia" = "社交互动", "H ADI_R_Socia" = "",
   #                             "L ADI_R_Verba" = "语言沟通", "H ADI_R_Verba" = "",
   #                             "L ADI_R_Nonve" = "非语言沟通", "H ADI_R_Nonve" = "",
@@ -1162,10 +1162,10 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 # CairoPNG(file.path(plotDir, name), width = 7, height = 6, units = "in", dpi = 500)
 # ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
 #   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-#   scale_fill_manual(values = c("L VIN_Commu_t" = "#7c9d97", "H VIN_Commu_t" = "#eab080",
-#                                "L VIN_Daily_t" = "#7c9d97", "H VIN_Daily_t" = "#eab080",
-#                                "L VIN_Socia_t" = "#7c9d97", "H VIN_Socia_t" = "#eab080",
-#                                "L VIN_ABC_t" = "#7c9d97", "H VIN_ABC_t" = "#eab080")) +
+#   scale_fill_manual(values = c("L VIN_Commu_t" = "#b4d4c7", "H VIN_Commu_t" = "#facaae",
+#                                "L VIN_Daily_t" = "#b4d4c7", "H VIN_Daily_t" = "#facaae",
+#                                "L VIN_Socia_t" = "#b4d4c7", "H VIN_Socia_t" = "#facaae",
+#                                "L VIN_ABC_t" = "#b4d4c7", "H VIN_ABC_t" = "#facaae")) +
 #   scale_y_discrete(labels = c("L VIN_Commu_t" = "沟通", "H VIN_Commu_t" = "",
 #                               "L VIN_Daily_t" = "日常生活", "H VIN_Daily_t" = "",
 #                               "L VIN_Socia_t" = "社交", "H VIN_Socia_t" = "",
@@ -1248,15 +1248,15 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 # 
 # ggplot(var_long, aes(x = variable, y = factor(measure, levels = rnames), fill = measure)) +
 #   geom_density_ridges(scale = 1.3, quantile_lines = TRUE, size = 0.9, quantiles = 4) +
-#   scale_fill_manual(values = c("L VIN_Recep" = "#7c9d97", "H VIN_Recep" = "#eab080",
-#                                "L VIN_Expre" = "#7c9d97", "H VIN_Expre" = "#eab080",
-#                                "L VIN_Write" = "#7c9d97", "H VIN_Write" = "#eab080",
-#                                "L VIN_Perso" = "#7c9d97", "H VIN_Perso" = "#eab080",
-#                                "L VIN_Domes" = "#7c9d97", "H VIN_Domes" = "#eab080",
-#                                "L VIN_Commu" = "#7c9d97", "H VIN_Commu" = "#eab080",
-#                                "L VIN_Inter" = "#7c9d97", "H VIN_Inter" = "#eab080",
-#                                "L VIN_Play" = "#7c9d97", "H VIN_Play" = "#eab080",
-#                                "L VIN_Copin" = "#7c9d97", "H VIN_Copin" = "#eab080")) +
+#   scale_fill_manual(values = c("L VIN_Recep" = "#b4d4c7", "H VIN_Recep" = "#facaae",
+#                                "L VIN_Expre" = "#b4d4c7", "H VIN_Expre" = "#facaae",
+#                                "L VIN_Write" = "#b4d4c7", "H VIN_Write" = "#facaae",
+#                                "L VIN_Perso" = "#b4d4c7", "H VIN_Perso" = "#facaae",
+#                                "L VIN_Domes" = "#b4d4c7", "H VIN_Domes" = "#facaae",
+#                                "L VIN_Commu" = "#b4d4c7", "H VIN_Commu" = "#facaae",
+#                                "L VIN_Inter" = "#b4d4c7", "H VIN_Inter" = "#facaae",
+#                                "L VIN_Play" = "#b4d4c7", "H VIN_Play" = "#facaae",
+#                                "L VIN_Copin" = "#b4d4c7", "H VIN_Copin" = "#facaae")) +
 #   xlim(2, 22) +
 #   xlab("") +
 #   ylab("") +
@@ -1316,7 +1316,7 @@ name <- paste0("differ_bmi_", newDate, ".png")
 ggplot(var, aes(x = variable, y = factor(clusterID, levels = c("L", "H")), fill = clusterID)) +
   geom_density_ridges(scale = 1.2, quantile_lines = TRUE, size = 1, quantiles = 4) +
   scale_x_continuous(breaks = c(13, 18, 23, 28, 33), limits = c(NA, 36)) +
-  scale_fill_manual(values = c("L" = "#7c9d97", "H" = "#eab080")) +
+  scale_fill_manual(values = c("L" = "#b4d4c7", "H" = "#facaae")) +
   # coord_fixed(ratio = 6) + 
   xlab("") +
   ylab("") +

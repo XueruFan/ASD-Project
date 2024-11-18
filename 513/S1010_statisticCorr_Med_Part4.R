@@ -83,7 +83,10 @@ for (name_brain in names_brain) {
         temp$x <- scale(temp[[name_brain]])
         temp$med <- scale(temp[[name_med]])
         temp$y <- scale(temp[[name_cog]])
-        
+        # temp$x <- temp[[name_brain]]
+        # temp$med <- temp[[name_med]]
+        # temp$y <- temp[[name_cog]]
+        # 
         # 步骤1: 估计路径 A (X -> M)
         model_M1 <- lm(med ~ x + SITE_ID + TCV_centile, data = temp)
         
