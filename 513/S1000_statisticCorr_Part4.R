@@ -11,7 +11,7 @@
 rm(list=ls())
 packages <- c("tidyverse", "mgcv", "stringr", "reshape2", "magrittr", "ggplot2", "dplyr", "readxl",
               "stringr", "ggseg", "patchwork", "effectsize", "pwr", "cowplot",
-              "readr", "ggridges", "tidyr", "stats", "gamlss")
+              "readr", "ggridges", "tidyr", "stats", "gamlss", "openxlsx")
 # sapply(packages,instAll.packages,character.only=TRUE)
 sapply(packages, require, character.only = TRUE)
 
@@ -74,8 +74,11 @@ names_cog_p <- c("FIQ", "ADOS_2_SOCAFFECT" , "ADOS_2_TOTAL", "ADI_R_SOCIAL_TOTAL
                  "SRS_COMMUNICATION_RAW", "SRS_MOTIVATION_RAW", "SRS_MANNERISMS_RAW")
 names_cog_s <- c("ADOS_2_RRB")
 
+
 #### select: 控制变量、自变量、因变量
 names_col <- c("clusterID", "SITE_ID", "TCV_centile", names_brain, names_cog_p, names_cog_s)
+
+
 temp <- All[, names_col]
 temp[temp < 0] <- NA
 
@@ -83,6 +86,7 @@ L <- subset(temp, clusterID == "1")
 L <- L[, -1]
 H <- subset(temp, clusterID == "2")
 H <- H[, -1]
+
 
 # 初始化空数据框来存储相关计算的结果
 results_L <- data.frame()

@@ -224,7 +224,7 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 
 
 ######################### Part 4: Project extram percentage on the brain ###########################
-# 34个脑区的异常流行率, 对于每个脑区来说有多少人的体积常模分属于极端值（位于thr以外，这里thr取5%）
+# 34个脑区的异常流行率, 对于每个脑区来说有多少人的体积常模分属于极端值
 group1 <- (subset(cluster_result, clusterID == "1"))[, -1:-9]
 group2 <- (subset(cluster_result, clusterID == "2"))[, -1:-9]
 
@@ -283,7 +283,8 @@ label <- c("superiorfrontal", "rostralmiddlefrontal", "caudalmiddlefrontal",
 label_map_df <- cbind(label_map_df, label)
 
 ###########
-thr <- 0.025
+# thr <- 0.025
+thr <- 0.01
 
 # cluster 1
 # 小于
@@ -297,7 +298,8 @@ abno_g1_sorted <- abno_g1 %>% arrange(desc(perc))
 # 为 abno_g1_sorted 数据框添加中文标签列
 
 
-name <- paste0("Cluster_1_Ab025rank_", newDate, ".xlsx")
+# name <- paste0("Cluster_1_Ab025rank_", newDate, ".xlsx")
+name <- paste0("Cluster_1_Ab01rank_", newDate, ".xlsx")
 write.xlsx(abno_g1_sorted, file.path(resDir, name))
 
 # 画脑图
@@ -307,14 +309,18 @@ ggseg(.data = abno_g1, mapping = aes(fill = perc), color = "black", atlas = dk,
   theme_void() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.key.width = unit(1, "cm")) +
-  scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0, 18),
-                      breaks = seq(0, 18, by=6),  # 自定义区间
-                      labels = c("0", "6%", "12%", "18%")) +
+  # scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0, 18),
+  #                     breaks = seq(0, 18, by=6),  # 自定义区间
+  #                     labels = c("0", "6%", "12%", "18%")) +
+  scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0, 8),
+                      breaks = seq(0, 8, by=2),  # 自定义区间
+                      labels = c("0", "2%", "4%", "6%", "8%")) +
   # scale_fill_viridis_c(option = "inferno", limits = c(0, 18),  # 设置上下限
   #                      breaks = seq(0, 18, by=6),  # 自定义区间
   #                      labels = c("0", "6", "12", "18")) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
-name <- paste0("Cluster_1_Ab025brain_V2_", newDate, ".png")
+# name <- paste0("Cluster_1_Ab025brain_V2_", newDate, ".png")
+name <- paste0("Cluster_1_Ab01brain_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 # # 大于95%
 # abno <- apply(group1 >= (1-thr), 2, function(x) sum(x) / length(x) * 100)
@@ -340,7 +346,8 @@ abno_g2 <- data.frame(label)
 abno_g2$perc <- as.numeric(abno)
 abno_g2 <- merge(abno_g2, label_map_df, by = "label")
 abno_g2_sorted <- abno_g2 %>% arrange(desc(perc))
-name <- paste0("Cluster_2_Ab975rank_", newDate, ".xlsx")
+# name <- paste0("Cluster_2_Ab975rank_", newDate, ".xlsx")
+name <- paste0("Cluster_2_Ab99rank_", newDate, ".xlsx")
 write.xlsx(abno_g2_sorted, file.path(resDir, name))
 
 # 画脑图
@@ -350,15 +357,20 @@ ggseg(.data = abno_g2, mapping = aes(fill = perc), color = "black", atlas = dk,
   theme_void() +
   theme(legend.title = element_blank(), legend.position = "bottom",
         legend.key.width = unit(1, "cm")) +
-  scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0, 7),
+  # scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0, 7),
+  #                     # breaks = seq(0, 18, by=6),  # 自定义区间
+  #                     breaks = c(0, 2, 4, 6),  # 自定义区间
+  #                     labels = c("0", "2%", "4%", "6%")) +
+  scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0, 5),
                       # breaks = seq(0, 18, by=6),  # 自定义区间
-                      breaks = c(0, 2, 4, 6),  # 自定义区间
-                      labels = c("0", "2%", "4%", "6%")) +
+                      breaks = c(0, 2.5, 5),  # 自定义区间
+                      labels = c("0", "2.5%", "5%")) +
   # scale_fill_viridis_c(option = "inferno", limits = c(0, 18),  # 设置上下限
   #                      breaks = seq(0,18, by=6),  # 自定义区间
   #                      labels = c("0", "6", "12", "18")) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
-name <- paste0("Cluster_2_Ab975brain_V1_", newDate, ".png")
+# name <- paste0("Cluster_2_Ab975brain_V1_", newDate, ".png")
+name <- paste0("Cluster_2_Ab99_brain_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 # # 小于5%
 # abno <- apply(group2 <= thr, 2, function(x) sum(x) / length(x) * 100)
