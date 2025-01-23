@@ -92,16 +92,16 @@ for (id in id_group){
 }
   
 # 修改度量标准的显示名称
-all_data$Measure <- factor(all_data$Measure, levels = c("TCV", "WMV", "GMV", "sGMV", "Ventricles",
-                                                        "meanCT2", "totalSA2"),
-                           # labels = c("脑总容积", "白质总体积",
+all_data$Measure <- factor(all_data$Measure, levels = rev(c("TCV", "WMV", "GMV", "sGMV", "Ventricles",
+                                                        "meanCT2", "totalSA2")),
+                           # labels = rev(c("脑总容积", "白质总体积",
                            #            "皮层灰质总体积", "皮层下灰质总体积",
                            #            "脑脊液总体积", "平均皮层厚度",
-                           #            "皮层总表面积"))
-                           labels = c("TCV", "WMV",
+                           #            "皮层总表面积")))
+                           labels = rev(c("TCV", "WMV",
                                       "GMV", "sGMV",
                                       "CSF", "mCT",
-                                      "tSA"))
+                                      "tSA")))
 
 name_global <- paste0("Cluster_Centile_Global_", newDate, ".png")
 # CairoPNG(file.path(plotDir, name_global), width = 6, height = 5, units = "in", dpi = 500)
@@ -283,11 +283,10 @@ label <- c("superiorfrontal", "rostralmiddlefrontal", "caudalmiddlefrontal",
 label_map_df <- cbind(label_map_df, label)
 
 ###########
-# thr <- 0.025
-thr <- 0.01
+thr <- 0.025
+# thr <- 0.01
 
 # cluster 1
-# 小于
 abno <- apply(group1 < thr, 2, function(x) sum(x) / length(x) * 100)
 label <- names(abno)
 abno_g1 <- data.frame(label)
@@ -298,8 +297,8 @@ abno_g1_sorted <- abno_g1 %>% arrange(desc(perc))
 # 为 abno_g1_sorted 数据框添加中文标签列
 
 
-# name <- paste0("Cluster_1_Ab025rank_", newDate, ".xlsx")
-name <- paste0("Cluster_1_Ab01rank_", newDate, ".xlsx")
+name <- paste0("Cluster_1_Ab025rank_", newDate, ".xlsx")
+# name <- paste0("Cluster_1_Ab01rank_", newDate, ".xlsx")
 write.xlsx(abno_g1_sorted, file.path(resDir, name))
 
 # 画脑图
@@ -319,8 +318,8 @@ ggseg(.data = abno_g1, mapping = aes(fill = perc), color = "black", atlas = dk,
   #                      breaks = seq(0, 18, by=6),  # 自定义区间
   #                      labels = c("0", "6", "12", "18")) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
-# name <- paste0("Cluster_1_Ab025brain_V2_", newDate, ".png")
-name <- paste0("Cluster_1_Ab01brain_", newDate, ".png")
+name <- paste0("Cluster_1_Ab025brain_V2_", newDate, ".png")
+# name <- paste0("Cluster_1_Ab01brain_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 # # 大于95%
 # abno <- apply(group1 >= (1-thr), 2, function(x) sum(x) / length(x) * 100)
@@ -364,13 +363,13 @@ ggseg(.data = abno_g2, mapping = aes(fill = perc), color = "black", atlas = dk,
   scale_fill_gradient(low = "white", high = "#d26b66", limits = c(0, 5),
                       # breaks = seq(0, 18, by=6),  # 自定义区间
                       breaks = c(0, 2.5, 5),  # 自定义区间
-                      labels = c("0", "2.5%", "5%")) +
+                      labels = c("0", "2.5%", "5%")) 
   # scale_fill_viridis_c(option = "inferno", limits = c(0, 18),  # 设置上下限
   #                      breaks = seq(0,18, by=6),  # 自定义区间
   #                      labels = c("0", "6", "12", "18")) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
-# name <- paste0("Cluster_2_Ab975brain_V1_", newDate, ".png")
-name <- paste0("Cluster_2_Ab99_brain_", newDate, ".png")
+name <- paste0("Cluster_2_Ab975brain_V1_", newDate, ".png")
+# name <- paste0("Cluster_2_Ab99_brain_", newDate, ".png")
 ggsave(file.path(plotDir, name), width = 7.8, height = 3, units = "in", dpi = 500)
 # # 小于5%
 # abno <- apply(group2 <= thr, 2, function(x) sum(x) / length(x) * 100)

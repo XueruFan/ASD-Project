@@ -136,7 +136,7 @@ name <- file.path(plotDir, paste0("centile_regional_median_513_", newDate, ".png
 ggsave(name, width = 7.8, height = 3, units = "in", dpi = 500)
 
 
-######################### Part3: Plot density for 7 measures #######################################
+######################### Part 3: Plot density for 7 measures #######################################
 # ASD组7个全局指标常模分（中位数+四分位距）的概率密度图
 
 asd_global <- asd_centile[which(names(asd_centile) == "GMV"):which(names(asd_centile) == "totalSA2")]
@@ -146,16 +146,16 @@ all_data <- gather(asd_global, key = "Measure", value = "Centile", GMV:totalSA2,
                    factor_key = TRUE)
 
 # 修改度量标准的显示名称
-all_data$Measure <- factor(all_data$Measure, levels = c("TCV", "WMV", "GMV", "sGMV", "Ventricles",
-                                                        "meanCT2", "totalSA2"),
-                           # labels = c("脑总容积", "白质总体积",
+all_data$Measure <- factor(all_data$Measure, levels = rev(c("TCV", "WMV", "GMV", "sGMV", "Ventricles",
+                                                            "meanCT2", "totalSA2")),
+                           # labels = rev(c("脑总容积", "白质总体积",
                            #            "皮层灰质总体积", "皮层下灰质总体积",
                            #            "脑脊液总体积", "平均皮层厚度",
-                           #            "皮层总表面积"))
-                           labels = c("TCV", "WMV",
-                                      "GMV", "sGMV",
-                                      "CSF", "mCT",
-                                      "tSA"))
+                           #            "皮层总表面积")))
+                           labels = rev(c("TCV", "WMV",
+                                          "GMV", "sGMV",
+                                          "CSF", "mCT",
+                                          "tSA")))
 
 name_global <- paste0("centile_global_density_513_", newDate, ".png")
 # CairoPNG(file.path(plotDir, name_global), width = 6, height = 5, units = "in", dpi = 500)
