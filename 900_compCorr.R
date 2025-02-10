@@ -1,6 +1,6 @@
 rm(list=ls())
 packages <- c("tidyverse", "mgcv", "stringr", "reshape2", "magrittr", "ggplot2", "dplyr", "readxl",
-              "stringr", "ggseg", "patchwork", "effectsize", "pwr", "cowplot",
+              "stringr", "ggseg", "patchwork", "effectsize", "pwr", "cowplot", "openxlsx",
               "readr", "ggridges", "tidyr", "stats", "gamlss")
 # sapply(packages,instAll.packages,character.only=TRUE)
 sapply(packages, require, character.only = TRUE)
@@ -28,6 +28,9 @@ h_all <- subset(h_all, sign(coef.x) == sign(coef.y))
 cabic_l$name_brain <- paste0(cabic_l$name_brain, "_centile")
 l_all <- merge(cabic_l, abide_l, by = "name_brain")
 l_all <- subset(l_all, sign(coef.x) == sign(coef.y))
+
+write.xlsx(l_all, file.path(resuDir, "l_corr_part4_bothABIDEandCABIC.xlsx"), rowNames = F)
+write.xlsx(h_all, file.path(resuDir, "h_corr_part4_bothABIDEandCABIC.xlsx"), rowNames = F)
 
 
 
