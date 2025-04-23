@@ -1,8 +1,9 @@
-# this script is used to arrange preprocessed CABIC data
+# this script is used to extracted 7 global measures and 34 regional gray matter volumes
+# from the preprocessing CABIC data. 
 # Xue-Ru Fan 15 May 2023 @BNU
 ###################################################
-# Part 1: 提取7个全局指标的结果，csv
-# Part 2：提取34个DK分区体积的结果，并计算出CT，SA，Vertex，csv
+# Part 1: Extract 7 global measurements
+# Part 2：Extract 34 regional volume, and calaulate CT，SA，Vertex
 ###################################################
 
 rm(list=ls())
@@ -19,7 +20,7 @@ resDate <- "240928"
 SUB_ID <- list.files(path = dataDir)
 
 
-############################ Part 1: Get global data from raw freesurfer results ###################
+############################ Part 1: Extract 7 global measurements ###################
 # 从freesurfer结果文件中提取7个全局指标的结果
 
 ## make an empty dataframe to save global data
@@ -69,7 +70,7 @@ name <- paste0("cabic_global_", resDate, ".csv")
 write.csv(cabic_global, file.path(resuDir, name), row.names = F)
 
 
-############################ Part 2: Get regional data from raw freesurfer results #################
+############################ Part 2: Extract 34 regional volume, and calaulate CT，SA，Vertex ######
 # 从freesurfer结果文件中提取34个DK分区体积的结果，并计算出CT，SA，Vertex 
 
 cabic_regional <- data.frame()

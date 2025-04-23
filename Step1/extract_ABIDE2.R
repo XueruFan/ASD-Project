@@ -1,11 +1,12 @@
-# this script is used to arrange preprocessed ABIDE II data
+# this script is used to extracted 7 global measures and 34 regional gray matter volumes
+# from the preprocessing ABIDE II data. 
 # please note, this works for freesurfer6 results only
 # Xue-Ru Fan 15 May 2023 @BNU
 ###################################################
-# Part 0: 解压tar文件
-# Part 1: 整理出有预处理结果和通过人工质控的被试列表，csv
-# Part 2: 提取7个全局指标的结果，csv
-# Part 3：提取34个DK分区体积的结果，并计算出CT，SA，Vertex，csv
+# Part 0: Untar Files
+# Part 1: Get sub list after qc
+# Part 2: Extract 7 global measurements
+# Part 3：Extract 34 regional volume, and calaulate CT，SA，Vertex
 ###################################################
 
 rm(list=ls())
@@ -19,20 +20,20 @@ dataDir <- file.path(abideDir, "Preprocessed/ABIDE_II")
 resDate <- "240315"
 
 ############################ Part 0: Untar Files ###################################################
-# # 解压freesurfer预处理完的tar.gz文件
-# tarDir <- file.path(dataDir, "SiteWise")
-# untarDir <- file.path(dataDir, "SubWise")
+# 解压freesurfer预处理完的tar.gz文件
+tarDir <- file.path(dataDir, "SiteWise")
+untarDir <- file.path(dataDir, "SubWise")
 
-# ## get sub_id
-# SUB_file <- list.files(tarDir)
-# 
-# ## untar files
-# setwd(tarDir)
-# for (s in SUB_file) {
-#   untar(s, exdir = untarDir)
-# }
+## get sub_id
+SUB_file <- list.files(tarDir)
 
-############################ Part 1: get sub list after qc #########################################
+## untar files
+setwd(tarDir)
+for (s in SUB_file) {
+  untar(s, exdir = untarDir)
+}
+
+############################ Part 1: Get sub list after qc #########################################
 # 导入做完人工质控后的被试清单，与有预处理结果的被试清单取交集，整合出最终用于后续分析的被试清单
 abide_qc <- read.xlsx(file.path(abideDir, "ABIDE_T1qc/abide_qc_result_afterVisualQc.xlsx"))
 
@@ -54,7 +55,7 @@ name <- paste0("abide_2_sub4analysis_", resDate, ".csv")
 write.csv(SUB_file, file.path(abideDir, "Preprocessed", name), row.names = F, col.names = F)
 
 
-############################ Part 2: Get global data from raw freesurfer results ###################
+############################ Part 2: Extract 7 global measurements #################################
 # 从freesurfer结果文件中提取7个全局指标的结果
 
 ## make an empty dataframe to save global data
@@ -94,7 +95,7 @@ name <- paste0("abide_2_global_afterqc_", resDate, ".csv")
 write.csv(abide2_global, file.path(abideDir, "Preprocessed", name), row.names = F)
 
 
-############################ Part 3: Get regional data from raw freesurfer results #################
+############################ Part 3: Extract 34 regional volume, and calaulate CT，SA，Vertex ######
 # 从freesurfer结果文件中提取34个DK分区体积的结果，并计算出CT，SA，Vertex 
 
 abide2_regional <- data.frame()
