@@ -19,4 +19,7 @@ Before starting the analysis, we preprocessed the T1 MRI scans from the ABIDE (I
 The subsequent processing and analysis consist of XXX steps:
 
 **Step 1: Extract brain measurement metrics**
+
 We extracted 7 global measures and 34 regional gray matter volumes from the preprocessing results.
+
+
