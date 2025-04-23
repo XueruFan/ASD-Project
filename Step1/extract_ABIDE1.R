@@ -1,4 +1,4 @@
-# this script is used to extracted 7 global measures and 34 regional gray matter volumes
+# Extracte 7 global measures and 34 regional gray matter volumes
 # from the preprocessing ABIDE I data. 
 # please note, this works for freesurfer6 results only
 # Xue-Ru Fan 2 Jan 2024 @BNU
@@ -6,7 +6,7 @@
 # Part 0: Untar Files
 # Part 1: Get sub list after qc
 # Part 2: Extract 7 global measurements
-# Part 3：Extract 34 regional volume, and calaulate CT，SA，Vertex
+# Part 3：Extract 34 regional volume, and calculate CT, SA, Vertex
 ###################################################
 
 rm(list=ls())
@@ -108,7 +108,7 @@ write.csv(abide1_global, file.path(abideDir, "Preprocessed/abide_1_global_afterq
           row.names = F)
 
 
-############################ Part 3: Extract 34 regional volume, and calaulate CT，SA，Vertex ######
+############################ Part 3: Extract 34 regional volume, and calculate CT，SA，Vertex ######
 # 从freesurfer结果文件中提取分区体积的结果
 
 abide1_regional <- data.frame()

@@ -1,9 +1,9 @@
-# this script is used to extracted 7 global measures and 34 regional gray matter volumes
+# Extract 7 global measures and 34 regional gray matter volumes
 # from the preprocessing CABIC data. 
 # Xue-Ru Fan 15 May 2023 @BNU
 ###################################################
 # Part 1: Extract 7 global measurements
-# Part 2：Extract 34 regional volume, and calaulate CT，SA，Vertex
+# Part 2：Extract 34 regional volume, and calculate CT, SA, Vertex
 ###################################################
 
 rm(list=ls())
@@ -70,7 +70,7 @@ name <- paste0("cabic_global_", resDate, ".csv")
 write.csv(cabic_global, file.path(resuDir, name), row.names = F)
 
 
-############################ Part 2: Extract 34 regional volume, and calaulate CT，SA，Vertex ######
+############################ Part 2: Extract 34 regional volume, and calculate CT，SA，Vertex ######
 # 从freesurfer结果文件中提取34个DK分区体积的结果，并计算出CT，SA，Vertex 
 
 cabic_regional <- data.frame()
