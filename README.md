@@ -16,10 +16,13 @@ Code Release
 
 Before starting the analysis, we preprocessed the T1 MRI scans from the ABIDE (I and II) and CABIC datasets with FreeSurfer.
 
+In each script, there is detailed explaination.
+
 The subsequent processing and analysis consist of XXX steps:
 
 **Step 1: Extract brain measurement metrics**
 
 We extracted 7 global measures and 34 regional gray matter volumes from the preprocessing results.
 
+-
 
