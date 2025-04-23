@@ -11,7 +11,7 @@ Background
 
 We explore neurodevelopmental heterogeneity in Autism Spectrum Disorder (ASD) through normative modeling of cross-cultural cohorts. Leveraging large-scale datasets from Autism Brain Imaging Data Exchange (ABIDE) and China Autism Brain Imaging Consortium (CABIC), the model identifies two ASD subgroups with distinct brain morphological abnormalities: subgroup "L" is characterized by generally smaller brain region volumes and higher rates of abnormality, while subgroup "H" exhibits larger volumes with less pronounced deviations in specific areas. Key areas, such as the isthmus cingulate and transverse temporal gyrus, were identified as critical for subgroup differentiation and ASD trait correlations. In subgroup H, the regional volume of the isthmus cingulate cortex showed a direct correlation with individuals' autistic mannerisms, potentially corresponding to its slower post-peak volumetric declines during development. These findings offer insights into the biological mechanisms underlying ASD and support the advancement of subgroup-driven precision clinical practices.
 
-Code Release
+Code Release and Usage
 ====
 
 Before starting the analysis, we preprocessed the T1 MRI scans from the ABIDE (I and II) and CABIC datasets with FreeSurfer. The subsequent processing and analysis consist of XXX steps. Detailed explaination is in each script.
@@ -38,12 +38,19 @@ First combine demographic and MRI measurements, format the data based on LBCC st
 - `Step2/prepare_Combat_CABIC.R`
 - `Step2/do_Combat_CABIC.R`
 
-**Step 3: Calculate OoS centile scores**
+**Step 3: Centile scoring**
+
+We first calculated the OoS centile scores, then visualized the results and tested the normality of the scores with Jarque-Bera test.
 
 - `Step3/calculate_Centile_ABIDE.R`
 - `Step3/calculate_Centile_CABIC.R`
 
-Note: We saved the results separately for two age groups: <13 years and 5–9.9 years, enabling subsequent analyses on narrower age ranges.
+Note 1: We saved the results separately for two age groups: <13 years and 5–9.9 years, enabling subsequent analyses on narrower age ranges.
+
+- `../Age-13/plot_Centile_ABIDE.R`
+- `../Age-13/norm_Centile_ABIDE.R`
+- 
+Note 2: For the 5-9.9 years analysis, use the same files in the `Age510` folder.
 
 
 
