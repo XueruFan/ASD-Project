@@ -56,7 +56,7 @@ Note 3-2: For the 5-9.9 years analysis, use the same scripts in the `Age510` fol
 
 **Step 4: Spectral Clustering**
 
-We performed spectral clustering analysis using 34 regional volume OoS scores as classification features to subgroup male ASD individuals (<13 years) from the ABIDE dataset. Tested the normality of the scores with Jarque-Bera test for each cluster. Based on the previous classification results, used SVM-RFECV to select the optimal feature set for classification. Then visualized the results for each cluster.
+We performed spectral clustering analysis using 34 regional volume OoS scores as classification features to subgroup male ASD individuals (<13 years) from the ABIDE dataset. Tested the normality of the scores with Jarque-Bera test for each cluster. Based on the previous classification results, used SVM-RFECV to select the optimal feature set for classification. Then visualized the results for each cluster. At last, we calculated the extreme percentage of OoS centils for each cluster and project the results on the brain.
 
 - `Step4/Age-13/SpectralCluster/do_Clustering_ABIDE.R`
 
@@ -64,4 +64,8 @@ We performed spectral clustering analysis using 34 regional volume OoS scores as
   
 - `Step4/Age-13/SpectralCluster/norm_Centile_Clusters_ABIDE.R`
 - `Step4/Age-13/SpectralCluster/select_Feature_ABIDE.py`
+- `Step4/Age-13/SpectralCluster/plot_Clusters_ABIDE.R`
 
+  **Step 5: Analyze differences between clusters**
+
+-`Step4/Age-13/SpectralCluster/statistic_Pheno_ABIDE.R`
