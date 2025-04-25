@@ -52,7 +52,35 @@ Note 3-1: We saved the results separately for two age groups: <13 years and 5–
 - `../Age-13/norm_Centile_ABIDE.R`
 - `../Age-13/norm_Centile_CABIC.R`
 
-Note 3-2: For the 5-9.9 years analysis, use the same scripts in the `Age510` folder.
+Note 3-2: For the 5-9.9 years analysis, use the same scripts in the `Age510` folder. The same for the following steps.
 
 **Step 4: Spectral Clustering**
 
+We performed spectral clustering analysis using 34 regional volume OoS scores as classification features to subgroup male ASD individuals (<13 years) from the ABIDE dataset. Tested the normality of the scores with Jarque-Bera test for each cluster. Based on the previous classification results, used SVM-RFECV to select the optimal feature set for classification. Then visualized the results for each cluster. At last, we calculated the extreme percentage of OoS centils for each cluster and project the results on the brain.
+
+- `Step4/Age-13/SpectralCluster/do_Clustering_ABIDE.R`
+
+  Note 4-1: Four participants were removed due to abnormal brain segmentation - three from ABIDE I (IDs: 50752, 51008, 51208) and one from ABIDE II (ID: 29109).
+  
+- `Step4/Age-13/SpectralCluster/norm_Centile_Clusters_ABIDE.R`
+- `Step4/Age-13/SpectralCluster/select_Feature_ABIDE.py`
+- `Step4/Age-13/SpectralCluster/plot_Clusters_ABIDE.R`
+
+**Step 5: Analyze differences between clusters**
+
+  We analyzed the differences of population (individuals used for clustering analysis) composition, demographic and cognitive behavioral, and OoS centile scores between clusters.
+
+- `Step4/Age-13/SpectralCluster/statistic_Pheno_ABIDE.R`
+- `Step4/Age-13/SpectralCluster/statistic_Difference_Scales_PartA_ABIDE.R`
+
+  Note 5-1: For site difference analysis, only sites with total sample sizes >10 were included. For MRI scanner model/manufacturer comparisons, only those with >30 samples (which is also >10) were analyzed.
+
+- `Step4/Age-13/SpectralCluster/statistic_Difference_Scales_PartB_ABIDE.R`
+- `Step4/Age-13/SpectralCluster/arrange_Difference_Scales_ABIDE`
+- `Step4/Age-13/SpectralCluster/norm_Scales_Clusters_ABIDE.R`
+
+  Note 5-2: Test whether cognitive scores follow a normal distribution
+  
+- `Step4/Age-13/SpectralCluster/statistic_Difference_MRI_ABIDE.R`
+
+**Step 6: Correlation analysis of OoS centile scores and cognitive behaviors**
