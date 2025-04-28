@@ -70,17 +70,32 @@ We performed spectral clustering analysis using 34 regional volume OoS scores as
 
   We analyzed the differences of population (individuals used for clustering analysis) composition, demographic and cognitive behavioral, and OoS centile scores between clusters.
 
-- `Step4/Age-13/SpectralCluster/statistic_Pheno_ABIDE.R`
-- `Step4/Age-13/SpectralCluster/statistic_Difference_Scales_PartA_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/statistic_Pheno_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/statistic_Difference_Scales_PartA_ABIDE.R`
 
   Note 5-1: For site difference analysis, only sites with total sample sizes >10 were included. For MRI scanner model/manufacturer comparisons, only those with >30 samples (which is also >10) were analyzed.
 
-- `Step4/Age-13/SpectralCluster/statistic_Difference_Scales_PartB_ABIDE.R`
-- `Step4/Age-13/SpectralCluster/arrange_Difference_Scales_ABIDE`
-- `Step4/Age-13/SpectralCluster/norm_Scales_Clusters_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/statistic_Difference_Scales_PartB_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/arrange_Difference_Scales_ABIDE`
+- `Step5/Age-13/SpectralCluster/norm_Scales_Clusters_ABIDE.R`
 
   Note 5-2: Test whether cognitive scores follow a normal distribution
   
-- `Step4/Age-13/SpectralCluster/statistic_Difference_MRI_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/statistic_Difference_MRI_ABIDE.R`
 
-**Step 6: Correlation analysis of OoS centile scores and cognitive behaviors**
+**Step 6: Validate results using CABIC**
+
+Use the previously trained SVM model to predict clusters in the CABIC dataset. Then did the same ststistic analysis like Step 5.
+
+- `Step6/Age-13/SpectralCluster/predict_Clusters_CABIC.py`
+- `Step6/Age-13/SpectralCluster/plot_Clusters_CABIC.R`
+- `Step6/Age-13/SpectralCluster/statisic_Pheno_CABIC.R`
+- `Step6/Age-13/SpectralCluster/statistic_Difference_Scales_CABIC.R`
+
+**Step 7: Correlation analysis of OoS centile scores and cognitive behaviors**
+
+We performed correlation analysis between brain and behavioral measures involving in the steps before.
+
+- `Step5/Age-13/SpectralCluster/statistic_Correlations_Clusters_ABIDE.R`
+  
+  Note 6-1: Control Site as a fixed effect and TCV as a covariate. Pearson's correlation was applied to most measures, while Spearman's correlation was used for ADOS-2 RRB scores due to their limited range.
