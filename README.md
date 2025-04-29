@@ -105,3 +105,20 @@ We performed correlation analysis between brain and behavioral measures involvin
 - `Step7/Age-13/SpectralCluster/plot_Correlations_Clusters_ABIDE.R`
 - `Step7/Age-13/SpectralCluster/plot_Correlations_Clusters_CABIC.R`
 - `Step7/Age-13/SpectralCluster/compare_Correlations_Clusters.R`
+
+**Step 8: Structural covarianc analysis**
+
+We analyzed structural covariance on OoS scores of each two DK regions. Then we performed correlation analysis on residuals obtained from linear regression models that controlled for site effects and TCV OoS scores.
+
+- `Step7/Age-13/SpectralCluster/stru_Covariance_ABIDE.R`
+- `Step7/Age-13/SpectralCluster/stru_Covariance_CABIC.R`
+- `Step7/Age-13/SpectralCluster/compare_StruCovariance.R`
+- `Step7/Age-13/SpectralCluster/statistic_Correlations_StruCova.R`
+
+**SM-Step1. Analyze age-related changes in OoS scores**
+
+We use GAMM to explore the relationship between OoS scores of age and spectific brain regions.
+
+- `SM-Step1/Age-13/SpectralCluster/gamm_Centile_Clusters_ABIDE.R`
+- `SM-Step1/Age-13/SpectralCluster/gamm_Centile_Clusters_CABIC.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_gamm_Centile.R`
