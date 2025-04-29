@@ -96,6 +96,12 @@ Use the previously trained SVM model to predict clusters in the CABIC dataset. T
 
 We performed correlation analysis between brain and behavioral measures involving in the steps before.
 
-- `Step5/Age-13/SpectralCluster/statistic_Correlations_Clusters_ABIDE.R`
+- `Step7/Age-13/SpectralCluster/statistic_Correlations_Clusters_ABIDE.R`
+- `Step7/Age-13/SpectralCluster/statistic_Correlations_Clusters_CABIC.R`
   
-  Note 6-1: Control Site as a fixed effect and TCV as a covariate. Pearson's correlation was applied to most measures, while Spearman's correlation was used for ADOS-2 RRB scores due to their limited range.
+  Note 7-1: Control Site as a fixed effect and TCV as a covariate. Pearson's correlation was applied to most measures, while Spearman's correlation was used for ADOS-2 RRB scores due to their limited range.
+
+- `Step7/Age-13/SpectralCluster/compare_Correlations_Clusters.R`
+- `Step7/Age-13/SpectralCluster/plot_Correlations_Clusters_ABIDE.R`
+- `Step7/Age-13/SpectralCluster/plot_Correlations_Clusters_CABIC.R`
+- `Step7/Age-13/SpectralCluster/compare_Correlations_Clusters.R`
