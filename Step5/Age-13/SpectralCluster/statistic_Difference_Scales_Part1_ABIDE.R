@@ -5,7 +5,7 @@
 # Part 01: Site
 # Part 02: Manufacturer and scan
 # Part 03: DSM tpye
-# Part 1: 年龄
+# Part 1: Age
 # Part 2: IQ
 # SM Part 1: ADOS_G
 # Part 3: ADOS_2
