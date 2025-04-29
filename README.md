@@ -70,17 +70,69 @@ We performed spectral clustering analysis using 34 regional volume OoS scores as
 
   We analyzed the differences of population (individuals used for clustering analysis) composition, demographic and cognitive behavioral, and OoS centile scores between clusters.
 
-- `Step4/Age-13/SpectralCluster/statistic_Pheno_ABIDE.R`
-- `Step4/Age-13/SpectralCluster/statistic_Difference_Scales_PartA_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/statistic_Pheno_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/statistic_Difference_Scales_PartA_ABIDE.R`
 
   Note 5-1: For site difference analysis, only sites with total sample sizes >10 were included. For MRI scanner model/manufacturer comparisons, only those with >30 samples (which is also >10) were analyzed.
 
-- `Step4/Age-13/SpectralCluster/statistic_Difference_Scales_PartB_ABIDE.R`
-- `Step4/Age-13/SpectralCluster/arrange_Difference_Scales_ABIDE`
-- `Step4/Age-13/SpectralCluster/norm_Scales_Clusters_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/statistic_Difference_Scales_PartB_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/arrange_Difference_Scales_ABIDE`
+- `Step5/Age-13/SpectralCluster/norm_Scales_Clusters_ABIDE.R`
 
   Note 5-2: Test whether cognitive scores follow a normal distribution
   
-- `Step4/Age-13/SpectralCluster/statistic_Difference_MRI_ABIDE.R`
+- `Step5/Age-13/SpectralCluster/statistic_Difference_MRI_ABIDE.R`
 
-**Step 6: Correlation analysis of OoS centile scores and cognitive behaviors**
+**Step 6: Validate results using CABIC**
+
+Use the previously trained SVM model to predict clusters in the CABIC dataset. Then did the same ststistic analysis like Step 5.
+
+- `Step6/Age-13/SpectralCluster/predict_Clusters_CABIC.py`
+- `Step6/Age-13/SpectralCluster/plot_Clusters_CABIC.R`
+- `Step6/Age-13/SpectralCluster/statisic_Pheno_CABIC.R`
+- `Step6/Age-13/SpectralCluster/statistic_Difference_Scales_CABIC.R`
+
+**Step 7: Correlation analysis of OoS centile scores and cognitive behaviors**
+
+We performed correlation analysis between brain and behavioral measures involving in the steps before.
+
+- `Step7/Age-13/SpectralCluster/statistic_Correlations_Clusters_ABIDE.R`
+- `Step7/Age-13/SpectralCluster/statistic_Correlations_Clusters_CABIC.R`
+  
+  Note 7-1: Control Site as a fixed effect and TCV as a covariate. Pearson's correlation was applied to most measures, while Spearman's correlation was used for ADOS-2 RRB scores due to their limited range.
+
+- `Step7/Age-13/SpectralCluster/compare_Correlations_Clusters.R`
+- `Step7/Age-13/SpectralCluster/plot_Correlations_Clusters_ABIDE.R`
+- `Step7/Age-13/SpectralCluster/plot_Correlations_Clusters_CABIC.R`
+- `Step7/Age-13/SpectralCluster/compare_Correlations_Clusters.R`
+
+**Step 8: Structural covarianc analysis**
+
+We analyzed structural covariance on OoS scores of each two DK regions. Then we performed correlation analysis on residuals obtained from linear regression models that controlled for site effects and TCV OoS scores.
+
+- `Step7/Age-13/SpectralCluster/stru_Covariance_ABIDE.R`
+- `Step7/Age-13/SpectralCluster/stru_Covariance_CABIC.R`
+- `Step7/Age-13/SpectralCluster/compare_StruCovariance.R`
+- `Step7/Age-13/SpectralCluster/statistic_Correlations_StruCova.R`
+
+**SM-Step 1. Analyze age-related changes in OoS scores**
+
+We use GAMM to explore the relationship between OoS scores of age and spectific brain regions.
+
+- `SM-Step1/Age-13/SpectralCluster/gamm_Centile_Clusters_ABIDE.R`
+- `SM-Step1/Age-13/SpectralCluster/gamm_Centile_Clusters_CABIC.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_gamm_Centile_ABIDE.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_gamm_Centile_CABIC.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_gamm_Centile_Both.R`
+
+  Note SM1-1: Only subgroup H were plotted in this code.
+
+**SM-Step 2. Plot with LBCC**
+
+We ploted LBCC-corrected 34 regional volumes with GAM smoothing for clusters.
+
+- `SM-Step1/Age-13/SpectralCluster/plot_LBCC_ABIDE.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_LBCC_CABIC.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_LBCC_Both.R`
+
+  Note SM2-1: Only subgroup H were plotted in this code.
