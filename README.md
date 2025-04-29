@@ -115,10 +115,24 @@ We analyzed structural covariance on OoS scores of each two DK regions. Then we 
 - `Step7/Age-13/SpectralCluster/compare_StruCovariance.R`
 - `Step7/Age-13/SpectralCluster/statistic_Correlations_StruCova.R`
 
-**SM-Step1. Analyze age-related changes in OoS scores**
+**SM-Step 1. Analyze age-related changes in OoS scores**
 
 We use GAMM to explore the relationship between OoS scores of age and spectific brain regions.
 
 - `SM-Step1/Age-13/SpectralCluster/gamm_Centile_Clusters_ABIDE.R`
 - `SM-Step1/Age-13/SpectralCluster/gamm_Centile_Clusters_CABIC.R`
-- `SM-Step1/Age-13/SpectralCluster/plot_gamm_Centile.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_gamm_Centile_ABIDE.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_gamm_Centile_CABIC.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_gamm_Centile_Both.R`
+
+  Note SM1-1: Only subgroup H were plotted in this code.
+
+**SM-Step 2. Plot with LBCC**
+
+We ploted LBCC-corrected 34 regional volumes with GAM smoothing for clusters.
+
+- `SM-Step1/Age-13/SpectralCluster/plot_LBCC_ABIDE.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_LBCC_CABIC.R`
+- `SM-Step1/Age-13/SpectralCluster/plot_LBCC_Both.R`
+
+  Note SM2-1: Only subgroup H were plotted in this code.
