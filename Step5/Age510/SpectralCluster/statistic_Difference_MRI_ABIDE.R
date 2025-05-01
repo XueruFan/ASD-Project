@@ -1,5 +1,5 @@
 # Analyze differences of OoS centiles of MRI measures between the clusters
-# Male, ASD, <13 years old, Spectral Clustering
+# Male, ASD, 5~9.9 years old, Spectral Clustering
 # Xue-Ru Fan 24 Oct 2023 @BNU
 ################################
 
@@ -34,8 +34,8 @@ for (i in 1:41) {
   # var[, 2] <- scale(var[, 2])
   
   # 统计检验
-  L <- subset(var, clusterID == 1)
-  H <- subset(var, clusterID == 2)
+  L <- subset(var, clusterID == 2)
+  H <- subset(var, clusterID == 1)
   
   Pvalue[i, "t-test"] <- t.test(L[,2], H[,2])[["p.value"]]
   Pvalue[i, "w-test"] <- wilcox.test(L[,2], H[,2])[["p.value"]]

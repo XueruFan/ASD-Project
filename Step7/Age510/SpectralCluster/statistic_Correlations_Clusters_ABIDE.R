@@ -69,9 +69,9 @@ names_col <- c("clusterID", "SITE_ID", "TCV_centile", names_brain, names_cog_p, 
 temp <- All[, names_col]
 temp[temp < 0] <- NA
 
-L <- subset(temp, clusterID == "1")
+L <- subset(temp, clusterID == "2")
 L <- L[, -1]
-H <- subset(temp, clusterID == "2")
+H <- subset(temp, clusterID == "1")
 H <- H[, -1]
 
 

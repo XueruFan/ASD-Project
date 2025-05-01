@@ -1,5 +1,5 @@
 # Analyze demographic and cognitive behavioral differences between the clusters (Part B)
-# Male, ASD, <13 years old, Spectral Clustering
+# Male, ASD, 5~9.9 years old, Spectral Clustering
 # Xue-Ru Fan 24 Oct 2023 @BNU
 ################################
 # Part 1: RBSR
@@ -32,8 +32,8 @@ cluster <- read.csv(file.path(clustDir, name))
 colnames(cluster)[3:ncol(cluster)] <- paste0(colnames(cluster)[3:ncol(cluster)], "_centile")
 
 All <- merge(cluster, pheno, by = "participant", all.x = TRUE)
-All[which(All$clusterID == "1"), 'clusterID'] = "L"
-All[which(All$clusterID == "2"), 'clusterID'] = "H"
+All[which(All$clusterID == "1"), 'clusterID'] = "H"
+All[which(All$clusterID == "2"), 'clusterID'] = "L"
 All$clusterID <- factor(All$clusterID)
 
 evalu <- c("Median", "Mean", "SD") # 计算哪些统计值

@@ -41,9 +41,9 @@ colnames(temp)[1] <- "clusterID"
 
 temp <- subset(temp, Age < 13)
 
-L <- subset(temp, clusterID == "1")
+L <- subset(temp, clusterID == "2")
 L <- L[, c(-1,-4)]
-H <- subset(temp, clusterID == "2")
+H <- subset(temp, clusterID == "1")
 H <- H[, c(-1,-4)]
 
 # 初始化空数据框来存储相关计算的结果

@@ -91,7 +91,7 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 ##### Part 2: Plot the probability density of OoS centile (median) for 7 global measures ###########
 # 初始化空数据框
 all_data <- data.frame()
-id_group <- c("1", "2") # cluster 1 是L， 2是H
+id_group <- c("1", "2")
 
 for (id in id_group){
   # id <- "1"

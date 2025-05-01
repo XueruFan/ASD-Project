@@ -33,8 +33,8 @@ All <- merge(cluster, pheno, by = "participant")
 All <- subset(All, SEX == "M" & GROUP == "ASD")
 All <- subset(All, AGE >= 5 & AGE < 13)
 
-All[which(All$predicted_cluster == "1"), 'clusterID'] = "L"
-All[which(All$predicted_cluster == "2"), 'clusterID'] = "H"
+All[which(All$predicted_cluster == "1"), 'clusterID'] = "H"
+All[which(All$predicted_cluster == "2"), 'clusterID'] = "L"
 All$clusterID <- factor(All$clusterID)
 
 evalu <- c("Median", "Mean", "SD") # 计算哪些统计值

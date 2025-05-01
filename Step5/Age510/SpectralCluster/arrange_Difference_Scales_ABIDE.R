@@ -1,5 +1,5 @@
 # Summary all the demographic and cognitive behavioral differences evaluated before
-# Male, ASD, <13 years old, Spectral Clustering
+# Male, ASD, 5~9.9 years old, Spectral Clustering
 # Xue-Ru Fan 24 Oct 2023 @BNU
 ################################
 
