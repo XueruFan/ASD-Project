@@ -47,14 +47,12 @@ We first calculated the OoS centile scores, then visualized the results and test
 
 Note 3-1: We saved the results separately for two age groups: <13 years and 5–9.9 years, enabling subsequent analyses on narrower age ranges.
 
-- `../Age-13/plot_Centile_ABIDE.R`
-- `../Age-13/plot_Centile_CABIC.R`
-- `../Age-13/norm_Centile_ABIDE.R`
-- `../Age-13/norm_Centile_CABIC.R`
+- `Step3/Age-13/plot_Centile_ABIDE.R`
+- `Step3/Age-13/plot_Centile_CABIC.R`
+- `Step3/Age-13/norm_Centile_ABIDE.R`
+- `Step3/Age-13/norm_Centile_CABIC.R`
 
-Note 3-2: For the 5-9.9 years analysis, use the same scripts in the `Age510` folder. The same for the following steps.
-
-**Step 4: Spectral Clustering**
+**Step 4: Spectral clustering**
 
 We performed spectral clustering analysis using 34 regional volume OoS scores as classification features to subgroup male ASD individuals (<13 years) from the ABIDE dataset. Tested the normality of the scores with Jarque-Bera test for each cluster. Based on the previous classification results, used SVM-RFECV to select the optimal feature set for classification. Then visualized the results for each cluster. At last, we calculated the extreme percentage of OoS centils for each cluster and project the results on the brain.
 
@@ -136,3 +134,13 @@ We ploted LBCC-corrected 34 regional volumes with GAM smoothing for clusters.
 - `SM-Step1/Age-13/SpectralCluster/plot_LBCC_Both.R`
 
   Note SM2-1: Only subgroup H were plotted in this code.
+
+**SM-Analysis 1. Narrow age range analysis**
+
+.....scriptss are in the `Age510` folder within each step.
+
+**SM-Analysis 2. GMM clustering**
+
+We performed GMM clustering analysis as 
+
+All the scripts are in the `GmmCluster` folder within each step.
