@@ -18,12 +18,12 @@ sapply(packages, require, character.only = TRUE)
 
 # abideDir <- '/Volumes/Xueru/PhDproject/ABIDE' # MAC
 cabicDir <- 'E:/PhDproject/CABIC'
-resuDir <- file.path(cabicDir, "result/pred/Spect513")
+resuDir <- file.path(cabicDir, "result/inde/Spect-13")
 plotDir <- file.path(resuDir, "Plot/Cluster")
 newDate <- "250117"
 oldDate <- "240928"
 
-name <- paste0("cabic_cluster_predictions_513_", oldDate, ".csv")
+name <- paste0("Cluster_", oldDate, ".csv")
 cluster_result <- read.csv(file.path(resuDir, name))
 
 ########## Part 1: Project the OoS centile (median) of 34 regional volumes on the brain ############
@@ -49,13 +49,13 @@ ggseg(.data = asd_parc_centile, mapping = aes(fill = median), color = "black", a
                        breaks = seq(0.40, 0.70, by = 0.1)) +
   guides(fill = guide_colourbar(frame.colour = "black", frame.linewidth = 1, ticks = FALSE))
 
-name <- file.path(plotDir, paste0("centile_regional_median_513_", oldDate, ".png"))
+name <- file.path(plotDir, paste0("centile_regional_median_", oldDate, ".png"))
 ggsave(name, width = 7.8, height = 3, units = "in", dpi = 500)
 
 ########## Part 2: Project the OoS centile (median) of 34 regional volumes for each cluster ########
-group1 <- (subset(cluster_result, predicted_cluster == "1"))[, which(names(cluster_result) == "bankssts"):
+group1 <- (subset(cluster_result, clusterID == "2"))[, which(names(cluster_result) == "bankssts"):
                                                                which(names(cluster_result) == "insula")]
-group2 <- (subset(cluster_result, predicted_cluster == "2"))[, which(names(cluster_result) == "bankssts"):
+group2 <- (subset(cluster_result, clusterID == "1"))[, which(names(cluster_result) == "bankssts"):
                                                                which(names(cluster_result) == "insula")]
 ######################### cluster 1
 asd_parc <- group1
@@ -112,11 +112,11 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 ########## Part 3: Plot the probability density of OoS centile (median) for 7 global measures ######
 # 初始化空数据框
 all_data <- data.frame()
-id_group <- c("1", "2") # cluster 1 是L， 2是H
+id_group <- c("1", "2") # cluster 1 是H， 2是L
 
 for (id in id_group){
   # id <- "1"
-  eval(parse(text = paste0("group", id, " <- (subset(cluster_result, predicted_cluster == ", id, "))[, -1:-3]")))
+  eval(parse(text = paste0("group", id, " <- (subset(cluster_result, clusterID == ", id, "))[, -1:-2]")))
   eval(parse(text = paste0("global <- group", id)))
   global <- global[which(names(global) == "GMV"):which(names(global) == "totalSA2")]
   asd_long <- gather(global, key = "Measure", value = "Centile", GMV:totalSA2, na.rm = TRUE,
@@ -145,7 +145,7 @@ ggplot(all_data, aes(x = Centile, y = Measure, fill = Group, group = interaction
   # geom_density_ridges(scale = 1.6, quantile_lines = TRUE, size = 0.7, quantiles = 2, alpha = .75) +
   geom_density_ridges(scale = 1.6, quantile_lines = TRUE, size = 1, quantiles = 2, alpha = .9) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  scale_fill_manual(values = c("1" = "#b4d4c7", "2" = "#facaae")) +  # 此处为两组人设置不同颜色
+  scale_fill_manual(values = c("1" = "#facaae", "2" = "#b4d4c7")) +  # 此处为两组人设置不同颜色
   coord_fixed(ratio = 0.2) + 
   xlab("") +
   ylab("") +
@@ -170,7 +170,7 @@ id_group <- c("1", "2") # cluster 1 是L， 2是H
 
 for (id in id_group){
   # id <- "1"
-  eval(parse(text = paste0("group", id, " <- (subset(cluster_result, predicted_cluster == ", id, "))[, -1:-3]")))
+  eval(parse(text = paste0("group", id, " <- (subset(cluster_result, clusterID == ", id, "))[, -1:-2]")))
   eval(parse(text = paste0("regional <- group", id)))
   regional <- regional[which(names(regional) == "bankssts"):which(names(regional) == "insula")]
   asd_long <- gather(regional, key = "Measure", value = "Centile", bankssts:insula, na.rm = TRUE,
@@ -226,7 +226,7 @@ ggplot(all_data, aes(x = Centile, y = Measure, fill = Group, group = interaction
   # geom_density_ridges(scale = 1.7, quantile_lines = TRUE, size = 0.5, quantiles = 2, alpha = .75) +
   geom_density_ridges(scale = 2, quantile_lines = TRUE, size = 0.75, quantiles = 2, alpha = .9) +
   scale_x_continuous(breaks = seq(0, 1, by = 0.25), labels = c("0%", "25%", "50%", "75%", "100%")) +
-  scale_fill_manual(values = c("1" = "#b4d4c7", "2" = "#facaae")) +
+  scale_fill_manual(values = c("1" = "#facaae", "2" = "#b4d4c7")) +
   # coord_fixed(ratio = 0.15) + 
   xlab("") +
   ylab("") +
@@ -246,9 +246,9 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 
 ########## Part 5: Project extreme percentage (<2.5% and >97.5%) of OoS centils on the brain #######
 # 34个脑区的异常流行率, 对于每个脑区来说有多少人的体积常模分属于极端值（位于thr以外，这里thr取5%）
-group1 <- (subset(cluster_result, predicted_cluster == "1"))[, which(names(cluster_result) == "bankssts"):
+group1 <- (subset(cluster_result, clusterID == "2"))[, which(names(cluster_result) == "bankssts"):
                                                                which(names(cluster_result) == "insula")]
-group2 <- (subset(cluster_result, predicted_cluster == "2"))[, which(names(cluster_result) == "bankssts"):
+group2 <- (subset(cluster_result, clusterID == "1"))[, which(names(cluster_result) == "bankssts"):
                                                                which(names(cluster_result) == "insula")]
 
 # label_map <- c("额上回" = "superiorfrontal",
