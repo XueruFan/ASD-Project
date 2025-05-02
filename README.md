@@ -147,6 +147,10 @@ For example,
 
 We performed another clustering method GMM analysis to evaluate the robustness of our results. Related scripts are in the `GmmCluster` folder within each step.
 
+For example, 
+
+- `Step4/Age-13/GmmCluster/do_Clustering_ABIDE.R`
+
 **SM-Analysis 3. Indepentent clustering analysis on CABIC**
 
 We performed spectral clustering on CABIC as did on ABIDE, to evaluate the consistency of cluster ID compare to predicting the cluster with ABIDE classifier.
