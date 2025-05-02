@@ -137,10 +137,20 @@ We ploted LBCC-corrected 34 regional volumes with GAM smoothing for clusters.
 
 **SM-Analysis 1. Narrow age range analysis**
 
-.....scriptss are in the `Age510` folder within each step.
+After calculated the OoS centile scores, we also performed the same analysis from clustering with a narrow age range 5.0~9.9 years. Related scripts are in the `Age510` folder within each step.
+
+For example, 
+
+- `Step4/Age510/SpectralCluster/do_Clustering_ABIDE.R`
 
 **SM-Analysis 2. GMM clustering**
 
-We performed GMM clustering analysis as 
+We performed another clustering method GMM analysis to evaluate the robustness of our results. Related scripts are in the `GmmCluster` folder within each step.
 
-All the scripts are in the `GmmCluster` folder within each step.
+**SM-Analysis 3. Indepentent clustering analysis on CABIC**
+
+We performed spectral clustering on CABIC as did on ABIDE, to evaluate the consistency of cluster ID compare to predicting the cluster with ABIDE classifier.
+
+- `SM-Analysis3/do_Clustering_CABIC.R`
+- `SM-Analysis3/plot_Clusters_CABIC.R`
+- `SM-Analysis3/compare_ClusterID.R`
