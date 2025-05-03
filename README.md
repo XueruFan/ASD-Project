@@ -143,6 +143,10 @@ For example,
 
 - `Step4/Age510/SpectralCluster/do_Clustering_ABIDE.R`
 
+To evaluate the consistency of cluster ID compare to the clustering analysis on broad (<13 years) and narrow (5~9.9 years) age range, use following script,
+
+- `SM-Analysis1/compare_ClusterID.R`
+
 **SM-Analysis 2. GMM clustering**
 
 We performed another clustering method GMM analysis to evaluate the robustness of our results. Related scripts are in the `GmmCluster` folder within each step.
