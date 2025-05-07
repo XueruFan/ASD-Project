@@ -39,3 +39,6 @@ compare <- merged_data %>%
   )
 
 write.csv(compare, file.path(cabicDir, "compare_ClusterID.csv"), row.names = FALSE)
+
+colnames(merged_data) <- c("Participant", "IndepententClusterID", "PredictedClusterID")
+write.csv(merged_data, file.path(cabicDir, "CABIC_ClusterID.csv"), row.names = FALSE)

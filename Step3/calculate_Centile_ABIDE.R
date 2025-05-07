@@ -89,3 +89,33 @@ write.csv(abide_centile_513, file.path(dataDir, name), row.names = F)
 abide_centile_510 <- subset(abide_centile, Age < 10)
 name <- paste0("abide_All_centile_510_", resDate, ".csv")
 write.csv(abide_centile_510, file.path(dataDir, name), row.names = F)
+
+############## save the results of participants aging 6~9.9
+abide_centile_610 <- subset(abide_centile, Age < 10 & Age >= 6 & dx == "ASD" & sex == "Male")
+name <- paste0("abide_All_centile_610_", resDate, ".csv")
+write.csv(abide_centile_610, file.path(dataDir, name), row.names = F)
+
+############## save the results of participants aging 10~12.9
+abide_centile_112 <- subset(abide_centile, Age >= 10 & Age < 12 & dx == "ASD" & sex == "Male")
+name <- paste0("abide_All_centile_112_", resDate, ".csv")
+write.csv(abide_centile_112, file.path(dataDir, name), row.names = F)
+
+############## save the results of participants aging 7~10.9
+abide_centile_711 <- subset(abide_centile, Age < 11 & Age >= 7 & dx == "ASD" & sex == "Male")
+name <- paste0("abide_All_centile_711_", resDate, ".csv")
+write.csv(abide_centile_711, file.path(dataDir, name), row.names = F)
+
+############## save the results of participants aging 8~11.9
+abide_centile_812 <- subset(abide_centile, Age < 12 & Age >= 8 & dx == "ASD" & sex == "Male")
+name <- paste0("abide_All_centile_812_", resDate, ".csv")
+write.csv(abide_centile_812, file.path(dataDir, name), row.names = F)
+
+############## save the results of participants aging 9~12.9
+abide_centile_913 <- subset(abide_centile, Age < 13 & Age >= 9 & dx == "ASD" & sex == "Male")
+name <- paste0("abide_All_centile_913_", resDate, ".csv")
+write.csv(abide_centile_913, file.path(dataDir, name), row.names = F)
+
+############## save the results of participants aging 5~8.9
+abide_centile_509 <- subset(abide_centile, Age < 9 & Age >= 5 & dx == "ASD" & sex == "Male")
+name <- paste0("abide_All_centile_509_", resDate, ".csv")
+write.csv(abide_centile_509, file.path(dataDir, name), row.names = F)
