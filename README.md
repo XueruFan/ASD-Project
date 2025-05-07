@@ -165,7 +165,7 @@ We performed spectral clustering on CABIC as did on ABIDE, to evaluate the consi
 
 **SM-Analysis 4. Clustering analysis on NYU site only**
 
-We performed spectral clustering on ABIDE-NYU site, to evaluate the consistency of cluster ID compare with ABIDE classifier in main amalysis.
+We performed spectral clustering on ABIDE-NYU site, to evaluate the consistency of cluster ID compare with ABIDE classifier in main analysis.
 
 - `SM-Analysis4/do_Clustering_CABIC.R`
 - `SM-Analysis4/compare_ClusterID.R`
