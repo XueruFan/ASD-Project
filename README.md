@@ -45,7 +45,7 @@ We first calculated the OoS centile scores, then visualized the results and test
 - `Step3/calculate_Centile_ABIDE.R`
 - `Step3/calculate_Centile_CABIC.R`
 
-Note 3-1: We saved the results separately for two age groups: <13 years and 5–9.9 years, enabling subsequent analyses on narrower age ranges.
+Note 3-1: We saved the results separately for different age groups to enable subsequent analyses on narrower age ranges.
 
 - `Step3/Age-13/plot_Centile_ABIDE.R`
 - `Step3/Age-13/plot_Centile_CABIC.R`
@@ -142,6 +142,10 @@ After calculated the OoS centile scores, we also performed the same analysis fro
 For example, 
 
 - `Step4/Age510/SpectralCluster/do_Clustering_ABIDE.R`
+
+To evaluate the consistency of cluster ID compare to the clustering analysis on broad (<13 years) and narrow (5~9.9 years) age range, use following script,
+
+- `SM-Analysis1/compare_ClusterID.R`
 
 **SM-Analysis 2. GMM clustering**
 
