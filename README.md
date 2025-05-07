@@ -162,3 +162,10 @@ We performed spectral clustering on CABIC as did on ABIDE, to evaluate the consi
 - `SM-Analysis3/do_Clustering_CABIC.R`
 - `SM-Analysis3/plot_Clusters_CABIC.R`
 - `SM-Analysis3/compare_ClusterID.R`
+
+**SM-Analysis 4. Clustering analysis on NYU site only**
+
+We performed spectral clustering on ABIDE-NYU site, to evaluate the consistency of cluster ID compare with ABIDE classifier in main amalysis.
+
+- `SM-Analysis4/do_Clustering_CABIC.R`
+- `SM-Analysis4/compare_ClusterID.R`
