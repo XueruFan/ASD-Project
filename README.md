@@ -157,8 +157,18 @@ For example,
 
 **SM-Analysis 3. Indepentent clustering analysis on CABIC**
 
-We performed spectral clustering on CABIC as did on ABIDE, to evaluate the consistency of cluster ID compare to predicting the cluster with ABIDE classifier.
+We performed spectral clustering on CABIC as did on ABIDE, to evaluate the consistency of cluster ID compare to predicting the cluster with ABIDE classifier. These scripts have the samiliar functions as in `Step 7` and `Step 8`.
 
 - `SM-Analysis3/do_Clustering_CABIC.R`
 - `SM-Analysis3/plot_Clusters_CABIC.R`
 - `SM-Analysis3/compare_ClusterID.R`
+- `SM-Analysis3/statistic_Correlations_Clusters.R`
+- `SM-Analysis3/compare_Correlations_Clusters.R`
+- `SM-Analysis3/plot_Correlations_Clusters.R`
+
+**SM-Analysis 4. Clustering analysis on NYU site only**
+
+We performed spectral clustering on ABIDE-NYU site, to evaluate the consistency of cluster ID compare with ABIDE classifier in main analysis.
+
+- `SM-Analysis4/do_Clustering_CABIC.R`
+- `SM-Analysis4/compare_ClusterID.R`
