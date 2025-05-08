@@ -28,7 +28,7 @@ inde$clusterID[inde$clusterID == "H"] <- "2"
 pred <- pred[, c(1,45)]
 inde <- inde[, c(2,1)]
 
-merged_data <- merge(inde, pred, by = "participant")
+merged_data <- merge(pred, inde, by = "participant")
 
 compare <- merged_data %>%
   summarise(
@@ -37,8 +37,14 @@ compare <- merged_data %>%
     Match_Percent = mean(clusterID == predicted_cluster) * 100,
     Mismatch_Percent = mean(clusterID != predicted_cluster) * 100
   )
-
+compare
 write.csv(compare, file.path(cabicDir, "compare_ClusterID.csv"), row.names = FALSE)
 
-colnames(merged_data) <- c("Participant", "IndepententClusterID", "PredictedClusterID")
+colnames(merged_data) <- c("Participant", "ClusterIndex_Predicted", "ClusterIndex_Indepentent")
+merged_data[, 2:3] <- lapply(merged_data[, 2:3], function(x) {
+  x[x == 1] <- "L"
+  x[x == 2] <- "H"
+  x
+})
+
 write.csv(merged_data, file.path(cabicDir, "CABIC_ClusterID.csv"), row.names = FALSE)
