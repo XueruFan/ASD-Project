@@ -635,17 +635,17 @@ rm(list = (setdiff(ls(), objects_to_keep)))
 #                            ")[['p.value']]")))
 #   # 创建一个新的数据框，将 L 和 H 的数据合并，并加上 group 列
 #   combined_data <- data.frame(
-#     group = c(rep("L", length(eval(parse(text = paste0("L$", v))))), 
+#     group = c(rep("L", length(eval(parse(text = paste0("L$", v))))),
 #               rep("H", length(eval(parse(text = paste0("H$", v)))))),
-#     variable = c(eval(parse(text = paste0("L$", v))), 
+#     variable = c(eval(parse(text = paste0("L$", v))),
 #                  eval(parse(text = paste0("H$", v))))
 #   )
-#   
+# 
 #   # 构建列联表
 #   table_data <- table(combined_data$group, combined_data$variable)
-#   
+# 
 #   # 进行 Fisher 检验
-#   eval(parse(text = paste0("Pvalue['f-test', '", v, "'] <- fisher.test(table_data, 
+#   eval(parse(text = paste0("Pvalue['f-test', '", v, "'] <- fisher.test(table_data,
 #                            simulate.p.value = TRUE, B = 1e5)[['p.value']]")))
 # }
 # 

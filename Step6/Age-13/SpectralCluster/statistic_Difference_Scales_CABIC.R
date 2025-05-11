@@ -18,8 +18,8 @@ packages <- c("ggplot2", "ggridges", "tidyr", "bestNormalize", "dplyr", "reshape
 sapply(packages, require, character.only = TRUE)
 
 cabicDir <- 'E:/PhDproject/CABIC'
-resuDir <- file.path(cabicDir, "result/pred/513/Diff")
-plotDir <- file.path(cabicDir, "result/pred/513/Plot/Diff")
+resuDir <- file.path(cabicDir, "result/pred/Spect513/Diff")
+plotDir <- file.path(cabicDir, "result/pred/Spect513/Plot/Diff")
 resDate <- "240928"
 
 # 认知行为
@@ -27,11 +27,10 @@ pheno <- read_excel(file.path(cabicDir, "CABIC_Subjects_info.xls"))
 colnames(pheno)[3] <- "participant"
 # 聚类信息、脑形态测量百分位数
 name <- paste0("cabic_cluster_predictions_513_", resDate, ".csv")
-cluster <- read.csv(file.path(cabicDir, "result/pred/513", name))
+cluster <- read.csv(file.path(cabicDir, "result/pred/Spect513", name))
 
 All <- merge(cluster, pheno, by = "participant")
 All <- subset(All, SEX == "M" & GROUP == "ASD")
-All <- subset(All, AGE >= 5 & AGE < 13)
 
 All[which(All$predicted_cluster == "1"), 'clusterID'] = "L"
 All[which(All$predicted_cluster == "2"), 'clusterID'] = "H"

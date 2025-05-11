@@ -1,5 +1,5 @@
 # Analyze demographic and cognitive behavioral differences between the clusters
-# Male, ASD, 5~9.9 years old, Spectral Clustering
+# Male, ASD, <13 years old, Spectral Clustering
 # Xue-Ru Fan 24 Oct 2023 @BNU
 ################################
 # Part 0: Site
@@ -13,27 +13,26 @@
 
 
 rm(list=ls())
-packages <- c("ggplot2", "ggridges", "tidyr", "bestNormalize", "dplyr", "reshape2", "Cairo")
+packages <- c("ggplot2", "ggridges", "tidyr", "bestNormalize", "dplyr", "reshape2", "Cairo", "readxl")
 # sapply(packages,install.packages,character.only=TRUE)
 sapply(packages, require, character.only = TRUE)
 
 cabicDir <- 'E:/PhDproject/CABIC'
-resuDir <- file.path(cabicDir, "result/pred/510/Diff")
-plotDir <- file.path(cabicDir, "result/pred/510/Plot/Diff")
+resuDir <- file.path(cabicDir, "result/inde/Spect-13/Diff")
+plotDir <- file.path(cabicDir, "result/inde/Spect-13/Plot/Diff")
 resDate <- "240928"
 
 # 认知行为
 pheno <- read_excel(file.path(cabicDir, "CABIC_Subjects_info.xls"))
 colnames(pheno)[3] <- "participant"
 # 聚类信息、脑形态测量百分位数
-name <- paste0("cabic_cluster_predictions_510_", resDate, ".csv")
-cluster <- read.csv(file.path(cabicDir, "result/pred/510", name))
+cluster <- read.csv(file.path(cabicDir, "result/inde/Spect-13",  paste0("Cluster_", resDate, ".csv")))
 
 All <- merge(cluster, pheno, by = "participant")
 All <- subset(All, SEX == "M" & GROUP == "ASD")
 
-All[which(All$predicted_cluster == "1"), 'clusterID'] = "H"
-All[which(All$predicted_cluster == "2"), 'clusterID'] = "L"
+All[which(All$clusterID == "1"), 'clusterID'] = "H"
+All[which(All$clusterID == "2"), 'clusterID'] = "L"
 All$clusterID <- factor(All$clusterID)
 
 evalu <- c("Median", "Mean", "SD") # 计算哪些统计值

@@ -10,7 +10,7 @@ packages <- c("tidyverse", "stats", "dplyr", "ggplot2", "reshape2", "pheatmap",
               "magrittr", "readr", "openxlsx")
 sapply(packages, require, character.only = TRUE)
 
-statDir <- ("E:/PhDproject/CABIC/result/pred/513/StruCorr")
+statDir <- ("E:/PhDproject/CABIC/result/pred/Spect513/StruCorr")
 
 # 自定义 cor.mtest() 函数来计算 p 值矩阵
 cor.mtest <- function(mat, conf.level = 0.95) {
@@ -30,7 +30,7 @@ cor.mtest <- function(mat, conf.level = 0.95) {
 }
 
 # 读取 Cluster 数据
-cluster <- read.csv("E:/PhDproject/CABIC/result/pred/513/cabic_cluster_predictions_513_240928.csv")
+cluster <- read.csv("E:/PhDproject/CABIC/result/pred/Spect513/cabic_cluster_predictions_513_240928.csv")
 colnames(cluster)[45] <- "clusterID"
 
 # 读取脑区数据

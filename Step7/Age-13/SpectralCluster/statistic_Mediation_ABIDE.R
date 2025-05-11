@@ -15,7 +15,6 @@ abideDir <- 'E:/PhDproject/ABIDE' # winds
 phenoDir <- file.path(abideDir, "Preprocessed")
 clustDir <- file.path(abideDir, "Analysis/Cluster/Spect513")
 statiDir <- file.path(abideDir, "Analysis/Statistic/Spect513")
-plotDir <- file.path(abideDir, "Plot/Cluster/Spect513/Corr/Part4")
 resDate <- "240315"
 newDate <- "240610"
 
@@ -74,7 +73,7 @@ H <- H[, -1]
 results_H <- data.frame()
 
 
-
+# 脑-行为
 for (name_brain in names_brain) {
   for (name_cog in names_cog) {
     for (name_med in names_med) {
@@ -132,6 +131,78 @@ for (name_brain in names_brain) {
           A_pvalue = p_A,
           B_effect = B,
           B_pvalue = p_B,
+          DirectEffect = direct_effect,
+          DirectEffect_pvalue = p_C_prime,
+          TotalEffect = total_effect,
+          IndirectEffect = indirect_effect,
+          SobelTestStat = sobel_test_stat,
+          Sobel_pvalue = p_value))
+      }
+    }
+  }
+}
+
+
+name <- paste0("corr_median_Part4_Select_H_brain2cog_", newDate, ".csv")
+write.csv(results_H, file.path(statiDir, name), row.names = F)
+
+
+
+# 行为-脑
+for (name_brain in names_brain) {
+  for (name_cog in names_cog) {
+    for (name_med in names_med) {
+      if (name_cog != name_med) {
+        temp <- H[, c(name_brain, "SITE_ID", "TCV_centile", name_med, name_cog)]
+        temp <- na.omit(temp)
+        
+        # 对变量进行标准化
+        temp$y <- scale(temp[[name_brain]])
+        temp$med <- scale(temp[[name_med]])
+        temp$x <- scale(temp[[name_cog]])
+
+        # 步骤1: 估计路径 A (X -> M)
+        model_M1 <- lm(med ~ x + SITE_ID + TCV_centile, data = temp)
+        
+        # 提取路径 A 的系数和标准误
+        A <- coef(model_M1)["x"]
+        se_A <- summary(model_M1)$coefficients["x", "Std. Error"]
+        p_A <- summary(model_M1)$coefficients["x", "Pr(>|t|)"]  # 提取 A 的 p 值
+        
+        # 步骤2: 估计路径 B 和路径 C' (M -> Y，控制 X)
+        model_Y1 <- lm(y ~ x + med + SITE_ID + TCV_centile, data = temp)
+        
+        # 提取路径 B 和 C' 的系数和标准误
+        B <- coef(model_Y1)["med"]
+        se_B <- summary(model_Y1)$coefficients["med", "Std. Error"]
+        p_B <- summary(model_Y1)$coefficients["med", "Pr(>|t|)"]  # 提取 B 的 p 值
+        
+        # 提取直接效应 C'
+        direct_effect <- coef(model_Y1)["x"]
+        p_C_prime <- summary(model_Y1)$coefficients["x", "Pr(>|t|)"]  # 提取直接效应的 p 值
+        
+        
+        # 步骤3: 估计总效应 C (X -> Y)
+        model_C <- lm(y ~ x + SITE_ID + TCV_centile, data = temp)
+        
+        # 提取总效应 C
+        total_effect <- coef(model_C)["x"]
+        
+        # 计算间接效应 A * B
+        indirect_effect <- A * B
+        
+        # Sobel Test 计算间接效应的显著性
+        sobel_test_stat <- (A * B) / sqrt(B^2 * se_A^2 + A^2 * se_B^2)
+        p_value <- 2 * (1 - pnorm(abs(sobel_test_stat)))
+        
+        results_H <- rbind(results_H, data.frame(
+          brain = name_brain,
+          cog = name_cog,
+          med = name_med,
+          A_effect = A,
+          A_pvalue = p_A,
+          B_effect = B,
+          B_pvalue = p_B,
           IndirectEffect = indirect_effect,
           DirectEffect = direct_effect,
           DirectEffect_pvalue = p_C_prime,
@@ -144,5 +215,5 @@ for (name_brain in names_brain) {
 }
 
 
-name <- paste0("corr_median_Part4_Select_H_", newDate, ".csv")
+name <- paste0("corr_median_Part4_Select_H_cog2brain_", newDate, ".csv")
 write.csv(results_H, file.path(statiDir, name), row.names = F)

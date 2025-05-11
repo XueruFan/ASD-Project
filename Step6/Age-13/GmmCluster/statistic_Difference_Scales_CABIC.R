@@ -31,7 +31,6 @@ cluster <- read.csv(file.path(cabicDir, "result/pred/GMM513", name))
 
 All <- merge(cluster, pheno, by = "participant")
 All <- subset(All, SEX == "M" & GROUP == "ASD")
-All <- subset(All, AGE >= 5 & AGE < 13)
 
 All[which(All$predicted_cluster == "1"), 'clusterID'] = "L"
 All[which(All$predicted_cluster == "2"), 'clusterID'] = "H"
