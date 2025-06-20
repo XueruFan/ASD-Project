@@ -27,7 +27,7 @@ abide_centile <- read.csv(file.path(dataDir, paste0("abide_All_centile_513_", re
 
 data_raw <- subset(abide_centile, dx == "ASD" & sex == "Male")
 
-# 有3个ASD男性被去掉了，找到他们
+# 有男性被去掉了，找到他们
 # rows_with_na <- apply(data_raw, 1, function(x) any(is.na(x)))
 # na_rows <- data_raw[rows_with_na, ]
 # 去掉他们
